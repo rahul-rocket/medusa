@@ -79,6 +79,23 @@
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.promotion.listRuleValues("rules", "attr_123")
+ *       .then(({ values }) => {
+ *         console.log(values)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -92,16 +109,37 @@
  *     content:
  *       application/json:
  *         schema:
- *           type: object
- *           description: The list of rule values.
- *           required:
- *             - values
- *           properties:
- *             values:
- *               type: array
+ *           allOf:
+ *             - type: object
+ *               description: The pagination fields.
+ *               required:
+ *                 - limit
+ *                 - offset
+ *                 - count
+ *               properties:
+ *                 limit:
+ *                   type: number
+ *                   title: limit
+ *                   description: The maximum number of items returned.
+ *                 offset:
+ *                   type: number
+ *                   title: offset
+ *                   description: The number of items skipped before retrieving the returned items.
+ *                 count:
+ *                   type: number
+ *                   title: count
+ *                   description: The total number of items.
+ *             - type: object
  *               description: The list of rule values.
- *               items:
- *                 $ref: "#/components/schemas/AdminRuleValueOption"
+ *               required:
+ *                 - values
+ *               properties:
+ *                 values:
+ *                   type: array
+ *                   description: The list of rule values.
+ *                   items:
+ *                     $ref: "#/components/schemas/AdminRuleValueOption"
+ *           description: The paginated list of rule values.
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":

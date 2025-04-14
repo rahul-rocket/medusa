@@ -55,6 +55,11 @@ post:
                 title: remove
                 description: A customer's ID.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_customer-groups_{id}_customers/post.js
     - lang: Shell
       label: cURL
       source:

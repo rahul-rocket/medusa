@@ -18,5 +18,6 @@ export const ProductModule = {
     alias: [],
   },
 
+  list: jest.fn(async () => []),
   softDelete: jest.fn(() => {}),
 }

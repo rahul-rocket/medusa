@@ -42,6 +42,10 @@ delete:
   description: Deletes the cookie session ID previously set for authentication.
   x-authenticated: true
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/auth_session/delete.js
     - lang: Shell
       label: cURL
       source:

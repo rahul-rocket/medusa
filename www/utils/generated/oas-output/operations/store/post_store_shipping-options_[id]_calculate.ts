@@ -52,6 +52,29 @@
  *             externalDocs:
  *               url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       sdk.store.fulfillment.calculate("so_123", {
+ *         cart_id: "cart_123"
+ *       })
+ *       .then(({ shipping_option }) => {
+ *         console.log(shipping_option)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

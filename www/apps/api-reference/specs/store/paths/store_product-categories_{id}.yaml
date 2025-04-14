@@ -83,6 +83,10 @@ get:
           or select specific fields to make the response size smaller. For
           example, `fields=category_children.id,category_children.name`.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_product-categories_{id}/get.js
     - lang: Shell
       label: cURL
       source:

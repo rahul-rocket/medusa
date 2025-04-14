@@ -41,6 +41,7 @@ medusaIntegrationTestRunner({
     let publishableKey
     let storeHeadersWithCustomer
     let customer
+    let shippingProfile
 
     const createProducts = async (data) => {
       const response = await api.post(
@@ -135,6 +136,14 @@ medusaIntegrationTestRunner({
           adminHeaders
         )
       ).data.region
+
+      shippingProfile = (
+        await api.post(
+          `/admin/shipping-profiles`,
+          { name: "default", type: "default" },
+          adminHeaders
+        )
+      ).data.shipping_profile
     })
 
     describe("Get products based on publishable key", () => {
@@ -145,7 +154,11 @@ medusaIntegrationTestRunner({
         product1 = (
           await api.post(
             "/admin/products",
-            getProductFixture({ title: "test1", status: "published" }),
+            getProductFixture({
+              title: "test1",
+              status: "published",
+              shipping_profile_id: shippingProfile.id,
+            }),
             adminHeaders
           )
         ).data.product
@@ -153,7 +166,11 @@ medusaIntegrationTestRunner({
         product2 = (
           await api.post(
             "/admin/products",
-            getProductFixture({ title: "test2", status: "published" }),
+            getProductFixture({
+              title: "test2",
+              status: "published",
+              shipping_profile_id: shippingProfile.id,
+            }),
             adminHeaders
           )
         ).data.product
@@ -161,7 +178,11 @@ medusaIntegrationTestRunner({
         product3 = (
           await api.post(
             "/admin/products",
-            getProductFixture({ title: "test3", status: "published" }),
+            getProductFixture({
+              title: "test3",
+              status: "published",
+              shipping_profile_id: shippingProfile.id,
+            }),
             adminHeaders
           )
         ).data.product
@@ -500,6 +521,7 @@ medusaIntegrationTestRunner({
           title: "test product 1",
           collection_id: collection.id,
           status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
           options: [
             { title: "size", values: ["large", "small"] },
             { title: "color", values: ["green"] },
@@ -538,6 +560,7 @@ medusaIntegrationTestRunner({
         ;[product2, [variant2]] = await createProducts({
           title: "test product 2 uniquely",
           status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
           options: [
             { title: "size", values: ["large", "small"] },
             { title: "material", values: ["cotton", "polyester"] },
@@ -557,6 +580,7 @@ medusaIntegrationTestRunner({
         ;[product3, [variant3]] = await createProducts({
           title: "product not in price list",
           status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
           options: [{ title: "size", values: ["large", "small"] }],
           variants: [
             { title: "test variant 3", prices: [], options: { size: "large" } },
@@ -565,6 +589,7 @@ medusaIntegrationTestRunner({
         ;[product4, [variant4]] = await createProducts({
           title: "draft product",
           status: ProductStatus.DRAFT,
+          shipping_profile_id: shippingProfile.id,
           options: [{ title: "size", values: ["large", "small"] }],
           variants: [
             { title: "test variant 4", prices: [], options: { size: "large" } },
@@ -834,6 +859,34 @@ medusaIntegrationTestRunner({
         expect(response.data.count).toEqual(1)
         expect(response.data.products).toEqual([
           expect.objectContaining({ id: product.id }),
+        ])
+      })
+
+      it("returns a list of products with one of the given handles", async () => {
+        const response = await api.get(
+          `/store/products?handle[]=${product.handle}&handle[]=${product2.handle}`,
+          storeHeaders
+        )
+
+        expect(response.status).toEqual(200)
+        expect(response.data.count).toEqual(2)
+        expect(response.data.products).toEqual([
+          expect.objectContaining({ id: product.id }),
+          expect.objectContaining({ id: product2.id }),
+        ])
+      })
+
+      it("returns a list of products with one of the given titles", async () => {
+        const response = await api.get(
+          `/store/products?title[]=${product.title}&title[]=${product2.title}`,
+          storeHeaders
+        )
+
+        expect(response.status).toEqual(200)
+        expect(response.data.count).toEqual(2)
+        expect(response.data.products).toEqual([
+          expect.objectContaining({ id: product.id }),
+          expect.objectContaining({ id: product2.id }),
         ])
       })
 
@@ -1727,6 +1780,7 @@ medusaIntegrationTestRunner({
         ;[product, [variant]] = await createProducts({
           title: "test product 1",
           status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
           options: [{ title: "size", values: ["large"] }],
           variants: [
             {
@@ -2206,6 +2260,7 @@ medusaIntegrationTestRunner({
             getProductFixture({
               title: "test1",
               status: "published",
+              shipping_profile_id: shippingProfile.id,
               variants: [
                 {
                   title: "Test taxes",
@@ -2239,6 +2294,7 @@ medusaIntegrationTestRunner({
             getProductFixture({
               title: "test2",
               status: "published",
+              shipping_profile_id: shippingProfile.id,
             }),
             adminHeaders
           )
@@ -2313,6 +2369,12 @@ medusaIntegrationTestRunner({
         expect(products[0].variants[0].calculated_price).not.toHaveProperty(
           "calculated_amount_without_tax"
         )
+        expect(products[0].variants[0].calculated_price).not.toHaveProperty(
+          "original_amount_with_tax"
+        )
+        expect(products[0].variants[0].calculated_price).not.toHaveProperty(
+          "original_amount_without_tax"
+        )
       })
 
       it("should not return tax pricing if automatic taxes are off when listing products", async () => {
@@ -2329,6 +2391,12 @@ medusaIntegrationTestRunner({
         )
         expect(products[0].variants[0].calculated_price).not.toHaveProperty(
           "calculated_amount_without_tax"
+        )
+        expect(products[0].variants[0].calculated_price).not.toHaveProperty(
+          "original_amount_with_tax"
+        )
+        expect(products[0].variants[0].calculated_price).not.toHaveProperty(
+          "original_amount_without_tax"
         )
       })
 
@@ -2368,6 +2436,66 @@ medusaIntegrationTestRunner({
                 calculated_amount: 45,
                 calculated_amount_without_tax: 45,
                 calculated_amount_with_tax: 49.5,
+              }),
+            }),
+          ])
+        )
+      })
+
+      it("should return prices with and without tax for a tax inclusive region when listing products with a price list sale", async () => {
+        const customerGroup = (
+          await api.post(
+            "/admin/customer-groups",
+            { name: "VIP" },
+            adminHeaders
+          )
+        ).data.customer_group
+
+        await api.post(
+          `/admin/customer-groups/${customerGroup.id}/customers`,
+          { add: [customer.id] },
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/price-lists`,
+          {
+            title: "test price list",
+            description: "test",
+            status: PriceListStatus.ACTIVE,
+            type: PriceListType.SALE,
+            prices: [
+              {
+                amount: 35,
+                currency_code: euRegion.currency_code,
+                variant_id: product1.variants[0].id,
+              },
+            ],
+            rules: { "customer.groups.id": [customerGroup.id] },
+          },
+          adminHeaders
+        )
+
+        const products = (
+          await api.get(
+            `/store/products?fields=id,*variants.calculated_price&region_id=${euRegion.id}&country_code=it`,
+            storeHeadersWithCustomer
+          )
+        ).data.products
+
+        expect(products.length).toBe(2)
+        expect(products[0].variants).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              calculated_price: expect.objectContaining({
+                currency_code: "eur",
+                calculated_amount: 35,
+                original_amount: 45,
+                is_calculated_price_price_list: true,
+                calculated_amount_with_tax: 38.5,
+                calculated_amount_without_tax: 35,
+                original_amount_with_tax: 45,
+                original_amount_without_tax: 40.90909090909091,
               }),
             }),
           ])
@@ -2490,6 +2618,13 @@ medusaIntegrationTestRunner({
         )
         expect(product.variants[0].calculated_price).not.toHaveProperty(
           "calculated_amount_without_tax"
+        )
+
+        expect(product.variants[0].calculated_price).not.toHaveProperty(
+          "original_amount_with_tax"
+        )
+        expect(product.variants[0].calculated_price).not.toHaveProperty(
+          "original_amount_without_tax"
         )
       })
 

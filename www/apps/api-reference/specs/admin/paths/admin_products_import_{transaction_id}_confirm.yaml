@@ -17,6 +17,11 @@ post:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_products_import_{transaction_id}_confirm/post.js
     - lang: Shell
       label: cURL
       source:
@@ -25,6 +30,8 @@ post:
   tags:
     - Products
   responses:
+    '202':
+      description: OK
     '400':
       $ref: ../components/responses/400_error.yaml
     '401':
@@ -37,4 +44,3 @@ post:
       $ref: ../components/responses/invalid_request_error.yaml
     '500':
       $ref: ../components/responses/500_error.yaml
-  x-workflow: importProductsWorkflowId

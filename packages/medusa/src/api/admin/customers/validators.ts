@@ -22,7 +22,9 @@ export const AdminCustomerGroupInCustomerParams = z.object({
 
 export const AdminCustomersParamsFields = z.object({
   q: z.string().optional(),
-  id: z.union([z.string(), z.array(z.string())]).optional(),
+  id: z
+    .union([z.string(), z.array(z.string()), createOperatorMap()])
+    .optional(),
   email: z.union([z.string(), z.array(z.string())]).optional(),
   groups: z
     .union([
@@ -90,6 +92,8 @@ export const AdminCreateCustomerAddress = WithAdditionalData(
 
 export const AdminUpdateCustomerAddress = AdminCreateCustomerAddress
 
+export const AdminCustomerAddressParams = createSelectParams()
+
 export const AdminCustomerAddressesParams = createFindParams({
   offset: 0,
   limit: 50,
@@ -108,6 +112,9 @@ export type AdminCustomerParamsType = z.infer<typeof AdminCustomerParams>
 export type AdminCustomersParamsType = z.infer<typeof AdminCustomersParams>
 export type AdminCreateCustomerType = z.infer<typeof CreateCustomer>
 export type AdminUpdateCustomerType = z.infer<typeof UpdateCustomer>
+export type AdminCustomerAddressParamsType = z.infer<
+  typeof AdminCustomerAddressParams
+>
 export type AdminCreateCustomerAddressType = z.infer<
   typeof CreateCustomerAddress
 >

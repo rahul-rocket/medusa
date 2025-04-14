@@ -20,7 +20,7 @@ import {
   LoadStrategy,
   FilterQuery as MikroFilterQuery,
   FindOptions as MikroOptions,
-  ReferenceType,
+  ReferenceKind,
 } from "@mikro-orm/core"
 import { SqlEntityManager } from "@mikro-orm/postgresql"
 import {
@@ -31,10 +31,7 @@ import {
 } from "../../common"
 import { toMikroORMEntity } from "../../dml"
 import { buildQuery } from "../../modules-sdk/build-query"
-import {
-  getSoftDeletedCascadedEntitiesIdsMappedBy,
-  transactionWrapper,
-} from "../utils"
+import { transactionWrapper } from "../utils"
 import { dbErrorMapper } from "./db-error-mapper"
 import { mikroOrmSerializer } from "./mikro-orm-serializer"
 import { mikroOrmUpdateDeletedAtRecursively } from "./utils"
@@ -162,7 +159,10 @@ export class MikroOrmBaseRepository<const T extends object = object>
     throw new Error("Method not implemented.")
   }
 
-  delete(idsOrPKs: FindOptions<T>["where"], context?: Context): Promise<void> {
+  delete(
+    idsOrPKs: FindOptions<T>["where"],
+    context?: Context
+  ): Promise<string[]> {
     throw new Error("Method not implemented.")
   }
 
@@ -212,17 +212,13 @@ export class MikroOrmBaseRepository<const T extends object = object>
     const date = new Date()
 
     const manager = this.getActiveManager<SqlEntityManager>(sharedContext)
-    await mikroOrmUpdateDeletedAtRecursively<T>(
+    const softDeletedEntitiesMap = await mikroOrmUpdateDeletedAtRecursively<T>(
       manager,
       entities as any[],
       date
     )
 
-    const softDeletedEntitiesMap = getSoftDeletedCascadedEntitiesIdsMappedBy({
-      entities,
-    })
-
-    return [entities, softDeletedEntitiesMap]
+    return [entities, Object.fromEntries(softDeletedEntitiesMap)]
   }
 
   async restore(
@@ -236,32 +232,13 @@ export class MikroOrmBaseRepository<const T extends object = object>
     const entities = await this.find(query, sharedContext)
 
     const manager = this.getActiveManager<SqlEntityManager>(sharedContext)
-    await mikroOrmUpdateDeletedAtRecursively(manager, entities as any[], null)
+    const softDeletedEntitiesMap = await mikroOrmUpdateDeletedAtRecursively(
+      manager,
+      entities as any[],
+      null
+    )
 
-    const softDeletedEntitiesMap = getSoftDeletedCascadedEntitiesIdsMappedBy({
-      entities,
-      restored: true,
-    })
-
-    return [entities, softDeletedEntitiesMap]
-  }
-
-  applyFreeTextSearchFilters<T>(
-    findOptions: DAL.FindOptions<T & { q?: string }>,
-    retrieveConstraintsToApply: (q: string) => any[]
-  ): void {
-    if (!("q" in findOptions.where) || !findOptions.where.q) {
-      delete findOptions.where.q
-
-      return
-    }
-
-    const q = findOptions.where.q as string
-    delete findOptions.where.q
-
-    findOptions.where = {
-      $and: [findOptions.where, { $or: retrieveConstraintsToApply(q) }],
-    } as unknown as DAL.FindOptions<T & { q?: string }>["where"]
+    return [entities, Object.fromEntries(softDeletedEntitiesMap)]
   }
 }
 
@@ -303,7 +280,7 @@ export class MikroOrmBaseTreeRepository<
     throw new Error("Method not implemented.")
   }
 
-  delete(ids: string[], context?: Context): Promise<void> {
+  delete(ids: string[], context?: Context): Promise<string[]> {
     throw new Error("Method not implemented.")
   }
 }
@@ -319,6 +296,10 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
 
   class MikroOrmAbstractBaseRepository_ extends MikroOrmBaseRepository<T> {
     entity = mikroOrmEntity
+    tableName = (
+      (mikroOrmEntity as unknown as EntitySchema).meta ??
+      (mikroOrmEntity as EntityClass<any>).prototype.__meta
+    ).collection
 
     // @ts-ignore
     constructor(...args: any[]) {
@@ -391,7 +372,7 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
           const relation = relations.find((relation) => relation.name === key)
           const shouldInit =
             relation &&
-            relation.reference === ReferenceType.MANY_TO_MANY &&
+            relation.kind === ReferenceKind.MANY_TO_MANY &&
             Array.isArray(update[key]) &&
             !update[key].length
 
@@ -409,44 +390,69 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
         descriptor,
       ] of collectionsToRemoveAllFrom) {
         await promiseAll(
-          data.map(async ({ entity }) => {
+          data.flatMap(async ({ entity }) => {
             if (!descriptor.mappedBy) {
               return await entity[collectionToRemoveAllFrom].init()
             }
 
+            const promises: Promise<any>[] = []
             await entity[collectionToRemoveAllFrom].init()
             const items = entity[collectionToRemoveAllFrom]
 
             for (const item of items) {
-              await item[descriptor.mappedBy!].init()
+              promises.push(item[descriptor.mappedBy!].init())
             }
+
+            return promises
           })
         )
       }
     }
 
     async update(
-      data: { entity; update }[],
+      data: { entity: any; update: any }[],
       context?: Context
     ): Promise<InferRepositoryReturnType<T>[]> {
       const manager = this.getActiveManager<EntityManager>(context)
 
       await this.initManyToManyToDetachAllItemsIfNeeded(data, context)
 
-      data.map((_, index) => {
-        manager.assign(data[index].entity, data[index].update)
-        manager.persist(data[index].entity)
+      data.forEach(({ entity, update }) => {
+        manager.assign(entity, update, {
+          mergeObjectProperties: true,
+        })
+        manager.persist(entity)
       })
 
-      return data.map((d) => d.entity)
+      return data.map((d) => d.entity) as InferRepositoryReturnType<T>[]
     }
 
     async delete(
       filters: FindOptions<T>["where"],
       context?: Context
-    ): Promise<void> {
-      const manager = this.getActiveManager<EntityManager>(context)
-      await manager.nativeDelete<T>(this.entity, filters)
+    ): Promise<string[]> {
+      const manager = this.getActiveManager<SqlEntityManager>(context)
+
+      const whereSqlInfo = manager
+        .createQueryBuilder(this.entity.name, this.tableName)
+        .where(filters)
+        .getKnexQuery()
+        .toSQL()
+
+      const where = [
+        whereSqlInfo.sql.split("where ")[1],
+        whereSqlInfo.bindings,
+      ] as [string, any[]]
+
+      return await (manager.getTransactionContext() ?? manager.getKnex())
+        .queryBuilder()
+        .from(this.tableName)
+        .delete()
+        .where(manager.getKnex().raw(...where))
+        .returning("id")
+        .then((rows: { id: string }[]) => {
+          return rows.map((row: { id: string }) => row.id)
+        })
     }
 
     async find(
@@ -578,7 +584,7 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
         const existingEntity = existingEntitiesMap.get(key)
         if (existingEntity) {
           const updatedType = manager.assign(existingEntity, data_)
-          updatedEntities.push(updatedType)
+          updatedEntities.push(updatedType as any)
         } else {
           const newEntity = manager.create(this.entity, data_)
           createdEntities.push(newEntity as InferRepositoryReturnType<T>)
@@ -698,8 +704,8 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
               // TODO: Handle ONE_TO_ONE
               // One to one and Many to one are handled outside of the assignment as they need to happen before the main entity is created
               if (
-                relation.reference === ReferenceType.ONE_TO_ONE ||
-                relation.reference === ReferenceType.MANY_TO_ONE
+                relation.kind === ReferenceKind.ONE_TO_ONE ||
+                relation.kind === ReferenceKind.MANY_TO_ONE
               ) {
                 return
               }
@@ -765,7 +771,7 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
         return this.getEntityWithId(manager, relation.type, normalizedItem)
       })
 
-      if (relation.reference === ReferenceType.MANY_TO_MANY) {
+      if (relation.kind === ReferenceKind.MANY_TO_MANY) {
         const currentPivotColumn = relation.inverseJoinColumns[0]
         const parentPivotColumn = relation.joinColumns[0]
 
@@ -792,20 +798,25 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
           }
         })
 
-        const qb = manager.qb(relation.pivotEntity)
-        await qb.insert(pivotData).onConflict().ignore().execute()
-
-        await manager.nativeDelete(relation.pivotEntity, {
-          [parentPivotColumn]: (data as any).id,
-          [currentPivotColumn]: {
-            $nin: pivotData.map((d) => d[currentPivotColumn]),
-          },
-        })
+        await promiseAll([
+          manager
+            .qb(relation.pivotEntity)
+            .insert(pivotData)
+            .onConflict()
+            .ignore()
+            .execute(),
+          manager.nativeDelete(relation.pivotEntity, {
+            [parentPivotColumn]: (data as any).id,
+            [currentPivotColumn]: {
+              $nin: pivotData.map((d) => d[currentPivotColumn]),
+            },
+          }),
+        ])
 
         return { entities: normalizedData, performedActions }
       }
 
-      if (relation.reference === ReferenceType.ONE_TO_MANY) {
+      if (relation.kind === ReferenceKind.ONE_TO_MANY) {
         const joinColumns =
           relation.targetMeta?.properties[relation.mappedBy]?.joinColumns
 
@@ -815,27 +826,23 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
           joinColumnsConstraints[joinColumn] = data[referencedColumnName]
         })
 
-        const toDeleteEntities = await manager.find<any>(
-          relation.type,
-          {
-            ...joinColumnsConstraints,
-            id: { $nin: normalizedData.map((d: any) => d.id) },
-          },
-          {
-            fields: ["id"],
-          }
+        const deletedRelations = await (
+          manager.getTransactionContext() ?? manager.getKnex()
         )
-        const toDeleteIds = toDeleteEntities.map((d: any) => d.id)
+          .queryBuilder()
+          .from(relation.targetMeta!.collection)
+          .delete()
+          .where(joinColumnsConstraints)
+          .whereNotIn(
+            "id",
+            normalizedData.map((d: any) => d.id)
+          )
+          .returning("id")
 
-        await manager.nativeDelete(relation.type, {
-          ...joinColumnsConstraints,
-          id: { $in: toDeleteIds },
-        })
-
-        if (toDeleteEntities.length) {
+        if (deletedRelations.length) {
           performedActions.deleted[relation.type] ??= []
           performedActions.deleted[relation.type].push(
-            ...toDeleteEntities.map((d) => ({ id: d.id }))
+            ...deletedRelations.map((row) => ({ id: row.id }))
           )
         }
 
@@ -869,7 +876,7 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
       }
 
       // If it is a many-to-one we ensure the ID is set for when we want to set/unset an association
-      if (relation.reference === ReferenceType.MANY_TO_ONE) {
+      if (relation.kind === ReferenceKind.MANY_TO_ONE) {
         if (originalData === null) {
           entryCopy[relation.joinColumns[0]] = null
           return null
@@ -927,7 +934,7 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
         .filter(
           ([_, propDef]: any) =>
             propDef.persist === false &&
-            propDef.reference === ReferenceType.MANY_TO_ONE
+            propDef.kind === ReferenceKind.MANY_TO_ONE
         )
         .forEach(([key]) => {
           delete resp[key]
@@ -959,38 +966,46 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
         deleted: {},
       }
 
-      await promiseAll(
-        entries.map(async (data) => {
-          const existingEntity = existingEntitiesMap.get(data.id)
-          orderedEntities.push(data)
-          if (existingEntity) {
-            if (skipUpdate) {
-              return
-            }
-            await manager.nativeUpdate(entityName, { id: data.id }, data)
-            performedActions.updated[entityName] ??= []
-            performedActions.updated[entityName].push({ id: data.id })
-          } else {
-            const qb = manager.qb(entityName)
-            if (skipUpdate) {
-              const res = await qb
-                .insert(data)
-                .onConflict()
-                .ignore()
-                .execute("all", true)
-              if (res) {
-                performedActions.created[entityName] ??= []
-                performedActions.created[entityName].push({ id: data.id })
-              }
-            } else {
-              await manager.insert(entityName, data)
-              performedActions.created[entityName] ??= []
-              performedActions.created[entityName].push({ id: data.id })
-              // await manager.insert(entityName, data)
-            }
+      const promises: Promise<any>[] = []
+      const toInsert: unknown[] = []
+      let shouldInsert = false
+
+      entries.map(async (data) => {
+        const existingEntity = existingEntitiesMap.get(data.id)
+        orderedEntities.push(data)
+        if (existingEntity) {
+          if (skipUpdate) {
+            return
           }
-        })
-      )
+          const update = manager.nativeUpdate(entityName, { id: data.id }, data)
+          promises.push(update)
+
+          performedActions.updated[entityName] ??= []
+          performedActions.updated[entityName].push({ id: data.id })
+        } else {
+          shouldInsert = true
+          toInsert.push(data)
+        }
+      })
+
+      if (shouldInsert) {
+        let insertQb = manager.qb(entityName).insert(toInsert).returning("id")
+
+        if (skipUpdate) {
+          insertQb = insertQb.onConflict().ignore()
+        }
+
+        promises.push(
+          insertQb.execute("all", true).then((res: { id: string }[]) => {
+            performedActions.created[entityName] ??= []
+            performedActions.created[entityName].push(
+              ...res.map((data) => ({ id: data.id }))
+            )
+          })
+        )
+      }
+
+      await promiseAll(promises)
 
       return { orderedEntities, performedActions }
     }

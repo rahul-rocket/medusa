@@ -648,3 +648,10 @@ properties:
     type: string
     title: status
     description: The order's status.
+  region:
+    $ref: ./AdminRegion.yaml
+  credit_lines:
+    type: array
+    description: The order preview's credit lines.
+    items:
+      $ref: ./OrderCreditLine.yaml

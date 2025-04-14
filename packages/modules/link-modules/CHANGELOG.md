@@ -1,5 +1,58 @@
 # @medusajs/link-modules
 
+## 2.7.0
+
+### Minor Changes
+
+- [`386205d0f41828b82d519d2f5b8e07b41907a8ae`](https://github.com/medusajs/medusa/commit/386205d0f41828b82d519d2f5b8e07b41907a8ae) Thanks [@olivermrbl](https://github.com/olivermrbl)! - feat: Change customer to account_holder to be one-to-many
+
+### Patch Changes
+
+- [#12097](https://github.com/medusajs/medusa/pull/12097) [`74381addc3d6af42f0292e778948aabb60a6dad9`](https://github.com/medusajs/medusa/commit/74381addc3d6af42f0292e778948aabb60a6dad9) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Emit events in batch and index process event ids in batch
+
+- [#11767](https://github.com/medusajs/medusa/pull/11767) [`cae47d9e49e9a17d8395f7b390f6ec0a2f9b8dc2`](https://github.com/medusajs/medusa/commit/cae47d9e49e9a17d8395f7b390f6ec0a2f9b8dc2) Thanks [@thetutlage](https://github.com/thetutlage)! - feat: add check for uniqueness when creating links with isList=false
+
+- [#12062](https://github.com/medusajs/medusa/pull/12062) [`2270f29ec544b14c26b246a59f80be121f8014a1`](https://github.com/medusajs/medusa/commit/2270f29ec544b14c26b246a59f80be121f8014a1) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(link-modules): backward compatible links
+
+- Updated dependencies [[`ec56a8bc857a74788df6523af25914da95c4c1d8`](https://github.com/medusajs/medusa/commit/ec56a8bc857a74788df6523af25914da95c4c1d8), [`2a18a75353f872b0cb4c203afc08cfd82f778428`](https://github.com/medusajs/medusa/commit/2a18a75353f872b0cb4c203afc08cfd82f778428)]:
+  - @medusajs/framework@2.7.0
+
+## 2.6.1
+
+### Patch Changes
+
+- [#11738](https://github.com/medusajs/medusa/pull/11738) [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Remove ranges on Medusa packages
+
+- Updated dependencies [[`cc1309d3709b251683a0cda0ced448f8bf9f514e`](https://github.com/medusajs/medusa/commit/cc1309d3709b251683a0cda0ced448f8bf9f514e), [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861), [`20cd59e622463fbd46506275648ce681869adcdf`](https://github.com/medusajs/medusa/commit/20cd59e622463fbd46506275648ce681869adcdf)]:
+  - @medusajs/framework@2.6.1
+
+## 2.6.0
+
+### Patch Changes
+
+- [#11643](https://github.com/medusajs/medusa/pull/11643) [`228b7b608dfa935618179684fa3d005f7a9aaf01`](https://github.com/medusajs/medusa/commit/228b7b608dfa935618179684fa3d005f7a9aaf01) Thanks [@adrien2p](https://github.com/adrien2p)! - Chore/link module serialization
+
+- [#11601](https://github.com/medusajs/medusa/pull/11601) [`b42f151be31161a5d7a73132ee6794b990403d76`](https://github.com/medusajs/medusa/commit/b42f151be31161a5d7a73132ee6794b990403d76) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Improve internal repository delete algo
+
+## 2.5.1
+
+## 2.5.0
+
+## 2.4.0
+
+### Minor Changes
+
+- [#10292](https://github.com/medusajs/medusa/pull/10292) [`cc73802ab3821d2c667942bd887efb7476205547`](https://github.com/medusajs/medusa/commit/cc73802ab3821d2c667942bd887efb7476205547) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore: upgrade to mikro-orm 6
+
+### Patch Changes
+
+- Updated dependencies [[`0deffe7b9b9a1055813249b17057b7bba01b78ac`](https://github.com/medusajs/medusa/commit/0deffe7b9b9a1055813249b17057b7bba01b78ac), [`cc73802ab3821d2c667942bd887efb7476205547`](https://github.com/medusajs/medusa/commit/cc73802ab3821d2c667942bd887efb7476205547), [`13fe2f6776b22c401d131f184fc3600ef4008383`](https://github.com/medusajs/medusa/commit/13fe2f6776b22c401d131f184fc3600ef4008383), [`e53b8b0a9708d2eb46258ca417b6ff6abbd5f3d9`](https://github.com/medusajs/medusa/commit/e53b8b0a9708d2eb46258ca417b6ff6abbd5f3d9)]:
+  - @medusajs/framework@2.4.0
+
+## 2.3.1
+
+## 2.3.0
+
 ## 2.2.0
 
 ## 2.1.3

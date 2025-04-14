@@ -1,12 +1,7 @@
 import * as React from "react"
+import { ExampleRegistry as ExampleRegistryType } from "types"
 
-type ExampleType = {
-  name: string
-  component: React.LazyExoticComponent<() => React.JSX.Element>
-  file: string
-}
-
-export const ExampleRegistry: Record<string, ExampleType> = {
+export const ExampleRegistry: ExampleRegistryType = {
   "alert-demo": {
     name: "alert-demo",
     component: React.lazy(async () => import("@/examples/alert-demo")),
@@ -83,14 +78,81 @@ export const ExampleRegistry: Record<string, ExampleType> = {
     file: "src/examples/badge-large.tsx",
   },
   "badge-rounded-full": {
-    name: "badge-rounded",
+    name: "badge-rounded-full",
     component: React.lazy(async () => import("@/examples/badge-rounded-full")),
     file: "src/examples/badge-rounded-full.tsx",
   },
   "badge-rounded-base": {
-    name: "badge-rounded",
+    name: "badge-rounded-base",
     component: React.lazy(async () => import("@/examples/badge-rounded-base")),
     file: "src/examples/badge-rounded-base.tsx",
+  },
+  "data-table-demo": {
+    name: "data-table-demo",
+    component: React.lazy(async () => import("@/examples/data-table-demo")),
+    file: "src/examples/data-table-demo.tsx",
+  },
+  "data-table-row-click": {
+    name: "data-table-row-click",
+    component: React.lazy(
+      async () => import("@/examples/data-table-row-click")
+    ),
+    file: "src/examples/data-table-row-click.tsx",
+  },
+  "data-table-custom-cell": {
+    name: "data-table-custom-cell",
+    component: React.lazy(
+      async () => import("@/examples/data-table-custom-cell")
+    ),
+    file: "src/examples/data-table-custom-cell.tsx",
+  },
+  "data-table-search": {
+    name: "data-table-search",
+    component: React.lazy(async () => import("@/examples/data-table-search")),
+    file: "src/examples/data-table-search.tsx",
+  },
+  "data-table-pagination": {
+    name: "data-table-pagination",
+    component: React.lazy(
+      async () => import("@/examples/data-table-pagination")
+    ),
+    file: "src/examples/data-table-pagination.tsx",
+  },
+  "data-table-filters": {
+    name: "data-table-filters",
+    component: React.lazy(async () => import("@/examples/data-table-filters")),
+    file: "src/examples/data-table-filters.tsx",
+  },
+  "data-table-filters-date": {
+    name: "data-table-filters-date",
+    component: React.lazy(
+      async () => import("@/examples/data-table-filters-date")
+    ),
+    file: "src/examples/data-table-filters-date.tsx",
+  },
+  "data-table-filters-initial": {
+    name: "data-table-filters-initial",
+    component: React.lazy(
+      async () => import("@/examples/data-table-filters-initial")
+    ),
+    file: "src/examples/data-table-filters-initial.tsx",
+  },
+  "data-table-sorting": {
+    name: "data-table-sorting",
+    component: React.lazy(async () => import("@/examples/data-table-sorting")),
+    file: "src/examples/data-table-sorting.tsx",
+  },
+  "data-table-sorting-initial": {
+    name: "data-table-sorting-initial",
+    component: React.lazy(
+      async () => import("@/examples/data-table-sorting-initial")
+    ),
+    file: "src/examples/data-table-sorting-initial.tsx",
+  },
+  "data-table-commands": {
+    name: "data-table-commands",
+    component: React.lazy(async () => import("@/examples/data-table-commands")),
+    file: "src/examples/data-table-commands.tsx",
   },
   "icon-badge-demo": {
     name: "icon-badge-demo",
@@ -133,9 +195,29 @@ export const ExampleRegistry: Record<string, ExampleType> = {
     file: "src/examples/icon-badge-base.tsx",
   },
   "icon-badge-large": {
-    name: "icon-badge-small",
+    name: "icon-badge-large",
     component: React.lazy(async () => import("@/examples/icon-badge-large")),
     file: "src/examples/icon-badge-large.tsx",
+  },
+  "inline-tip-demo": {
+    name: "inline-tip-demo",
+    component: React.lazy(async () => import("@/examples/inline-tip-demo")),
+    file: "src/examples/inline-tip-demo.tsx",
+  },
+  "inline-tip-warning": {
+    name: "inline-tip-warning",
+    component: React.lazy(async () => import("@/examples/inline-tip-warning")),
+    file: "src/examples/inline-tip-warning.tsx",
+  },
+  "inline-tip-error": {
+    name: "inline-tip-error",
+    component: React.lazy(async () => import("@/examples/inline-tip-error")),
+    file: "src/examples/inline-tip-error.tsx",
+  },
+  "inline-tip-success": {
+    name: "inline-tip-success",
+    component: React.lazy(async () => import("@/examples/inline-tip-success")),
+    file: "src/examples/inline-tip-success.tsx",
   },
   "button-demo": {
     name: "button-demo",

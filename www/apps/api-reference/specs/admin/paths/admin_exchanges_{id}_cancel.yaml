@@ -20,6 +20,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostCancelExchangeReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_exchanges_{id}_cancel/post.js
     - lang: Shell
       label: cURL
       source:

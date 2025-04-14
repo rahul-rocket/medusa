@@ -42,6 +42,25 @@
  *             type: object
  *             description: The product type's metadata. Can hold custom key-value pairs.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.productType.update("ptyp_123", {
+ *         value: "Clothes"
+ *       })
+ *       .then(({ product_type }) => {
+ *         console.log(product_type)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

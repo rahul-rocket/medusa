@@ -36,6 +36,7 @@ export const OrderPaymentCollection: ModuleJoinerConfig = {
         methodSuffix: "PaymentCollections",
       },
       deleteCascade: true,
+      hasMany: true,
     },
   ],
   extends: [

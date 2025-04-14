@@ -838,6 +838,10 @@ get:
         title: cart_id
         description: The product's cart id.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_products/get.js
     - lang: Shell
       label: cURL
       source:

@@ -41,6 +41,11 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostClaimsShippingReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_claims_{id}_outbound_shipping-method/post.js
     - lang: Shell
       label: cURL
       source:

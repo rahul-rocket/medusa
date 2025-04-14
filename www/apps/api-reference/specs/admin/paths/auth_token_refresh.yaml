@@ -11,6 +11,10 @@ post:
     description: Learn about third-party authentication flow.
   x-authenticated: true
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/auth_token_refresh/post.js
     - lang: Shell
       label: cURL
       source:

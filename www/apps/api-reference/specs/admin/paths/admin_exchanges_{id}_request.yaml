@@ -33,6 +33,10 @@ post:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_exchanges_{id}_request/post.js
     - lang: Shell
       label: cURL
       source:
@@ -76,6 +80,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_exchanges_{id}_request/delete.js
     - lang: Shell
       label: cURL
       source:

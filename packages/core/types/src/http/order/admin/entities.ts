@@ -1,9 +1,10 @@
+import { OrderCreditLineDTO } from "../../../order"
 import { AdminClaim } from "../../claim"
 import { AdminCustomer } from "../../customer"
 import { AdminExchange } from "../../exchange"
 import { AdminPaymentCollection } from "../../payment/admin"
 import { AdminProduct, AdminProductVariant } from "../../product"
-import { AdminRegionCountry } from "../../region"
+import { AdminRegion, AdminRegionCountry } from "../../region"
 import { AdminReturn } from "../../return"
 import { AdminSalesChannel } from "../../sales-channel"
 import {
@@ -30,6 +31,10 @@ export interface AdminOrder extends Omit<BaseOrder, "items"> {
    */
   sales_channel?: AdminSalesChannel
   /**
+   * The order's region.
+   */
+  region?: AdminRegion
+  /**
    * The details of the customer that placed the order.
    */
   customer?: AdminCustomer
@@ -49,6 +54,10 @@ export interface AdminOrder extends Omit<BaseOrder, "items"> {
    * The order's shipping methods.
    */
   shipping_methods: AdminOrderShippingMethod[]
+  /**
+   * The order's credit lines.
+   */
+  credit_lines?: OrderCreditLineDTO[]
 }
 
 export interface AdminOrderChange

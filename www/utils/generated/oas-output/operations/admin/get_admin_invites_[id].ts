@@ -3,7 +3,7 @@
  * operationId: GetInvitesId
  * summary: Get an Invite
  * description: Retrieve an invite by its ID. You can expand the invite's relations or select the fields that should be returned.
- * x-authenticated: false
+ * x-authenticated: true
  * parameters:
  *   - name: id
  *     in: path
@@ -24,6 +24,23 @@
  *       externalDocs:
  *         url: "#select-fields-and-relations"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.invite.retrieve("invite_123")
+ *       .then(({ invite }) => {
+ *         console.log(invite)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: curl '{backend_url}/admin/invites/{id}'
@@ -48,6 +65,10 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
+ * security:
+ *   - api_token: []
+ *   - cookie_auth: []
+ *   - jwt_token: []
  * 
 */
 

@@ -391,6 +391,7 @@ export class LocalWorkflow {
 
   async cancel(
     transactionOrTransactionId: string | DistributedTransactionType,
+    _?: unknown, // not used but a common argument on other methods called dynamically
     context?: Context,
     subscribe?: DistributedTransactionEvents
   ) {

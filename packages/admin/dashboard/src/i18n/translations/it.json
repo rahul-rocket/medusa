@@ -298,6 +298,9 @@
     }
   },
   "filters": {
+    "sortLabel": "Ordina",
+    "filterLabel": "Filtra",
+    "searchLabel": "Cerca",
     "date": {
       "today": "Oggi",
       "lastSevenDays": "Ultimi 7 giorni",
@@ -306,7 +309,9 @@
       "lastTwelveMonths": "Ultimi 12 mesi",
       "custom": "Personalizzato",
       "from": "Da",
-      "to": "A"
+      "to": "A",
+      "starting": "Inizio",
+      "ending": "Fine"
     },
     "compare": {
       "lessThan": "Meno di",
@@ -316,6 +321,18 @@
       "lessThanLabel": "meno di {{value}}",
       "greaterThanLabel": "maggiore di {{value}}",
       "andLabel": "e"
+    },
+    "sorting": {
+      "alphabeticallyAsc": "A - Z",
+      "alphabeticallyDesc": "Z - A",
+      "dateAsc": "Più recente",
+      "dateDesc": "Meno recente"
+    },
+    "radio": {
+      "yes": "Sì",
+      "no": "No",
+      "true": "Vero",
+      "false": "Falso"
     },
     "addFilter": "Aggiungi filtro"
   },
@@ -468,7 +485,17 @@
       }
     },
     "deleteWarning": "Stai per eliminare il prodotto {{title}}. Questa azione non può essere annullata.",
-    "variants": "Varianti",
+    "variants": {
+      "header": "Varianti",
+      "empty": {
+        "heading": "Nessuna variante",
+        "description": "Non ci sono varianti da visualizzare."
+      },
+      "filtered": {
+        "heading": "Nessun risultato",
+        "description": "Nessuna variante corrisponde ai criteri di filtro correnti."
+      }
+    },
     "attributes": "Attributi",
     "editAttributes": "Modifica Attributi",
     "editOptions": "Modifica Opzioni",
@@ -2092,14 +2119,14 @@
         "label": "La lista prezzi ha una data di scadenza?",
         "hint": "Pianifica la lista prezzi per disattivarsi in futuro."
       },
-        "customerAvailability": {
-          "header": "Scegli gruppi di clienti",
-          "label": "Disponibilità cliente",
-          "hint": "Scegli quali gruppi di clienti la lista prezzi dovrebbe essere applicata.",
-          "placeholder": "Cerca gruppi di clienti",
-          "attribute": "Gruppi di clienti"
-        }
+      "customerAvailability": {
+        "header": "Scegli gruppi di clienti",
+        "label": "Disponibilità cliente",
+        "hint": "Scegli quali gruppi di clienti la lista prezzi dovrebbe essere applicata.",
+        "placeholder": "Cerca gruppi di clienti",
+        "attribute": "Gruppi di clienti"
       }
+    }
   },
   "profile": {
     "domain": "Profilo",

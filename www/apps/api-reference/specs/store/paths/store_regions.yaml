@@ -149,6 +149,10 @@ get:
           type: object
         title: $or
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_regions/get.js
     - lang: Shell
       label: cURL
       source:

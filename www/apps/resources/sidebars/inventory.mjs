@@ -1,9 +1,9 @@
-/** @type {import('types').RawSidebarItem[]} */
+/** @type {import('types').Sidebar.SidebarItem[]} */
 export const inventorySidebar = [
   {
-    type: "category",
+    type: "sidebar",
+    sidebar_id: "inventory",
     title: "Inventory Module",
-    isChildSidebar: true,
     children: [
       {
         type: "link",
@@ -16,7 +16,8 @@ export const inventorySidebar = [
       {
         type: "category",
         title: "Concepts",
-        initialOpen: false,
+        autogenerate_tags: "concept+inventory",
+        autogenerate_as_ref: true,
         children: [
           {
             type: "link",
@@ -44,8 +45,8 @@ export const inventorySidebar = [
         type: "category",
         title: "Server Guides",
         autogenerate_tags: "server+inventory",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to use the Inventory Module in your customizations on the Medusa application server.",
       },
@@ -53,8 +54,8 @@ export const inventorySidebar = [
         type: "category",
         title: "Storefront Guides",
         autogenerate_tags: "storefront+inventory,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to integrate the Inventory Module's features into your storefront.",
       },
@@ -62,24 +63,23 @@ export const inventorySidebar = [
         type: "category",
         title: "Admin Guides",
         autogenerate_tags: "admin+inventory,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize administative features of the Inventory Module.",
       },
       {
         type: "category",
-        title: "User Guides",
-        autogenerate_tags: "userGuides+inventory",
-        initialOpen: false,
+        title: "Admin User Guides",
+        autogenerate_tags: "userGuide+inventory",
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize and manage Inventory features in the Medusa Admin dashboard.",
       },
       {
         type: "category",
         title: "References",
-        initialOpen: false,
         description:
           "Find references for tools and resources related to the Inventory Module, such as data models, methods, and more. These are useful for your customizations.",
         children: [
@@ -94,12 +94,14 @@ export const inventorySidebar = [
                 title: "Workflows",
                 autogenerate_tags: "workflow+inventory",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "category",
                 title: "Steps",
                 autogenerate_tags: "step+inventory",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -116,6 +118,7 @@ export const inventorySidebar = [
                 description:
                   "The following methods or properties are used to send requests to Store API Routes related to the Inventory Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "sub-category",
@@ -124,6 +127,7 @@ export const inventorySidebar = [
                 description:
                   "The following methods or properties are used to send requests to Admin API Routes related to the Inventory Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -133,12 +137,19 @@ export const inventorySidebar = [
             title: "Admin Widget Zones",
           },
           {
-            type: "link",
-            path: "/references/inventory-next",
+            type: "sidebar",
+            sidebar_id: "inventory-service-reference",
             title: "Main Service Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Inventory Module's Main Service Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/inventory-next",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Methods",
@@ -148,12 +159,19 @@ export const inventorySidebar = [
             ],
           },
           {
-            type: "link",
-            path: "/references/inventory-next/models",
+            type: "sidebar",
+            sidebar_id: "inventory-models-reference",
             title: "Data Models Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Inventory Module Data Models Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/inventory-next/models",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Data Models",

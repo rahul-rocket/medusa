@@ -28,23 +28,6 @@ export interface AdminBatchCreateInventoryItemLocationLevels {
   incoming_quantity?: number
 }
 
-export interface AdminBatchCreateInventoryItemLocationLevels {
-  /**
-   * The ID of the associated stock location.
-   */
-  location_id: string
-  /**
-   * The associated inventory item's stocked quantity in the
-   * associated stock location.
-   */
-  stocked_quantity?: number
-  /**
-   * The associated inventory item's incoming quantity in the
-   * associated stock location.
-   */
-  incoming_quantity?: number
-}
-
 export interface AdminBatchUpdateInventoryItemLocationLevels
   extends AdminBatchCreateInventoryItemLocationLevels {
   /**
@@ -104,9 +87,25 @@ export interface AdminBatchUpdateInventoryItemsLocationLevels
   id?: string
 }
 
+/**
+ * A list of inventory levels to create, update, or delete.
+ */
 export interface AdminBatchInventoryItemsLocationLevels {
+  /**
+   * The inventory levels to create.
+   */
   create: AdminBatchCreateInventoryItemsLocationLevels[]
+  /**
+   * The inventory levels to update.
+   */
   update: AdminBatchUpdateInventoryItemsLocationLevels[]
+  /**
+   * The IDs of the inventory levels to delete.
+   */
   delete: string[]
+  /**
+   * If enabled, the inventory levels will be deleted
+   * even if they have stocked quantity.
+   */
   force?: boolean
 }

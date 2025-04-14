@@ -65,6 +65,11 @@ post:
                     `additional_data` parameter.
           description: The cancelation details.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_orders_{id}_fulfillments_{fulfillment_id}_cancel/post.js
     - lang: Shell
       label: cURL
       source:

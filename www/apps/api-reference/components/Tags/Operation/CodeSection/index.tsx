@@ -1,7 +1,7 @@
 "use client"
 
 import MethodLabel from "@/components/MethodLabel"
-import type { Operation } from "@/types/openapi"
+import type { OpenAPI } from "types"
 import TagsOperationCodeSectionResponses from "./Responses"
 import type { TagOperationCodeSectionRequestSamplesProps } from "./RequestSamples"
 import dynamic from "next/dynamic"
@@ -15,7 +15,7 @@ const TagOperationCodeSectionRequestSamples =
   ) as React.FC<TagOperationCodeSectionRequestSamplesProps>
 
 export type TagOperationCodeSectionProps = {
-  operation: Operation
+  operation: OpenAPI.Operation
   method: string
   endpointPath: string
 } & React.HTMLAttributes<HTMLDivElement>
@@ -36,7 +36,7 @@ const TagOperationCodeSection = ({
       >
         <div className={clsx("flex w-[calc(100%-36px)] gap-1")}>
           <MethodLabel method={method} className="h-fit" />
-          <code className="text-medusa-fg-subtle =break-words break-all">
+          <code className="text-medusa-fg-base =break-words break-all">
             {endpointPath}
           </code>
         </div>

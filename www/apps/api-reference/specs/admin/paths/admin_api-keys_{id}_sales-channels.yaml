@@ -57,6 +57,10 @@ post:
                 title: remove
                 description: A sales channel's ID.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_api-keys_{id}_sales-channels/post.js
     - lang: Shell
       label: cURL
       source:

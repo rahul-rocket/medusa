@@ -52,6 +52,11 @@ post:
               title: type
               description: The fulfillment set's type.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_stock-locations_{id}_fulfillment-sets/post.js
     - lang: Shell
       label: cURL
       source:

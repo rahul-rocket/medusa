@@ -8,6 +8,7 @@
  *   - title
  *   - requires_shipping
  *   - is_discountable
+ *   - is_giftcard
  *   - is_tax_inclusive
  *   - unit_price
  *   - quantity
@@ -198,6 +199,10 @@
  *     type: string
  *     title: product_type_id
  *     description: The ID of the associated product's type.
+ *   is_giftcard:
+ *     type: boolean
+ *     title: is_giftcard
+ *     description: Whether the item is a gift card.
  * 
 */
 

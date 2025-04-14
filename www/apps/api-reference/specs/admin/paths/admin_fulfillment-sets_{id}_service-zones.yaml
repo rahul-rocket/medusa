@@ -157,6 +157,11 @@ post:
                         type: object
                         description: The geo zone's postal expression or ZIP code.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_fulfillment-sets_{id}_service-zones/post.js
     - lang: Shell
       label: cURL
       source:

@@ -43,6 +43,7 @@
     "plusCount": "+ {{count}}",
     "plusCountMore": "+ {{count}} more",
     "areYouSure": "Are you sure?",
+    "areYouSureDescription": "You are about to delete the {{entity}} {{title}}. This action cannot be undone.",
     "noRecordsFound": "No records found",
     "typeToConfirm": "Please type {val} to confirm:",
     "noResultsTitle": "No results",
@@ -298,6 +299,9 @@
     }
   },
   "filters": {
+    "sortLabel": "Sort",
+    "filterLabel": "Filter",
+    "searchLabel": "Search",
     "date": {
       "today": "Today",
       "lastSevenDays": "Last 7 days",
@@ -306,7 +310,9 @@
       "lastTwelveMonths": "Last 12 months",
       "custom": "Custom",
       "from": "From",
-      "to": "To"
+      "to": "To",
+      "starting": "Starting",
+      "ending": "Ending"
     },
     "compare": {
       "lessThan": "Less than",
@@ -316,6 +322,18 @@
       "lessThanLabel": "less than {{value}}",
       "greaterThanLabel": "greater than {{value}}",
       "andLabel": "and"
+    },
+    "sorting": {
+      "alphabeticallyAsc": "A to Z",
+      "alphabeticallyDesc": "Z to A",
+      "dateAsc": "Newest first",
+      "dateDesc": "Oldest first"
+    },
+    "radio": {
+      "yes": "Yes",
+      "no": "No",
+      "true": "True",
+      "false": "False"
     },
     "addFilter": "Add filter"
   },
@@ -332,6 +350,7 @@
     "backToDashboard": "Back to dashboard"
   },
   "addresses": {
+    "title": "Addresses",
     "shippingAddress": {
       "header": "Shipping Address",
       "editHeader": "Edit Shipping Address",
@@ -468,7 +487,17 @@
       }
     },
     "deleteWarning": "You are about to delete the product {{title}}. This action cannot be undone.",
-    "variants": "Variants",
+    "variants": {
+      "header": "Variants",
+      "empty": {
+        "heading": "No variants",
+        "description": "There are no variants to display."
+      },
+      "filtered": {
+        "heading": "No results",
+        "description": "No variants match the current filter criteria."
+      }
+    },
     "attributes": "Attributes",
     "editAttributes": "Edit Attributes",
     "editOptions": "Edit Options",
@@ -527,6 +556,10 @@
         "label": "Discountable",
         "hint": "When unchecked, discounts will not be applied to this product"
       },
+      "shipping_profile": {
+        "label": "Shipping profile",
+        "hint": "Connect the product to a shipping profile"
+      },
       "type": {
         "label": "Type"
       },
@@ -584,7 +617,7 @@
     "variant": {
       "edit": {
         "header": "Edit Variant",
-        "success": "Product variant edited sucessfully"
+        "success": "Product variant edited successfully"
       },
       "create": {
         "header": "Variant details"
@@ -620,7 +653,7 @@
           "levelsBatch": "Inventory levels updated.",
           "update": "Inventory item updated successfully.",
           "updateLevel": "Inventory level updated successfully.",
-          "itemsManageSuccess": "Inventory items sucessfully updated."
+          "itemsManageSuccess": "Inventory items successfully updated."
         }
       }
     },
@@ -652,6 +685,20 @@
       "tooltips": {
         "alreadyManaged": "This inventory item is already editable under {{title}}.",
         "alreadyManagedWithSku": "This inventory item is already editable under {{title}} ({{sku}})."
+      }
+    },
+    "shippingProfile": {
+      "header": "Shipping configuration",
+      "edit": {
+        "header": "Shipping Configuration",
+        "toasts": {
+          "success": "Successfully updated the shipping profile for {{title}}."
+        }
+      },
+      "create": {
+        "errors": {
+          "required": "Shipping profile is required"
+        }
       }
     },
     "toasts": {
@@ -764,8 +811,10 @@
     "locationLevels": "Locations",
     "associatedVariants": "Associated variants",
     "manageLocations": "Manage locations",
+    "manageLocationQuantity": "Manage location quantity",
     "deleteWarning": "You are about to delete an inventory item. This action cannot be undone.",
     "editItemDetails": "Edit item details",
+    "quantityAcrossLocations": "{{quantity}} across {{locations}} locations",
     "create": {
       "title": "Create Inventory Item",
       "details": "Details",
@@ -851,7 +900,7 @@
     "groups": {
       "label": "Customer groups",
       "remove": "Are you sure you want to remove the customer from \"{{name}}\" customer group?",
-      "removeMany": "Are you sure you want to customer from following customer groups: {{groups}}?",
+      "removeMany": "Are you sure you want to remove customer from following customer groups: {{groups}}?",
       "alreadyAddedTooltip": "The customer is already in this customer group.",
       "list": {
         "noRecordsMessage": "This customer doesn't belong to any group."
@@ -886,11 +935,42 @@
     },
     "registered": "Registered",
     "guest": "Guest",
-    "hasAccount": "Has account"
+    "hasAccount": "Has account",
+    "addresses": {
+      "title": "Addresses",
+      "fields": {
+        "addressName": "Address name",
+        "address1": "Address 1",
+        "address2": "Address 2",
+        "city": "City",
+        "province": "Province",
+        "postalCode": "Postal code",
+        "country": "Country",
+        "phone": "Phone",
+        "company": "Company",
+        "countryCode": "Country code",
+        "provinceCode": "Province code"
+      },
+      "create": {
+        "header": "Create Address",
+        "hint": "Create a new address for the customer.",
+        "successToast": "Address was successfully created."
+      }
+    }
   },
   "customerGroups": {
     "domain": "Customer Groups",
     "subtitle": "Organize customers into groups. Groups can have different promotions and prices.",
+    "list": {
+      "empty": {
+        "heading": "No customer groups",
+        "description": "There are no customer groups to display."
+      },
+      "filtered": {
+        "heading": "No results",
+        "description": "No customer groups match the current filter criteria."
+      }
+    },
     "create": {
       "header": "Create Customer Group",
       "hint": "Create a new customer group to segment your customers.",
@@ -1055,7 +1135,7 @@
       "sendNotificationHint": "Notify customer about return.",
       "returnTotal": "Return total",
       "inboundTotal": "Inbound total",
-      "refundAmount": "Refund amount",
+      "estDifference": "Estimated difference",
       "outstandingAmount": "Outstanding amount",
       "reason": "Reason",
       "reasonHint": "Choose why the customer want to return items.",
@@ -1212,6 +1292,8 @@
     "fulfillment": {
       "cancelWarning": "You are about to cancel a fulfillment. This action cannot be undone.",
       "markAsDeliveredWarning": "You are about to mark fulfillment as delivered. This action cannot be undone.",
+      "differentOptionSelected": "The selected shipping option is different from the one selected by the customer.",
+      "disabledItemTooltip": "The shipping option you have selected don’t allow fulfillment of this item",
       "unfulfilledItems": "Unfulfilled Items",
       "statusLabel": "Fulfillment status",
       "statusTitle": "Fulfillment Status",
@@ -1224,6 +1306,7 @@
       "available": "Available",
       "inStock": "In stock",
       "markAsShipped": "Mark as shipped",
+      "markAsPickedUp": "Mark as picked up",
       "markAsDelivered": "Mark as delivered",
       "itemsToFulfillDesc": "Choose items and quantities to fulfill",
       "locationDescription": "Choose which location you want to fulfill items from.",
@@ -1232,7 +1315,9 @@
       "error": {
         "wrongQuantity": "Only one item is available for fulfillment",
         "wrongQuantity_other": "Quantity should be a number between 1 and {{number}}",
-        "noItems": "No items to fulfill."
+        "noItems": "No items to fulfill.",
+        "noShippingOption": "Shipping option is required",
+        "noLocation": "Location is required"
       },
       "status": {
         "notFulfilled": "Not fulfilled",
@@ -1251,7 +1336,8 @@
         "created": "Fulfillment created successfully",
         "canceled": "Fulfillment successfully canceled",
         "fulfillmentShipped": "Cannot cancel an already shipped fulfillment",
-        "fulfillmentDelivered": "Fulfillment marked as delivered successfully"
+        "fulfillmentDelivered": "Fulfillment marked as delivered successfully",
+        "fulfillmentPickedUp": "Fulfillment marked as picked up successfully"
       },
       "trackingLabel": "Tracking",
       "shippingFromLabel": "Shipping from",
@@ -1417,7 +1503,7 @@
       "successToast": "Location {{name}} was successfully updated."
     },
     "delete": {
-      "confirmation": "You are about to delete the stock location {{name}}. This action cannot be undone."
+      "confirmation": "You are about to delete the stock location \"{{name}}\". This action cannot be undone."
     },
     "fulfillmentProviders": {
       "header": "Fulfillment Providers",
@@ -1436,7 +1522,7 @@
         "header": "Shipping"
       },
       "disable": {
-        "confirmation": "Are you sure that you want to disable {{name}}? This will delete all associated service zones and shipping options, and cannot be undone.",
+        "confirmation": "Are you sure that you want to disable \"{{name}}\"? This will delete all associated service zones and shipping options, and cannot be undone.",
         "pickup": "Pickup was successfully disabled.",
         "shipping": "Shipping was successfully disabled."
       },
@@ -1454,11 +1540,17 @@
     },
     "salesChannels": {
       "header": "Sales Channels",
+      "hint": "Manage the sales channels that are connected to this location.",
       "label": "Connected sales channels",
       "connectedTo": "Connected to {{count}} of {{total}} sales channels",
       "noChannels": "The location is not connected to any sales channels.",
       "action": "Connect sales channels",
       "successToast": "Sales channels were successfully updated."
+    },
+    "pickupOptions": {
+      "edit": {
+        "header": "Edit Pickup Option"
+      }
     },
     "shippingOptions": {
       "create": {
@@ -1467,6 +1559,12 @@
           "hint": "Create a new shipping option to define how products are shipped from this location.",
           "label": "Shipping options",
           "successToast": "Shipping option {{name}} was successfully created."
+        },
+        "pickup": {
+          "header": "Create Pickup Option for {{zone}}",
+          "hint": "Create a new pickup option to define how products are picked up from this location.",
+          "label": "Pickup options",
+          "successToast": "Pickup option {{name}} was successfully created."
         },
         "returns": {
           "header": "Create a Return Option for {{zone}}",
@@ -1481,7 +1579,7 @@
         "action": "Create option"
       },
       "delete": {
-        "confirmation": "You are about to delete the shipping option {{name}}. This action cannot be undone.",
+        "confirmation": "You are about to delete the shipping option \"{{name}}\". This action cannot be undone.",
         "successToast": "Shipping option {{name}} was successfully deleted."
       },
       "edit": {
@@ -1531,6 +1629,8 @@
         "count": {
           "shipping_one": "{{count}} shipping option",
           "shipping_other": "{{count}} shipping options",
+          "pickup_one": "{{count}} pickup option",
+          "pickup_other": "{{count}} pickup options",
           "returns_one": "{{count}} return option",
           "returns_other": "{{count}} return options"
         },
@@ -1568,7 +1668,7 @@
         "successToast": "Service zone {{name}} was successfully updated."
       },
       "delete": {
-        "confirmation": "You are about to delete the service zone {{name}}. This action cannot be undone.",
+        "confirmation": "You are about to delete the service zone \"{{name}}\". This action cannot be undone.",
         "successToast": "Service zone {{name}} was successfully deleted."
       },
       "manageAreas": {
@@ -1733,7 +1833,7 @@
         "successToast": "Tax rate was successfully updated."
       },
       "delete": {
-        "confirmation": "You are about to delete the tax rate {{name}}. This action cannot be undone.",
+        "confirmation": "You are about to delete the tax rate \"{{name}}\". This action cannot be undone.",
         "successToast": "Tax rate was successfully deleted."
       }
     },
@@ -1933,7 +2033,19 @@
         }
       },
       "status": {
-        "title": "Status"
+        "label": "Status",
+        "draft": {
+          "title": "Draft",
+          "description": "Customers will not be able to use the code yet"
+        },
+        "active": {
+          "title": "Active",
+          "description": "Customers will be able to use the code"
+        },
+        "inactive": {
+          "title": "Inactive",
+          "description": "Customers will no longer be able to use the code"
+        }
       },
       "method": {
         "label": "Method",
@@ -1979,11 +2091,11 @@
       },
       "value_type": {
         "fixed": {
-          "title": "Promotion Value",
+          "title": "Fixed amount",
           "description": "The amount to be discounted. eg. 100"
         },
         "percentage": {
-          "title": "Promotion Value",
+          "title": "Percentage",
           "description": "The percentage to discount off the amount. eg. 8%"
         }
       }
@@ -2096,8 +2208,8 @@
     "domain": "Price Lists",
     "subtitle": "Create sales or override prices for specific conditions.",
     "delete": {
-      "confirmation": "You are about to delete the price list {{title}}. This action cannot be undone.",
-      "successToast": "Price list {{title}} was successfully deleted."
+      "confirmation": "You are about to delete the price list \"{{title}}\". This action cannot be undone.",
+      "successToast": "Price list \"{{title}}\" was successfully deleted."
     },
     "create": {
       "header": "Create Price List",
@@ -2230,7 +2342,18 @@
       "developer": "Developer",
       "member": "Member"
     },
+    "list": {
+      "empty": {
+        "heading": "No users found",
+        "description": "Once a user has been invited, they will appear here."
+      },
+      "filtered": {
+        "heading": "No results",
+        "description": "No users match the current filter criteria."
+      }
+    },
     "deleteUserWarning": "You are about to delete the user {{name}}. This action cannot be undone.",
+    "deleteUserSuccess": "User {{name}} deleted successfully",
     "invite": "Invite"
   },
   "store": {
@@ -2239,6 +2362,8 @@
     "editStore": "Edit store",
     "defaultCurrency": "Default currency",
     "defaultRegion": "Default region",
+    "defaultSalesChannel": "Default sales channel",
+    "defaultLocation": "Default location",
     "swapLinkTemplate": "Swap link template",
     "paymentLinkTemplate": "Payment link template",
     "inviteLinkTemplate": "Invite link template",
@@ -2261,7 +2386,7 @@
   },
   "regions": {
     "domain": "Regions",
-    "subtitle": "A region is an area that you sell products in. It can cover multipe countries, and has different tax rates, providers, and currency.",
+    "subtitle": "A region is an area that you sell products in. It can cover multiple countries, and has different tax rates, providers, and currency.",
     "createRegion": "Create Region",
     "createRegionHint": "Manage tax rates and providers for a set of countries.",
     "addCountries": "Add countries",
@@ -2273,7 +2398,7 @@
     "removeCountryWarning": "You are about to remove the country {{name}} from the region. This action cannot be undone.",
     "automaticTaxesHint": "When enabled, taxes will only be calculated at checkout based on the shipping address.",
     "taxInclusiveHint": "When enabled, prices in the region will be tax inclusive.",
-    "providersHint": " Add which payment providers are available in this region.",
+    "providersHint": "Add which payment providers are available in this region.",
     "shippingOptions": "Shipping Options",
     "deleteShippingOptionWarning": "You are about to delete the shipping option {{name}}. This action cannot be undone.",
     "return": "Return",
@@ -2372,9 +2497,9 @@
     "removeSalesChannelsWarning_one": "You are about to remove {{count}} sales channel from the location.",
     "removeSalesChannelsWarning_other": "You are about to remove {{count}} sales channels from the location.",
     "toast": {
-      "create": "Location created sucessfully",
-      "update": "Location updated sucessfully",
-      "removeChannel": "Sales channel removed sucessfully"
+      "create": "Location created successfully",
+      "update": "Location updated successfully",
+      "removeChannel": "Sales channel removed successfully"
     }
   },
   "reservations": {
@@ -2385,6 +2510,16 @@
   "salesChannels": {
     "domain": "Sales Channels",
     "subtitle": "Manage the online and offline channels you sell products on.",
+    "list": {
+      "empty": {
+        "heading": "No sales channels found",
+        "description": "Once a sales channel has been created, it will appear here."
+      },
+      "filtered": {
+        "heading": "No results",
+        "description": "No sales channels match the current filter criteria."
+      }
+    },
     "createSalesChannel": "Create Sales Channel",
     "createSalesChannelHint": "Create a new sales channel to sell your products on.",
     "enabledHint": "Specify whether the sales channel is enabled.",
@@ -2510,8 +2645,8 @@
       "successToast": "Return reason {{label}} was successfully updated."
     },
     "delete": {
-      "confirmation": "You are about to delete the return reason {{label}}. This action cannot be undone.",
-      "successToast": "Return reason {{label}} was successfully deleted."
+      "confirmation": "You are about to delete the return reason \"{{label}}\". This action cannot be undone.",
+      "successToast": "Return reason \"{{label}}\" was successfully deleted."
     },
     "fields": {
       "value": {
@@ -2631,8 +2766,8 @@
       "successToast": "Product type {{value}} was successfully updated."
     },
     "delete": {
-      "confirmation": "You are about to delete the product type {{value}}. This action cannot be undone.",
-      "successToast": "Product type {{value}} was successfully deleted."
+      "confirmation": "You are about to delete the product type \"{{value}}\". This action cannot be undone.",
+      "successToast": "Product type \"{{value}}\" was successfully deleted."
     },
     "fields": {
       "value": "Value"
@@ -2665,7 +2800,7 @@
       "description": "You don't have any notifications at the moment, but once you do they will live here."
     },
     "accessibility": {
-      "description": "notifications about Medusa activities will be listed here."
+      "description": "Notifications about Medusa activities will be listed here."
     }
   },
   "errors": {
@@ -2676,6 +2811,8 @@
     "scheduled": "Scheduled",
     "expired": "Expired",
     "active": "Active",
+    "inactive": "Inactive",
+    "draft": "Draft",
     "enabled": "Enabled",
     "disabled": "Disabled"
   },
@@ -2687,7 +2824,9 @@
     "added": "Added",
     "removed": "Removed",
     "from": "From",
-    "to": "To"
+    "to": "To",
+    "beaware": "Be aware",
+    "loading": "Loading"
   },
   "fields": {
     "amount": "Amount",

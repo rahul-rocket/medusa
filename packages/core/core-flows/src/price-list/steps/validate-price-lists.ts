@@ -10,16 +10,26 @@ import {
 } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
+/**
+ * The IDs of price lists to validate that they exist.
+ */
+export type ValidatePriceListsStepInput = Pick<UpdatePriceListDTO, "id">[]
+
 export const validatePriceListsStepId = "validate-price-lists"
 /**
  * This step validates that the specified price lists exist.
+ * If not valid, the step throws an error.
  */
 export const validatePriceListsStep = createStep(
   validatePriceListsStepId,
-  async (data: Pick<UpdatePriceListDTO, "id">[], { container }) => {
+  async (data: ValidatePriceListsStepInput, { container }) => {
     const pricingModule = container.resolve<IPricingModuleService>(
       Modules.PRICING
     )
+
+    if (!data.length) {
+      return new StepResponse(void 0)
+    }
 
     const priceListIds = data.map((d) => d.id)
     const priceLists = await pricingModule.listPriceLists({ id: priceListIds })

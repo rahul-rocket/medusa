@@ -77,6 +77,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_product-categories_{id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -181,6 +185,10 @@ post:
               title: rank
               description: The product category's rank among other categories.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_product-categories_{id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -224,6 +232,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_product-categories_{id}/delete.js
     - lang: Shell
       label: cURL
       source:

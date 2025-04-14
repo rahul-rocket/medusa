@@ -213,7 +213,8 @@ export class Product {
    *       },
    *       prices: []
    *     }
-   *   ]
+   *   ],
+   *   shipping_profile_id: "sp_123"
    * })
    * .then(({ product }) => {
    *   console.log(product)
@@ -275,7 +276,7 @@ export class Product {
    * This method retrieves a paginated list of products. It sends a request to the 
    * [List Products](https://docs.medusajs.com/api/admin#products_getproducts) API route.
    * 
-   * @param query - Filters and pagination configurations.
+   * @param queryParams - Filters and pagination configurations.
    * @param headers - Headers to pass in the request.
    * @returns The paginated list of products.
    * 

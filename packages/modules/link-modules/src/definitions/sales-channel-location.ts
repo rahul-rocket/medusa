@@ -25,6 +25,7 @@ export const SalesChannelLocation: ModuleJoinerConfig = {
       args: {
         methodSuffix: "SalesChannels",
       },
+      hasMany: true,
     },
     {
       serviceName: Modules.STOCK_LOCATION,
@@ -35,6 +36,7 @@ export const SalesChannelLocation: ModuleJoinerConfig = {
       args: {
         methodSuffix: "StockLocations",
       },
+      hasMany: true,
     },
   ],
   extends: [

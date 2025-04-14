@@ -27,6 +27,7 @@ export const ProductSalesChannel: ModuleJoinerConfig = {
       args: {
         methodSuffix: "Products",
       },
+      hasMany: true,
     },
     {
       serviceName: Modules.SALES_CHANNEL,
@@ -37,6 +38,7 @@ export const ProductSalesChannel: ModuleJoinerConfig = {
       args: {
         methodSuffix: "SalesChannels",
       },
+      hasMany: true,
     },
   ],
   extends: [

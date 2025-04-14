@@ -3,7 +3,7 @@
  * operationId: PostInvitesIdResend
  * summary: Refresh Invite Token
  * description: Refresh the token of an invite.
- * x-authenticated: false
+ * x-authenticated: true
  * parameters:
  *   - name: id
  *     in: path
@@ -24,6 +24,23 @@
  *       externalDocs:
  *         url: "#select-fields-and-relations"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.invite.resend("invite_123")
+ *       .then(({ invite }) => {
+ *         console.log(invite)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: curl -X POST '{backend_url}/admin/invites/{id}/resend'
@@ -49,6 +66,10 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: refreshInviteTokensWorkflow
+ * security:
+ *   - api_token: []
+ *   - cookie_auth: []
+ *   - jwt_token: []
  * 
 */
 

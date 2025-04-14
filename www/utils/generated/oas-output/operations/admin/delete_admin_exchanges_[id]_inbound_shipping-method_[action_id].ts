@@ -26,6 +26,26 @@
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.exchange.deleteInboundShipping(
+ *         "exchange_123",
+ *         "ordchact_123",
+ *       )
+ *       .then(({ return: returnData }) => {
+ *         console.log(returnData)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: "curl -X DELETE '{backend_url}/admin/exchanges/{id}/inbound/shipping-method/{action_id}' \\ -H 'Authorization: Bearer {access_token}'"

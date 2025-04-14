@@ -23,6 +23,7 @@ export const LocationFulfillmentProvider: ModuleJoinerConfig = {
       foreignKey: "stock_location_id",
       alias: "location",
       args: { methodSuffix: "StockLocations" },
+      hasMany: true,
     },
     {
       serviceName: Modules.FULFILLMENT,
@@ -31,6 +32,7 @@ export const LocationFulfillmentProvider: ModuleJoinerConfig = {
       foreignKey: "fulfillment_provider_id",
       alias: "fulfillment_provider",
       args: { methodSuffix: "FulfillmentProviders" },
+      hasMany: true,
     },
   ],
   extends: [

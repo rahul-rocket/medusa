@@ -52,6 +52,8 @@ type AuthRequests = {
   exact?: string
   startsWith?: string
   requiresAuthentication: boolean
+  allowedAuthTypes?: string[]
+  httpMethods?: string[]
 }
 
 /**
@@ -62,6 +64,17 @@ class OasKindGenerator extends FunctionKindGenerator {
   public name = "oas"
   protected allowedKinds: SyntaxKind[] = [ts.SyntaxKind.FunctionDeclaration]
   private MAX_LEVEL = 7
+  readonly METHOD_NAMES = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+    "HEAD",
+    "TRACE",
+    "CONNECT",
+  ]
   readonly REQUEST_TYPE_NAMES = [
     "MedusaRequest",
     "RequestWithContext",
@@ -87,6 +100,21 @@ class OasKindGenerator extends FunctionKindGenerator {
     {
       exact: "store/orders/[id]/transfer/cancel",
       requiresAuthentication: true,
+    },
+    {
+      exact: "admin/invites/accept",
+      httpMethods: ["post"],
+      requiresAuthentication: true,
+      allowedAuthTypes: ["cookie_auth", "jwt_token"],
+    },
+    {
+      startsWith: "admin/invites",
+      requiresAuthentication: true,
+    },
+    {
+      startsWith: "admin/users",
+      requiresAuthentication: true,
+      allowedAuthTypes: ["cookie_auth", "jwt_token"],
     },
   ]
   readonly RESPONSE_TYPE_NAMES = ["MedusaResponse"]
@@ -146,8 +174,13 @@ class OasKindGenerator extends FunctionKindGenerator {
     const functionNode = ts.isFunctionDeclaration(node)
       ? node
       : this.extractFunctionNode(node as VariableNode)
+    const functionName = this.getFunctionName(node as FunctionOrVariableNode)
 
-    if (!functionNode || functionNode.parameters.length !== 2) {
+    if (
+      !functionNode ||
+      !this.METHOD_NAMES.includes(functionName) ||
+      functionNode.parameters.length !== 2
+    ) {
       return false
     }
 
@@ -206,7 +239,6 @@ class OasKindGenerator extends FunctionKindGenerator {
     node: ts.Node | FunctionOrVariableNode,
     options?: GetDocBlockOptions
   ): Promise<string> {
-    // TODO use AiGenerator to generate descriptions + examples
     if (!this.isAllowed(node)) {
       return await super.getDocBlock(node, options)
     }
@@ -259,8 +291,12 @@ class OasKindGenerator extends FunctionKindGenerator {
     const { oasPath, normalized: normalizedOasPath } = this.getOasPath(node)
     const splitOasPath = oasPath.split("/")
     const oasPrefix = this.getOasPrefix(methodName, normalizedOasPath)
-    const { isAdminAuthenticated, isStoreAuthenticated, isAuthenticated } =
-      this.getAuthenticationDetails(node, oasPath)
+    const {
+      isAdminAuthenticated,
+      isStoreAuthenticated,
+      isAuthenticated,
+      allowedAuthTypes,
+    } = this.getAuthenticationDetails(node, oasPath, methodName)
     const tagName = this.getTagName(splitOasPath)
     const { summary, description } =
       this.knowledgeBaseFactory.tryToGetOasMethodSummaryAndDescription({
@@ -312,49 +348,41 @@ class OasKindGenerator extends FunctionKindGenerator {
       tagName,
     })
 
-    // retrieve code examples
-    // only generate cURL examples, and for the rest
-    // check if the --generate-examples option is enabled
-    oas["x-codeSamples"] = [
-      {
-        ...OasExamplesGenerator.CURL_CODESAMPLE_DATA,
-        source: this.oasExamplesGenerator.generateCurlExample({
-          method: methodName,
-          path: normalizedOasPath,
-          isAdminAuthenticated,
-          isStoreAuthenticated,
-          requestSchema,
-        }),
-      },
-    ]
+    const curlExample = this.oasExamplesGenerator.generateCurlExample({
+      method: methodName,
+      path: normalizedOasPath,
+      isAdminAuthenticated,
+      isStoreAuthenticated,
+      requestSchema,
+    })
+    const jsSdkExample = this.oasExamplesGenerator.generateJsSdkExanmple({
+      method: methodName,
+      path: normalizedOasPath,
+    })
 
-    if (this.options.generateExamples) {
-      oas["x-codeSamples"].push(
-        {
-          ...OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA,
-          source: this.oasExamplesGenerator.generateJSClientExample({
-            oasPath,
-            httpMethod: methodName,
-            area: splitOasPath[0] as OasArea,
-            tag: tagName || "",
-            isAdminAuthenticated,
-            isStoreAuthenticated,
-            parameters: (oas.parameters as OpenAPIV3.ParameterObject[])?.filter(
-              (parameter) => parameter.in === "path"
-            ),
-            requestBody: requestSchema,
-            responseBody: responseSchema,
-          }),
-        },
-        {
-          ...OasExamplesGenerator.MEDUSAREACT_CODESAMPLE_DATA,
-          source: "EXAMPLE", // TODO figure out if we can generate examples for medusa react
-        }
-      )
+    // retrieve code examples
+    oas["x-codeSamples"] = []
+
+    if (jsSdkExample) {
+      oas["x-codeSamples"].push({
+        ...OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA,
+        source: jsSdkExample,
+      })
+    }
+
+    if (curlExample) {
+      oas["x-codeSamples"].push({
+        ...OasExamplesGenerator.CURL_CODESAMPLE_DATA,
+        source: curlExample,
+      })
     }
 
     // add security details if applicable
-    oas.security = this.getSecurity({ isAdminAuthenticated, isAuthenticated })
+    oas.security = this.getSecurity({
+      isAdminAuthenticated,
+      isAuthenticated,
+      auth_types: allowedAuthTypes,
+    })
 
     if (tagName) {
       oas.tags = [tagName]
@@ -468,11 +496,19 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     // check if authentication details (including security) should be updated
-    const { isAdminAuthenticated, isStoreAuthenticated, isAuthenticated } =
-      this.getAuthenticationDetails(node, oasPath)
+    const {
+      isAdminAuthenticated,
+      isStoreAuthenticated,
+      isAuthenticated,
+      allowedAuthTypes,
+    } = this.getAuthenticationDetails(node, oasPath, methodName)
 
     oas["x-authenticated"] = isAuthenticated
-    oas.security = this.getSecurity({ isAdminAuthenticated, isAuthenticated })
+    oas.security = this.getSecurity({
+      isAdminAuthenticated,
+      isAuthenticated,
+      auth_types: allowedAuthTypes,
+    })
 
     let parametersUpdated = false
 
@@ -579,7 +615,12 @@ class OasKindGenerator extends FunctionKindGenerator {
       // check if it has a success response of a type other than JSON
       if (!this.hasResponseType(node, oas)) {
         // remove response schema by only keeping the default responses
-        oas.responses = DEFAULT_OAS_RESPONSES
+        oas.responses = {
+          ...DEFAULT_OAS_RESPONSES,
+          [newStatus]: {
+            description: "OK",
+          },
+        }
       }
     } else {
       // check if response status should be changed
@@ -624,44 +665,6 @@ class OasKindGenerator extends FunctionKindGenerator {
       }
     }
 
-    // update examples if the --generate-examples option is enabled
-    if (this.options.generateExamples) {
-      const oldJsExampleIndex = oas["x-codeSamples"]
-        ? oas["x-codeSamples"].findIndex(
-            (example) =>
-              example.label ==
-              OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA.label
-          )
-        : -1
-
-      if (oldJsExampleIndex === -1) {
-        // only generate a new example if it doesn't have an example
-        const newJsExample = this.oasExamplesGenerator.generateJSClientExample({
-          oasPath,
-          httpMethod: methodName,
-          area: splitOasPath[0] as OasArea,
-          tag: tagName || "",
-          isAdminAuthenticated,
-          isStoreAuthenticated,
-          parameters: (oas.parameters as OpenAPIV3.ParameterObject[])?.filter(
-            (parameter) => parameter.in === "path"
-          ),
-          requestBody: updatedRequestSchema?.schema,
-          responseBody: updatedResponseSchema,
-        })
-
-        oas["x-codeSamples"] = [
-          ...(oas["x-codeSamples"] || []),
-          {
-            ...OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA,
-            source: newJsExample,
-          },
-        ]
-      }
-
-      // TODO add for Medusa React once we figure out how to generate it
-    }
-
     // check if cURL example should be updated.
     const oldCurlExampleIndex = oas["x-codeSamples"]
       ? oas["x-codeSamples"].findIndex(
@@ -694,6 +697,49 @@ class OasKindGenerator extends FunctionKindGenerator {
         )
       )
     }
+
+    // generate JS SDK example
+    const oldJsSdkExampleIndex = oas["x-codeSamples"]
+      ? oas["x-codeSamples"].findIndex(
+          (example) =>
+            example.label ===
+            OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA.label
+        )
+      : -1
+    const jsSdkExample = this.oasExamplesGenerator.generateJsSdkExanmple({
+      method: methodName,
+      path: normalizedOasPath,
+    })
+    if (jsSdkExample) {
+      if (oldJsSdkExampleIndex === -1) {
+        oas["x-codeSamples"] = [
+          ...(oas["x-codeSamples"] || []),
+          {
+            ...OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA,
+            source: jsSdkExample,
+          },
+        ]
+      } else {
+        oas["x-codeSamples"]![oldJsSdkExampleIndex] = {
+          ...OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA,
+          source: jsSdkExample,
+        }
+      }
+    } else if (oldJsSdkExampleIndex !== -1) {
+      // output a warning that maybe the JS SDK should be updated
+      console.warn(
+        chalk.yellow(
+          `[WARNING] The JS SDK example of ${methodName} ${oasPath} is missing from generated route examples. Consider updating it.`
+        )
+      )
+    }
+
+    // sort the code samples to show JS SDK first
+    oas["x-codeSamples"] = oas["x-codeSamples"]?.sort((a) => {
+      return a.label === OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA.label
+        ? -1
+        : 1
+    })
 
     // push new tags to the tags property
     if (tagName) {
@@ -753,8 +799,10 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     return (
-      node as ts.VariableStatement
-    ).declarationList.declarations[0].name.getText()
+      (
+        node as ts.VariableStatement
+      ).declarationList?.declarations[0].name.getText() || ""
+    )
   }
 
   /**
@@ -797,7 +845,8 @@ class OasKindGenerator extends FunctionKindGenerator {
    */
   getAuthenticationDetails(
     node: FunctionNode,
-    oasPath: string
+    oasPath: string,
+    httpMethod: string
   ): {
     /**
      * Whether the OAS operation requires admin authentication.
@@ -811,34 +860,42 @@ class OasKindGenerator extends FunctionKindGenerator {
      * Whether the OAS operation requires authentication in genral.
      */
     isAuthenticated: boolean
+    /**
+     * Override the default security requirements.
+     */
+    allowedAuthTypes?: string[]
   } {
     const isAuthenticationDisabled = node
       .getSourceFile()
       .statements.some((statement) =>
         statement.getText().includes("AUTHENTICATE = false")
       )
-    const hasAuthenticationOverride =
-      this.AUTH_REQUESTS.find((authRequest) => {
-        return (
-          authRequest.exact === oasPath ||
-          (authRequest.startsWith && oasPath.startsWith(authRequest.startsWith))
-        )
-      })?.requiresAuthentication === true
+    const hasAuthenticationOverride = this.AUTH_REQUESTS.find((authRequest) => {
+      const pathMatch =
+        authRequest.exact === oasPath ||
+        (authRequest.startsWith && oasPath.startsWith(authRequest.startsWith))
+      const httpMethodMatch =
+        !authRequest.httpMethods || authRequest.httpMethods.includes(httpMethod)
+      return pathMatch && httpMethodMatch
+    })
+    const isAuthRequired =
+      hasAuthenticationOverride?.requiresAuthentication === true
     const isAdminAuthenticated =
-      (!isAuthenticationDisabled || hasAuthenticationOverride) &&
+      (!isAuthenticationDisabled || isAuthRequired) &&
       oasPath.startsWith("admin")
-    const isStoreAuthenticated = hasAuthenticationOverride
+    const isStoreAuthenticated = isAuthRequired
       ? oasPath.startsWith("store")
       : !isAuthenticationDisabled &&
-        hasAuthenticationOverride &&
+        isAuthRequired &&
         oasPath.startsWith("store")
     const isAuthenticated =
-      isAdminAuthenticated || isStoreAuthenticated || hasAuthenticationOverride
+      isAdminAuthenticated || isStoreAuthenticated || isAuthRequired
 
     return {
       isAdminAuthenticated,
       isStoreAuthenticated,
       isAuthenticated,
+      allowedAuthTypes: hasAuthenticationOverride?.allowedAuthTypes,
     }
   }
 
@@ -885,6 +942,7 @@ class OasKindGenerator extends FunctionKindGenerator {
   getSecurity({
     isAdminAuthenticated,
     isAuthenticated,
+    auth_types,
   }: {
     /**
      * Whether the operation requires admin authentication.
@@ -894,22 +952,35 @@ class OasKindGenerator extends FunctionKindGenerator {
      * Whether the operation requires general authentication.
      */
     isAuthenticated: boolean
+    /**
+     * Override the default security requirements.
+     */
+    auth_types?: string[]
   }): OpenAPIV3.SecurityRequirementObject[] | undefined {
     const security: OpenAPIV3.SecurityRequirementObject[] = []
-    if (isAdminAuthenticated) {
+    const allowed_auth_types =
+      auth_types ||
+      [
+        "cookie_auth",
+        "jwt_token",
+        isAdminAuthenticated ? "api_token" : undefined,
+      ].filter(Boolean)
+    if (isAdminAuthenticated && allowed_auth_types.includes("api_token")) {
       security.push({
         api_token: [],
       })
     }
     if (isAuthenticated) {
-      security.push(
-        {
+      if (allowed_auth_types.includes("cookie_auth")) {
+        security.push({
           cookie_auth: [],
-        },
-        {
+        })
+      }
+      if (allowed_auth_types.includes("jwt_token")) {
+        security.push({
           jwt_token: [],
-        }
-      )
+        })
+      }
     }
 
     return security.length ? security : undefined
@@ -1203,7 +1274,7 @@ class OasKindGenerator extends FunctionKindGenerator {
       )
     }
 
-    if (methodName !== "delete" && methodName !== "get") {
+    if (methodName !== "get") {
       requestSchema = requestBodyParameterSchema
     }
 
@@ -2398,7 +2469,11 @@ class OasKindGenerator extends FunctionKindGenerator {
 
         const workflowName = childImport.name.getText()
 
-        if (fnText.includes(workflowName)) {
+        if (
+          fnText.includes(`${workflowName}(`) ||
+          fnText.includes(`${workflowName} (`) ||
+          fnText.includes(`${workflowName}.`)
+        ) {
           workflow = workflowName
         }
       })

@@ -26,33 +26,45 @@ export function MikroOrmBigNumberProperty(
       set(value: BigNumberInput) {
         if (options?.nullable && !isPresent(value)) {
           this.__helper.__data[columnName] = null
-          this.__helper.__data[rawColumnName]
+          this.__helper.__data[rawColumnName] = null
           this[rawColumnName] = null
         } else {
-          let bigNumber: BigNumber
-
-          if (value instanceof BigNumber) {
-            bigNumber = value
-          } else if (this[rawColumnName]) {
-            const precision = this[rawColumnName].precision
-            bigNumber = new BigNumber(value, {
-              precision,
-            })
+          // When mikro orm create and hydrate the entity with partial selection it can happen
+          // that null value is being passed.
+          if (!options?.nullable && value === null) {
+            this.__helper.__data[columnName] = undefined
+            this.__helper.__data[rawColumnName] = undefined
+            this[rawColumnName] = undefined
           } else {
-            bigNumber = new BigNumber(value)
+            let bigNumber: BigNumber
+
+            try {
+              if (value instanceof BigNumber) {
+                bigNumber = value
+              } else if (this[rawColumnName]) {
+                const precision = this[rawColumnName].precision
+                bigNumber = new BigNumber(value, {
+                  precision,
+                })
+              } else {
+                bigNumber = new BigNumber(value)
+              }
+            } catch (e) {
+              throw new Error(`Cannot set value ${value} for ${columnName}.`)
+            }
+
+            const raw = bigNumber.raw!
+            raw.value = trimZeros(raw.value as string)
+
+            // Note: this.__helper isn't present when directly working with the entity
+            // Adding this in optionally for it not to break.
+            if (isDefined(this.__helper)) {
+              this.__helper.__data[columnName] = bigNumber.numeric
+              this.__helper.__data[rawColumnName] = raw
+            }
+
+            this[rawColumnName] = raw
           }
-
-          const raw = bigNumber.raw!
-          raw.value = trimZeros(raw.value as string)
-
-          // Note: this.__helper isn't present when directly working with the entity
-          // Adding this in optionally for it not to break.
-          if (isDefined(this.__helper)) {
-            this.__helper.__data[columnName] = bigNumber.numeric
-            this.__helper.__data[rawColumnName] = raw
-          }
-
-          this[rawColumnName] = raw
         }
 
         // Note: this.__helper isn't present when directly working with the entity
@@ -80,6 +92,7 @@ export function MikroOrmBigNumberProperty(
       type: "any",
       columnType: "numeric",
       trackChanges: false,
+      runtimeType: "any",
       ...options,
     })(target, columnName)
   }

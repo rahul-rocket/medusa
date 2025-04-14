@@ -30,6 +30,7 @@ import {
 import { useStockLocation } from "../../../../../hooks/api/stock-locations"
 import { formatProvider } from "../../../../../lib/format-provider"
 import { getLocaleAmount } from "../../../../../lib/money-amount-helpers"
+import { FulfillmentSetType } from "../../../../locations/common/constants"
 
 type OrderFulfillmentSectionProps = {
   order: AdminOrder
@@ -150,6 +151,10 @@ const UnfulfilledItemDisplay = ({
 }) => {
   const { t } = useTranslation()
 
+  if (order.status === "canceled") {
+    return
+  }
+
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
@@ -209,6 +214,10 @@ const Fulfillment = ({
 
   const showLocation = !!fulfillment.location_id
 
+  const isPickUpFulfillment =
+    fulfillment.shipping_option?.service_zone.fulfillment_set.type ===
+    FulfillmentSetType.Pickup
+
   const { stock_location, isError, error } = useStockLocation(
     fulfillment.location_id!,
     undefined,
@@ -218,7 +227,9 @@ const Fulfillment = ({
   )
 
   let statusText = fulfillment.requires_shipping
-    ? "Awaiting shipping"
+    ? isPickUpFulfillment
+      ? "Awaiting pickup"
+      : "Awaiting shipping"
     : "Awaiting delivery"
   let statusColor: "blue" | "green" | "red" = "blue"
   let statusTimestamp = fulfillment.created_at
@@ -247,7 +258,9 @@ const Fulfillment = ({
     !fulfillment.canceled_at &&
     !fulfillment.shipped_at &&
     !fulfillment.delivered_at &&
-    fulfillment.requires_shipping
+    fulfillment.requires_shipping &&
+    !isPickUpFulfillment
+
   const showDeliveryButton =
     !fulfillment.canceled_at && !fulfillment.delivered_at
 
@@ -261,17 +274,20 @@ const Fulfillment = ({
     })
 
     if (res) {
-      await markAsDelivered(
-        {},
-        {
-          onSuccess: () => {
-            toast.success(t("orders.fulfillment.toast.fulfillmentDelivered"))
-          },
-          onError: (e) => {
-            toast.error(e.message)
-          },
-        }
-      )
+      await markAsDelivered(undefined, {
+        onSuccess: () => {
+          toast.success(
+            t(
+              isPickUpFulfillment
+                ? "orders.fulfillment.toast.fulfillmentPickedUp"
+                : "orders.fulfillment.toast.fulfillmentDelivered"
+            )
+          )
+        },
+        onError: (e) => {
+          toast.error(e.message)
+        },
+      })
     }
   }
 
@@ -331,7 +347,10 @@ const Fulfillment = ({
                     label: t("actions.cancel"),
                     icon: <XCircle />,
                     onClick: handleCancel,
-                    disabled: !!fulfillment.canceled_at,
+                    disabled:
+                      !!fulfillment.canceled_at ||
+                      !!fulfillment.shipped_at ||
+                      !!fulfillment.delivered_at,
                   },
                 ],
               },
@@ -430,7 +449,11 @@ const Fulfillment = ({
         <div className="bg-ui-bg-subtle flex items-center justify-end gap-x-2 rounded-b-xl px-4 py-4">
           {showDeliveryButton && (
             <Button onClick={handleMarkAsDelivered} variant="secondary">
-              {t("orders.fulfillment.markAsDelivered")}
+              {t(
+                isPickUpFulfillment
+                  ? "orders.fulfillment.markAsPickedUp"
+                  : "orders.fulfillment.markAsDelivered"
+              )}
             </Button>
           )}
 

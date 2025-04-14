@@ -25,7 +25,7 @@ tags:
       place an order.
     externalDocs:
       description: How to implement cart functionality in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/cart
+      url: https://docs.medusajs.com/resources/storefront-development/cart
     x-associatedSchema:
       $ref: ./components/schemas/StoreCart.yaml
   - name: Collections
@@ -38,7 +38,7 @@ tags:
     externalDocs:
       description: How to list product collections in a storefront.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/products/collections/list
+        https://docs.medusajs.com/resources/storefront-development/products/collections/list
     x-associatedSchema:
       $ref: ./components/schemas/StoreCollection.yaml
   - name: Currencies
@@ -55,7 +55,7 @@ tags:
     externalDocs:
       description: How to retrieve product variant prices in a storefront.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/products/price
+        https://docs.medusajs.com/resources/storefront-development/products/price
     x-associatedSchema:
       $ref: ./components/schemas/StoreCurrency.yaml
   - name: Customers
@@ -70,7 +70,7 @@ tags:
       These API routes allow customers to create and manage their accounts.
     externalDocs:
       description: How to implement customer account functionalities in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/customers
+      url: https://docs.medusajs.com/resources/storefront-development/customers
     x-associatedSchema:
       $ref: ./components/schemas/StoreCustomer.yaml
   - name: Orders
@@ -90,7 +90,7 @@ tags:
     externalDocs:
       description: How to implement payment during checkout.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+        https://docs.medusajs.com/resources/storefront-development/checkout/payment
     x-associatedSchema:
       $ref: ./components/schemas/StorePaymentCollection.yaml
   - name: Payment Providers
@@ -108,7 +108,7 @@ tags:
     externalDocs:
       description: How to implement payment during checkout.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+        https://docs.medusajs.com/resources/storefront-development/checkout/payment
     x-associatedSchema:
       $ref: ./components/schemas/StorePaymentProvider.yaml
   - name: Product Categories
@@ -119,9 +119,15 @@ tags:
     externalDocs:
       description: How to list product categories in a storefront.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/products/categories/list
+        https://docs.medusajs.com/resources/storefront-development/products/categories/list
     x-associatedSchema:
       $ref: ./components/schemas/StoreProductCategory.yaml
+  - name: Product Tags
+    x-associatedSchema:
+      $ref: ./components/schemas/StoreProductTag.yaml
+  - name: Product Types
+    x-associatedSchema:
+      $ref: ./components/schemas/StoreProductType.yaml
   - name: Products
     description: >
       Customers browse products for their purchase.
@@ -134,7 +140,7 @@ tags:
       These API routes allow customers to browse products.
     externalDocs:
       description: How to list products, get their prices, and more in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/products
+      url: https://docs.medusajs.com/resources/storefront-development/products
     x-associatedSchema:
       $ref: ./components/schemas/StoreProduct.yaml
   - name: Regions
@@ -150,7 +156,7 @@ tags:
       Use these API routes to retrieve available regions in the store.
     externalDocs:
       description: How to retrieve and store selected region in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/regions
+      url: https://docs.medusajs.com/resources/storefront-development/regions
     x-associatedSchema:
       $ref: ./components/schemas/StoreRegion.yaml
   - name: Return
@@ -185,7 +191,7 @@ tags:
     externalDocs:
       description: How to implement shipping during checkout.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping
+        https://docs.medusajs.com/resources/storefront-development/checkout/shipping
     x-associatedSchema:
       $ref: ./components/schemas/StoreShippingOption.yaml
 paths:
@@ -259,6 +265,14 @@ paths:
     $ref: paths/store_product-categories.yaml
   /store/product-categories/{id}:
     $ref: paths/store_product-categories_{id}.yaml
+  /store/product-tags:
+    $ref: paths/store_product-tags.yaml
+  /store/product-tags/{id}:
+    $ref: paths/store_product-tags_{id}.yaml
+  /store/product-types:
+    $ref: paths/store_product-types.yaml
+  /store/product-types/{id}:
+    $ref: paths/store_product-types_{id}.yaml
   /store/products:
     $ref: paths/store_products.yaml
   /store/products/{id}:
@@ -288,3 +302,8 @@ components:
       x-displayName: Cookie Session ID
       in: cookie
       name: connect.sid
+    reset_password:
+      type: http
+      x-displayName: Reset Password Token
+      scheme: bearer
+      x-is-auth: false

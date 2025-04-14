@@ -18,6 +18,18 @@ const PriceRule = model
       where: "deleted_at IS NULL",
       unique: true,
     },
+    {
+      on: ["attribute"],
+      where: "deleted_at IS NULL",
+    },
+    {
+      on: ["attribute", "value"],
+      where: "deleted_at IS NULL",
+    },
+    {
+      on: ["operator", "value"],
+      where: "deleted_at IS NULL",
+    },
   ])
 
 export default PriceRule

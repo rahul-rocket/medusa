@@ -16,6 +16,8 @@ import {
   MedusaContext,
   MedusaError,
   MedusaService,
+  moduleEventBuilderFactory,
+  Modules,
   UserEvents,
 } from "@medusajs/framework/utils"
 import jwt, { JwtPayload } from "jsonwebtoken"
@@ -110,16 +112,15 @@ export default class UserModuleService
   ): Promise<UserTypes.InviteDTO[]> {
     const invites = await this.refreshInviteTokens_(inviteIds, sharedContext)
 
-    sharedContext.messageAggregator?.saveRawMessageData(
-      invites.map((invite) => ({
-        eventName: UserEvents.INVITE_TOKEN_GENERATED,
-        source: this.constructor.name,
-        action: "token_generated",
-        object: "invite",
-        context: sharedContext,
-        data: { id: invite.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      eventName: UserEvents.INVITE_TOKEN_GENERATED,
+      source: Modules.USER,
+      action: "token_generated",
+      object: "invite",
+    })({
+      data: invites,
+      sharedContext,
+    })
 
     return await this.baseRepository_.serialize<UserTypes.InviteDTO[]>(
       invites,
@@ -170,6 +171,7 @@ export default class UserModuleService
     data: UserTypes.CreateUserDTO[],
     sharedContext?: Context
   ): Promise<UserTypes.UserDTO[]>
+  // @ts-expect-error
   createUsers(
     data: UserTypes.CreateUserDTO,
     sharedContext?: Context
@@ -177,6 +179,7 @@ export default class UserModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async createUsers(
     data: UserTypes.CreateUserDTO[] | UserTypes.CreateUserDTO,
     @MedusaContext() sharedContext: Context = {}
@@ -191,16 +194,15 @@ export default class UserModuleService
       populate: true,
     })
 
-    sharedContext.messageAggregator?.saveRawMessageData(
-      users.map((user) => ({
-        eventName: UserEvents.USER_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "user",
-        context: sharedContext,
-        data: { id: user.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      eventName: UserEvents.USER_CREATED,
+      source: Modules.USER,
+      action: CommonEvents.CREATED,
+      object: "user",
+    })({
+      data: serializedUsers,
+      sharedContext,
+    })
 
     return Array.isArray(data) ? serializedUsers : serializedUsers[0]
   }
@@ -210,6 +212,7 @@ export default class UserModuleService
     data: UserTypes.UpdateUserDTO[],
     sharedContext?: Context
   ): Promise<UserTypes.UserDTO[]>
+  // @ts-expect-error
   updateUsers(
     data: UserTypes.UpdateUserDTO,
     sharedContext?: Context
@@ -217,6 +220,7 @@ export default class UserModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async updateUsers(
     data: UserTypes.UpdateUserDTO | UserTypes.UpdateUserDTO[],
     @MedusaContext() sharedContext: Context = {}
@@ -231,25 +235,25 @@ export default class UserModuleService
       populate: true,
     })
 
-    sharedContext.messageAggregator?.saveRawMessageData(
-      updatedUsers.map((user) => ({
-        eventName: UserEvents.USER_UPDATED,
-        source: this.constructor.name,
-        action: CommonEvents.UPDATED,
-        object: "user",
-        context: sharedContext,
-        data: { id: user.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      eventName: UserEvents.USER_UPDATED,
+      source: Modules.USER,
+      action: CommonEvents.UPDATED,
+      object: "user",
+    })({
+      data: serializedUsers,
+      sharedContext,
+    })
 
     return Array.isArray(data) ? serializedUsers : serializedUsers[0]
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   createInvites(
     data: UserTypes.CreateInviteDTO[],
     sharedContext?: Context
   ): Promise<UserTypes.InviteDTO[]>
+  // @ts-expect-error
   createInvites(
     data: UserTypes.CreateInviteDTO,
     sharedContext?: Context
@@ -257,6 +261,7 @@ export default class UserModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async createInvites(
     data: UserTypes.CreateInviteDTO[] | UserTypes.CreateInviteDTO,
     @MedusaContext() sharedContext: Context = {}
@@ -271,27 +276,25 @@ export default class UserModuleService
       populate: true,
     })
 
-    sharedContext.messageAggregator?.saveRawMessageData(
-      invites.map((invite) => ({
-        eventName: UserEvents.INVITE_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "invite",
-        context: sharedContext,
-        data: { id: invite.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      eventName: UserEvents.INVITE_CREATED,
+      source: Modules.USER,
+      action: CommonEvents.CREATED,
+      object: "invite",
+    })({
+      data: serializedInvites,
+      sharedContext,
+    })
 
-    sharedContext.messageAggregator?.saveRawMessageData(
-      invites.map((invite) => ({
-        eventName: UserEvents.INVITE_TOKEN_GENERATED,
-        source: this.constructor.name,
-        action: "token_generated",
-        object: "invite",
-        context: sharedContext,
-        data: { id: invite.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      eventName: UserEvents.INVITE_TOKEN_GENERATED,
+      source: Modules.USER,
+      action: "token_generated",
+      object: "invite",
+    })({
+      data: serializedInvites,
+      sharedContext,
+    })
 
     return Array.isArray(data) ? serializedInvites : serializedInvites[0]
   }
@@ -332,6 +335,7 @@ export default class UserModuleService
     data: UserTypes.UpdateInviteDTO[],
     sharedContext?: Context
   ): Promise<UserTypes.InviteDTO[]>
+  // @ts-expect-error
   updateInvites(
     data: UserTypes.UpdateInviteDTO,
     sharedContext?: Context
@@ -339,6 +343,7 @@ export default class UserModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async updateInvites(
     data: UserTypes.UpdateInviteDTO | UserTypes.UpdateInviteDTO[],
     @MedusaContext() sharedContext: Context = {}
@@ -356,16 +361,15 @@ export default class UserModuleService
       populate: true,
     })
 
-    sharedContext.messageAggregator?.saveRawMessageData(
-      serializedInvites.map((invite) => ({
-        eventName: UserEvents.INVITE_UPDATED,
-        source: this.constructor.name,
-        action: CommonEvents.UPDATED,
-        object: "invite",
-        context: sharedContext,
-        data: { id: invite.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      eventName: UserEvents.INVITE_UPDATED,
+      source: Modules.USER,
+      action: CommonEvents.UPDATED,
+      object: "invite",
+    })({
+      data: serializedInvites,
+      sharedContext,
+    })
 
     return Array.isArray(data) ? serializedInvites : serializedInvites[0]
   }

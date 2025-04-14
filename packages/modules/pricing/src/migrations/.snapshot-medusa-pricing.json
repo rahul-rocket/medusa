@@ -131,6 +131,7 @@
           "keyName": "IDX_price_list_deleted_at",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_list_deleted_at\" ON \"price_list\" (deleted_at) WHERE deleted_at IS NULL"
@@ -141,12 +142,14 @@
             "id"
           ],
           "composite": false,
+          "constraint": true,
           "primary": true,
           "unique": true
         }
       ],
       "checks": [],
-      "foreignKeys": {}
+      "foreignKeys": {},
+      "nativeEnums": {}
     },
     {
       "columns": {
@@ -226,6 +229,7 @@
           "keyName": "IDX_price_list_rule_price_list_id",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_list_rule_price_list_id\" ON \"price_list_rule\" (price_list_id) WHERE deleted_at IS NULL"
@@ -234,9 +238,19 @@
           "keyName": "IDX_price_list_rule_deleted_at",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_list_rule_deleted_at\" ON \"price_list_rule\" (deleted_at) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_price_list_rule_attribute",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_list_rule_attribute\" ON \"price_list_rule\" (attribute) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "price_list_rule_pkey",
@@ -244,6 +258,7 @@
             "id"
           ],
           "composite": false,
+          "constraint": true,
           "primary": true,
           "unique": true
         }
@@ -263,7 +278,8 @@
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
-      }
+      },
+      "nativeEnums": {}
     },
     {
       "columns": {
@@ -344,6 +360,7 @@
           "keyName": "IDX_price_preference_deleted_at",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_preference_deleted_at\" ON \"price_preference\" (deleted_at) WHERE deleted_at IS NULL"
@@ -352,6 +369,7 @@
           "keyName": "IDX_price_preference_attribute_value",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_price_preference_attribute_value\" ON \"price_preference\" (attribute, value) WHERE deleted_at IS NULL"
@@ -362,12 +380,14 @@
             "id"
           ],
           "composite": false,
+          "constraint": true,
           "primary": true,
           "unique": true
         }
       ],
       "checks": [],
-      "foreignKeys": {}
+      "foreignKeys": {},
+      "nativeEnums": {}
     },
     {
       "columns": {
@@ -420,6 +440,7 @@
           "keyName": "IDX_price_set_deleted_at",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_set_deleted_at\" ON \"price_set\" (deleted_at) WHERE deleted_at IS NULL"
@@ -430,12 +451,14 @@
             "id"
           ],
           "composite": false,
+          "constraint": true,
           "primary": true,
           "unique": true
         }
       ],
       "checks": [],
-      "foreignKeys": {}
+      "foreignKeys": {},
+      "nativeEnums": {}
     },
     {
       "columns": {
@@ -570,6 +593,7 @@
           "keyName": "IDX_price_price_set_id",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_price_set_id\" ON \"price\" (price_set_id) WHERE deleted_at IS NULL"
@@ -578,6 +602,7 @@
           "keyName": "IDX_price_price_list_id",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_price_list_id\" ON \"price\" (price_list_id) WHERE deleted_at IS NULL"
@@ -586,6 +611,7 @@
           "keyName": "IDX_price_deleted_at",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_deleted_at\" ON \"price\" (deleted_at) WHERE deleted_at IS NULL"
@@ -594,6 +620,7 @@
           "keyName": "IDX_price_currency_code",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_currency_code\" ON \"price\" (currency_code) WHERE deleted_at IS NULL"
@@ -604,6 +631,7 @@
             "id"
           ],
           "composite": false,
+          "constraint": true,
           "primary": true,
           "unique": true
         }
@@ -636,7 +664,8 @@
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
-      }
+      },
+      "nativeEnums": {}
     },
     {
       "columns": {
@@ -743,6 +772,7 @@
           "keyName": "IDX_price_rule_price_id",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_rule_price_id\" ON \"price_rule\" (price_id) WHERE deleted_at IS NULL"
@@ -751,6 +781,7 @@
           "keyName": "IDX_price_rule_deleted_at",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_rule_deleted_at\" ON \"price_rule\" (deleted_at) WHERE deleted_at IS NULL"
@@ -759,9 +790,37 @@
           "keyName": "IDX_price_rule_price_id_attribute_operator_unique",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_price_rule_price_id_attribute_operator_unique\" ON \"price_rule\" (price_id, attribute, operator) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_price_rule_attribute",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_rule_attribute\" ON \"price_rule\" (attribute) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_price_rule_attribute_value",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_rule_attribute_value\" ON \"price_rule\" (attribute, value) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_price_rule_operator_value",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_price_rule_operator_value\" ON \"price_rule\" (operator, value) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "price_rule_pkey",
@@ -769,6 +828,7 @@
             "id"
           ],
           "composite": false,
+          "constraint": true,
           "primary": true,
           "unique": true
         }
@@ -788,7 +848,9 @@
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
-      }
+      },
+      "nativeEnums": {}
     }
-  ]
+  ],
+  "nativeEnums": {}
 }

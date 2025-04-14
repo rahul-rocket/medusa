@@ -1,9 +1,9 @@
-/** @type {import('types').RawSidebarItem[]} */
+/** @type {import('types').Sidebar.SidebarItem[]} */
 export const productSidebar = [
   {
-    type: "category",
+    type: "sidebar",
+    sidebar_id: "product",
     title: "Product Module",
-    isChildSidebar: true,
     children: [
       {
         type: "link",
@@ -16,10 +16,19 @@ export const productSidebar = [
       {
         type: "category",
         title: "Concepts",
-        initialOpen: false,
         autogenerate_tags: "concept+product",
         autogenerate_as_ref: true,
         children: [
+          {
+            type: "link",
+            path: "/commerce-modules/product/variant-inventory",
+            title: "Variant Inventory",
+          },
+          {
+            type: "link",
+            path: "/commerce-modules/product/selling-products",
+            title: "Selling Use Cases",
+          },
           {
             type: "link",
             path: "/commerce-modules/product/links-to-other-modules",
@@ -30,9 +39,9 @@ export const productSidebar = [
       {
         type: "category",
         title: "Server Guides",
-        autogenerate_tags: "server+product",
-        initialOpen: false,
+        autogenerate_tags: "product+server",
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to use the Product Module in your customizations on the Medusa application server.",
         children: [
@@ -57,8 +66,8 @@ export const productSidebar = [
         type: "category",
         title: "Storefront Guides",
         autogenerate_tags: "storefront+product,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to integrate the Product Module's features into your storefront.",
       },
@@ -66,24 +75,23 @@ export const productSidebar = [
         type: "category",
         title: "Admin Guides",
         autogenerate_tags: "admin+product,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize administative features of the Product Module.",
       },
       {
         type: "category",
-        title: "User Guides",
-        autogenerate_tags: "userGuides+product",
-        initialOpen: false,
+        title: "Admin User Guides",
+        autogenerate_tags: "userGuide+product",
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize and manage Product features in the Medusa Admin dashboard.",
       },
       {
         type: "category",
         title: "References",
-        initialOpen: false,
         description:
           "Find references for tools and resources related to the Product Module, such as data models, methods, and more. These are useful for your customizations.",
         children: [
@@ -98,12 +106,14 @@ export const productSidebar = [
                 title: "Workflows",
                 autogenerate_tags: "workflow+product",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "category",
                 title: "Steps",
                 autogenerate_tags: "step+product",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -120,6 +130,7 @@ export const productSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Store API Routes related to the Product Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "sub-category",
@@ -128,6 +139,7 @@ export const productSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Admin API Routes related to the Product Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -142,12 +154,19 @@ export const productSidebar = [
             title: "Admin Widget Zones",
           },
           {
-            type: "link",
-            path: "/references/product",
+            type: "sidebar",
+            sidebar_id: "product-service-reference",
             title: "Main Service Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Product Module's Main Service Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/product",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Methods",
@@ -157,12 +176,19 @@ export const productSidebar = [
             ],
           },
           {
-            type: "link",
-            path: "/references/product/models",
+            type: "sidebar",
+            sidebar_id: "product-models-reference",
             title: "Data Models Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Product Module Data Models Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/product/models",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Data Models",

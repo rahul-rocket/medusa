@@ -435,6 +435,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_inventory-items/get.js
     - lang: Shell
       label: cURL
       source:
@@ -525,6 +529,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminCreateInventoryItem.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_inventory-items/post.js
     - lang: Shell
       label: cURL
       source:

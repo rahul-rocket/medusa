@@ -90,6 +90,25 @@
  *             type: object
  *             description: The inventory item's metadata. Can be custom data in key-value pairs.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.inventoryItem.update("iitem_123", {
+ *         sku: "SHIRT"
+ *       })
+ *       .then(({ inventory_item }) => {
+ *         console.log(inventory_item)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

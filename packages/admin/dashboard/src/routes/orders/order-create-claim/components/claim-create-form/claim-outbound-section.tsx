@@ -63,6 +63,13 @@ export const ClaimOutboundSection = ({
     fields: "*prices,+service_zone.fulfillment_set.location.id",
   })
 
+  const outboundShippingOptions = shipping_options.filter(
+    (shippingOption) =>
+      !!shippingOption.rules.find(
+        (r) => r.attribute === "is_return" && r.value === "false"
+      )
+  )
+
   const { mutateAsync: addOutboundShipping } = useAddClaimOutboundShipping(
     claim.id,
     order.id
@@ -190,7 +197,9 @@ export const ClaimOutboundSection = ({
     setIsOpen("outbound-items", false)
   }
 
-  const onShippingOptionChange = async (selectedOptionId: string) => {
+  const onShippingOptionChange = async (
+    selectedOptionId: string | undefined
+  ) => {
     const outboundShippingMethods = preview.shipping_methods.filter((s) => {
       const action = s.actions?.find(
         (a) => a.action === "SHIPPING_ADD" && !a.return_id
@@ -213,14 +222,16 @@ export const ClaimOutboundSection = ({
 
     await Promise.all(promises)
 
-    await addOutboundShipping(
-      { shipping_option_id: selectedOptionId },
-      {
-        onError: (error) => {
-          toast.error(error.message)
-        },
-      }
-    )
+    if (selectedOptionId) {
+      await addOutboundShipping(
+        { shipping_option_id: selectedOptionId },
+        {
+          onError: (error) => {
+            toast.error(error.message)
+          },
+        }
+      )
+    }
   }
 
   const showLevelsWarning = useMemo(() => {
@@ -260,11 +271,12 @@ export const ClaimOutboundSection = ({
       const variantIds = outboundItems
         .map((item) => item?.variant_id)
         .filter(Boolean)
+
       const variants = (
-        await sdk.admin.productVariant.list(
-          { id: variantIds },
-          { fields: "*inventory,*inventory.location_levels" }
-        )
+        await sdk.admin.productVariant.list({
+          id: variantIds,
+          fields: "*inventory.location_levels",
+        })
       ).variants
 
       variants.forEach((variant) => {
@@ -395,17 +407,18 @@ export const ClaimOutboundSection = ({
                   <Form.Item>
                     <Form.Control>
                       <Combobox
+                        allowClear
                         value={value ?? undefined}
                         onChange={(val) => {
                           onChange(val)
-                          val && onShippingOptionChange(val)
+                          onShippingOptionChange(val)
                         }}
                         {...field}
-                        options={shipping_options.map((so) => ({
+                        options={outboundShippingOptions.map((so) => ({
                           label: so.name,
                           value: so.id,
                         }))}
-                        disabled={!shipping_options.length}
+                        disabled={!outboundShippingOptions.length}
                         noResultsPlaceholder={<OutboundShippingPlaceholder />}
                       />
                     </Form.Control>

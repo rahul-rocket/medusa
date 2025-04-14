@@ -199,6 +199,25 @@
  *                             description: A value of the attribute that enables this rule.
  *                             example: cusgroup_123
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.shippingOption.update("so_123", {
+ *         name: "Standard Shipping",
+ *       })
+ *       .then(({ shipping_option }) => {
+ *         console.log(shipping_option)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

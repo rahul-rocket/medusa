@@ -6,9 +6,21 @@ import {
 } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
+/**
+ * The details of the promotion codes to apply on a cart.
+ */
 export interface UpdateCartPromotionStepInput {
+  /**
+   * The ID of the cart to update promotions for.
+   */
   id: string
+  /**
+   * The promotion codes to apply on the cart.
+   */
   promo_codes?: string[]
+  /**
+   * Whether to add, remove, or replace promotion codes.
+   */
   action?:
     | PromotionActions.ADD
     | PromotionActions.REMOVE
@@ -23,6 +35,7 @@ export const updateCartPromotionsStep = createStep(
   updateCartPromotionsStepId,
   async (data: UpdateCartPromotionStepInput, { container }) => {
     const { promo_codes = [], id, action = PromotionActions.ADD } = data
+
     const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
     const remoteQuery = container.resolve(
       ContainerRegistrationKeys.REMOTE_QUERY
@@ -43,29 +56,31 @@ export const updateCartPromotionsStep = createStep(
       existingCartPromotionLinks.map((link) => [link.promotion_id, link])
     )
 
-    const promotions = await promotionService.listPromotions(
-      { code: promo_codes },
-      { select: ["id"] }
-    )
-
     const linksToCreate: any[] = []
     const linksToDismiss: any[] = []
 
-    for (const promotion of promotions) {
-      const linkObject = {
-        [Modules.CART]: { cart_id: id },
-        [Modules.PROMOTION]: { promotion_id: promotion.id },
-      }
+    if (promo_codes?.length) {
+      const promotions = await promotionService.listPromotions(
+        { code: promo_codes },
+        { select: ["id"] }
+      )
 
-      if ([PromotionActions.ADD, PromotionActions.REPLACE].includes(action)) {
-        linksToCreate.push(linkObject)
-      }
+      for (const promotion of promotions) {
+        const linkObject = {
+          [Modules.CART]: { cart_id: id },
+          [Modules.PROMOTION]: { promotion_id: promotion.id },
+        }
 
-      if (action === PromotionActions.REMOVE) {
-        const link = promotionLinkMap.get(promotion.id)
+        if ([PromotionActions.ADD, PromotionActions.REPLACE].includes(action)) {
+          linksToCreate.push(linkObject)
+        }
 
-        if (link) {
-          linksToDismiss.push(linkObject)
+        if (action === PromotionActions.REMOVE) {
+          const link = promotionLinkMap.get(promotion.id)
+
+          if (link) {
+            linksToDismiss.push(linkObject)
+          }
         }
       }
     }

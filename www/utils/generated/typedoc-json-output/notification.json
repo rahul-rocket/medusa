@@ -1,12 +1,12 @@
 {
-	"id": 41648,
+	"id": 43835,
 	"name": "notification",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
 	"children": [
 		{
-			"id": 41649,
+			"id": 43836,
 			"name": "AbstractNotificationProviderService",
 			"variant": "declaration",
 			"kind": 128,
@@ -25,16 +25,64 @@
 			},
 			"children": [
 				{
-					"id": 41650,
+					"id": 43837,
+					"name": "identifier",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isStatic": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Each notification provider has a unique ID used to identify it."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts\nclass MyNotificationProviderService extends AbstractNotificationProviderService {\n  static identifier = \"my-notification\"\n  // ...\n}\n```"
+									}
+								]
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "abstract-notification-provider.ts",
+							"line": 60,
+							"character": 9,
+							"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/core/utils/src/notification/abstract-notification-provider.ts#L60"
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 43838,
 					"name": "validateOptions",
 					"variant": "declaration",
 					"kind": 2048,
 					"flags": {
 						"isStatic": true
 					},
+					"sources": [
+						{
+							"fileName": "abstract-notification-provider.ts",
+							"line": 81,
+							"character": 9,
+							"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/core/utils/src/notification/abstract-notification-provider.ts#L81"
+						}
+					],
 					"signatures": [
 						{
-							"id": 41651,
+							"id": 43839,
 							"name": "validateOptions",
 							"variant": "signature",
 							"kind": 4096,
@@ -66,9 +114,17 @@
 									}
 								]
 							},
+							"sources": [
+								{
+									"fileName": "abstract-notification-provider.ts",
+									"line": 81,
+									"character": 9,
+									"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/core/utils/src/notification/abstract-notification-provider.ts#L81"
+								}
+							],
 							"parameters": [
 								{
-									"id": 41652,
+									"id": 43840,
 									"name": "options",
 									"variant": "param",
 									"kind": 32768,
@@ -110,21 +166,21 @@
 					]
 				},
 				{
-					"id": 41653,
+					"id": 43841,
 					"name": "constructor",
 					"variant": "declaration",
 					"kind": 512,
 					"flags": {},
 					"signatures": [
 						{
-							"id": 41654,
+							"id": 43842,
 							"name": "AbstractNotificationProviderService",
 							"variant": "signature",
 							"kind": 16384,
 							"flags": {},
 							"type": {
 								"type": "reference",
-								"target": 41649,
+								"target": 43836,
 								"name": "AbstractNotificationProviderService",
 								"package": "@medusajs/utils"
 							}
@@ -132,14 +188,22 @@
 					]
 				},
 				{
-					"id": 41655,
+					"id": 43843,
 					"name": "send",
 					"variant": "declaration",
 					"kind": 2048,
 					"flags": {},
+					"sources": [
+						{
+							"fileName": "abstract-notification-provider.ts",
+							"line": 114,
+							"character": 8,
+							"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/core/utils/src/notification/abstract-notification-provider.ts#L114"
+						}
+					],
 					"signatures": [
 						{
-							"id": 41656,
+							"id": 43844,
 							"name": "send",
 							"variant": "signature",
 							"kind": 4096,
@@ -172,9 +236,17 @@
 									}
 								]
 							},
+							"sources": [
+								{
+									"fileName": "abstract-notification-provider.ts",
+									"line": 114,
+									"character": 8,
+									"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/core/utils/src/notification/abstract-notification-provider.ts#L114"
+								}
+							],
 							"parameters": [
 								{
-									"id": 41657,
+									"id": 43845,
 									"name": "notification",
 									"variant": "param",
 									"kind": 32768,
@@ -236,15 +308,29 @@
 				{
 					"title": "Constructors",
 					"children": [
-						41653
+						43841
+					]
+				},
+				{
+					"title": "Properties",
+					"children": [
+						43837
 					]
 				},
 				{
 					"title": "Methods",
 					"children": [
-						41650,
-						41655
+						43838,
+						43843
 					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "abstract-notification-provider.ts",
+					"line": 48,
+					"character": 13,
+					"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/core/utils/src/notification/abstract-notification-provider.ts#L48"
 				}
 			],
 			"implementedTypes": [
@@ -264,41 +350,45 @@
 		{
 			"title": "Classes",
 			"children": [
-				41649
+				43836
 			]
 		}
 	],
 	"packageName": "@medusajs/utils",
 	"symbolIdMap": {
-		"41648": {
+		"43835": {
 			"sourceFileName": "../../../../packages/core/utils/src/notification/abstract-notification-provider.ts",
 			"qualifiedName": ""
 		},
-		"41649": {
+		"43836": {
 			"sourceFileName": "../../../../packages/core/utils/src/notification/abstract-notification-provider.ts",
 			"qualifiedName": "AbstractNotificationProviderService"
 		},
-		"41650": {
+		"43837": {
+			"sourceFileName": "../../../../packages/core/utils/src/notification/abstract-notification-provider.ts",
+			"qualifiedName": "AbstractNotificationProviderService.identifier"
+		},
+		"43838": {
 			"sourceFileName": "../../../../packages/core/utils/src/notification/abstract-notification-provider.ts",
 			"qualifiedName": "AbstractNotificationProviderService.validateOptions"
 		},
-		"41651": {
+		"43839": {
 			"sourceFileName": "../../../../packages/core/utils/src/notification/abstract-notification-provider.ts",
 			"qualifiedName": "AbstractNotificationProviderService.validateOptions"
 		},
-		"41652": {
+		"43840": {
 			"sourceFileName": "../../../../packages/core/utils/src/notification/abstract-notification-provider.ts",
 			"qualifiedName": "options"
 		},
-		"41655": {
+		"43843": {
 			"sourceFileName": "../../../../packages/core/utils/src/notification/abstract-notification-provider.ts",
 			"qualifiedName": "AbstractNotificationProviderService.send"
 		},
-		"41656": {
+		"43844": {
 			"sourceFileName": "../../../../packages/core/utils/src/notification/abstract-notification-provider.ts",
 			"qualifiedName": "AbstractNotificationProviderService.send"
 		},
-		"41657": {
+		"43845": {
 			"sourceFileName": "../../../../packages/core/utils/src/notification/abstract-notification-provider.ts",
 			"qualifiedName": "notification"
 		}
@@ -308,7 +398,7 @@
 			"1": "../../../../packages/core/utils/src/notification/abstract-notification-provider.ts"
 		},
 		"reflections": {
-			"1": 41648
+			"1": 43835
 		}
 	}
 }

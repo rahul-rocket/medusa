@@ -118,7 +118,7 @@
     "close": "Schließen",
     "showMore": "Mehr anzeigen",
     "continue": "Weitermachen",
-    "continueWithEmail": "Fahren Sie mit E-Mail fort",
+    "continueWithEmail": "Mit E-Mail anmelden",
     "idCopiedToClipboard": "ID in die Zwischenablage kopiert",
     "addReason": "Grund hinzufügen",
     "addNote": "Notiz hinzufügen",
@@ -233,8 +233,8 @@
         }
       },
       "store": {
-        "label": "Speichern",
-        "storeSettings": "Einstellungen speichern"
+        "label": "Shop",
+        "storeSettings": "Shop-Einstellungen"
       },
       "actions": {
         "logout": "Abmelden"
@@ -315,6 +315,12 @@
       "lessThanLabel": "kleiner als {{value}}",
       "greaterThanLabel": "größer als {{value}}",
       "andLabel": "Und"
+    },
+    "radio": {
+      "yes": "Ja",
+      "no": "Nein",
+      "true": "Wahr",
+      "false": "Falsch"
     },
     "addFilter": "Filter hinzufügen"
   },
@@ -467,7 +473,17 @@
       }
     },
     "deleteWarning": "Sie sind dabei, das Produkt {{title}} zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
-    "variants": "Varianten",
+    "variants": {
+      "header": "Varianten",
+      "empty": {
+        "heading": "Keine Varianten",
+        "description": "Es gibt keine Varianten, um angezeigt zu werden."
+      },
+      "filtered": {
+        "heading": "Keine Ergebnisse",
+        "description": "Keine Varianten stimmen mit den aktuellen Filterkriterien überein."
+      }
+    },
     "attributes": "Attribute",
     "editAttributes": "Attribute bearbeiten",
     "editOptions": "Optionen bearbeiten",
@@ -948,7 +964,7 @@
         "authorized": "Autorisiert",
         "partiallyAuthorized": "Teilweise autorisiert",
         "awaiting": "Warten",
-        "captured": "Gefangen",
+        "captured": "Erhalten",
         "partiallyRefunded": "Teilweise erstattet",
         "partiallyCaptured": "Teilweise erfasst",
         "refunded": "Erstattet",
@@ -2143,7 +2159,7 @@
     "invite": "Einladen"
   },
   "store": {
-    "domain": "Speichern",
+    "domain": "Shop",
     "manageYourStoresDetails": "Verwalten Sie die Details Ihres Shops",
     "editStore": "Shop bearbeiten",
     "defaultCurrency": "Standardwährung",
@@ -2438,7 +2454,7 @@
   "login": {
     "forgotPassword": "Passwort vergessen? - <0>Zurücksetzen</0>",
     "title": "Willkommen bei Medusa",
-    "hint": "Melden Sie sich an, um auf den Kontobereich zuzugreifen"
+    "hint": "Melden Sie sich an, um auf ihr Konto zuzugreifen"
   },
   "invite": {
     "title": "Willkommen bei Medusa",
@@ -2487,8 +2503,8 @@
     "transactionIdLabel": "Transaktions-ID",
     "workflowIdLabel": "Workflow-ID",
     "progressLabel": "Fortschritt",
-    "stepsCompletedLabel_one": "{{completed}} von {{count}} Schritt",
-    "stepsCompletedLabel_other": "{{completed}} von {{count}} Schritten",
+    "stepsCompletedLabel_one": "Schritt {{completed}} von {{count}}",
+    "stepsCompletedLabel_other": " Schritt {{completed}} von {{count}}",
     "list": {
       "noRecordsMessage": "Es wurden noch keine Workflows ausgeführt."
     },
@@ -2693,7 +2709,7 @@
     "key": "Schlüssel",
     "customer": "Kunde",
     "date": "Datum",
-    "order": "Befehl",
+    "order": "Bestellung",
     "fulfillment": "Erfüllung",
     "provider": "Anbieter",
     "payment": "Zahlung",

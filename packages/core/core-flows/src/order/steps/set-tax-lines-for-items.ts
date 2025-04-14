@@ -9,15 +9,51 @@ import {
 import { Modules, promiseAll } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
+/**
+ * The details of setting tax lines for an order's items and shipping methods.
+ */
 export interface SetOrderTaxLinesForItemsStepInput {
+  /**
+   * The order's details.
+   */
   order: OrderDTO
+  /**
+   * The tax lines to set for the order's items.
+   */
   item_tax_lines: ItemTaxLineDTO[]
+  /**
+   * The tax lines to set for the order's shipping methods.
+   */
   shipping_tax_lines: ShippingTaxLineDTO[]
 }
 
 export const setOrderTaxLinesForItemsStepId = "set-order-tax-lines-for-items"
 /**
  * This step sets the tax lines of an order's items and shipping methods.
+ *
+ * :::note
+ *
+ * You can retrieve an order's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
+ * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
+ *
+ * :::
+ *
+ * @example
+ * const data = setOrderTaxLinesForItemsStep({
+ *   order: {
+ *     id: "order_123",
+ *     // other order details...
+ *   },
+ *   item_tax_lines: [
+ *     {
+ *       line_item_id: "orli_123",
+ *       rate: 0.25,
+ *       code: "VAT",
+ *       name: "VAT",
+ *       provider_id: "tax_provider_123",
+ *     }
+ *   ]
+ * })
  */
 export const setOrderTaxLinesForItemsStep = createStep(
   setOrderTaxLinesForItemsStepId,
@@ -38,14 +74,13 @@ export const setOrderTaxLinesForItemsStep = createStep(
 
     const itemsTaxLinesData = normalizeItemTaxLinesForOrder(item_tax_lines)
     const setItemTaxLinesPromise = itemsTaxLinesData.length
-      ? orderService.setOrderLineItemTaxLines(order.id, itemsTaxLinesData)
+      ? orderService.upsertOrderLineItemTaxLines(itemsTaxLinesData)
       : void 0
 
     const shippingTaxLinesData =
       normalizeShippingTaxLinesForOrder(shipping_tax_lines)
     const setShippingTaxLinesPromise = shippingTaxLinesData.length
-      ? await orderService.setOrderShippingMethodTaxLines(
-          order.id,
+      ? await orderService.upsertOrderShippingMethodTaxLines(
           shippingTaxLinesData
         )
       : void 0
@@ -69,14 +104,13 @@ export const setOrderTaxLinesForItemsStep = createStep(
       return
     }
 
-    const { order, existingLineItemTaxLines, existingShippingMethodTaxLines } =
+    const { existingLineItemTaxLines, existingShippingMethodTaxLines } =
       revertData
 
     const orderService = container.resolve<IOrderModuleService>(Modules.ORDER)
 
     if (existingLineItemTaxLines) {
-      await orderService.setOrderLineItemTaxLines(
-        order.id,
+      await orderService.upsertOrderLineItemTaxLines(
         existingLineItemTaxLines.map((taxLine) => ({
           description: taxLine.description,
           tax_rate_id: taxLine.tax_rate_id,
@@ -88,8 +122,7 @@ export const setOrderTaxLinesForItemsStep = createStep(
       )
     }
 
-    await orderService.setOrderShippingMethodTaxLines(
-      order.id,
+    await orderService.upsertOrderShippingMethodTaxLines(
       existingShippingMethodTaxLines.map((taxLine) => ({
         description: taxLine.description,
         tax_rate_id: taxLine.tax_rate_id,

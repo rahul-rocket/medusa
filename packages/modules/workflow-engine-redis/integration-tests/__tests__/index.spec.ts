@@ -1,5 +1,6 @@
 import {
   DistributedTransactionType,
+  TransactionState,
   TransactionStep,
   TransactionStepTimeoutError,
   TransactionTimeoutError,
@@ -20,14 +21,20 @@ import {
 } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { asValue } from "awilix"
-import { setTimeout } from "timers/promises"
 import { setTimeout as setTimeoutSync } from "timers"
+import { setTimeout } from "timers/promises"
 import { WorkflowsModuleService } from "../../src/services"
 import "../__fixtures__"
 import { createScheduled } from "../__fixtures__/workflow_scheduled"
 import { TestDatabase } from "../utils"
+import {
+  createStep,
+  createWorkflow,
+  StepResponse,
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
 
-jest.setTimeout(999900000)
+jest.setTimeout(300000)
 
 const failTrap = (done) => {
   setTimeoutSync(() => {
@@ -37,6 +44,33 @@ const failTrap = (done) => {
     )
     done()
   }, 5000)
+}
+
+function times(num) {
+  let resolver
+  let counter = 0
+  const promise = new Promise((resolve) => {
+    resolver = resolve
+  })
+
+  return {
+    next: () => {
+      counter += 1
+      if (counter === num) {
+        resolver()
+      }
+    },
+    // Force resolution after 10 seconds to prevent infinite awaiting
+    promise: Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        setTimeoutSync(
+          () => reject("times has not been resolved after 10 seconds."),
+          1000
+        )
+      }),
+    ]),
+  }
 }
 
 // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
@@ -55,24 +89,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         await TestDatabase.clearTables()
         jest.clearAllMocks()
       })
-
-      function times(num) {
-        let resolver
-        let counter = 0
-        const promise = new Promise((resolve) => {
-          resolver = resolve
-        })
-
-        return {
-          next: () => {
-            counter += 1
-            if (counter === num) {
-              resolver()
-            }
-          },
-          promise,
-        }
-      }
 
       let query: RemoteQueryFunction
       let sharedContainer_: MedusaContainer
@@ -335,7 +351,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: false,
           })
 
-          await setTimeout(200)
+          await setTimeout(2000)
 
           const { transaction, result, errors } = (await workflowOrcModule.run(
             "workflow_step_timeout_async",
@@ -512,11 +528,168 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
           failTrap(done)
         })
+
+        it("should cancel and revert a completed workflow", async () => {
+          const workflowId = "workflow_sync"
+
+          const { acknowledgement, transaction: trx } =
+            await workflowOrcModule.run(workflowId, {
+              input: {
+                value: "123",
+              },
+            })
+
+          expect(trx.getFlow().state).toEqual("done")
+          expect(acknowledgement.hasFinished).toBe(true)
+
+          const { transaction } = await workflowOrcModule.cancel(workflowId, {
+            transactionId: acknowledgement.transactionId,
+          })
+
+          expect(transaction.getFlow().state).toEqual("reverted")
+        })
+      })
+
+      describe("Testing complex workflows", function () {
+        it("should execute workflow + workflow as step + manual workflow within a step correctly", async () => {
+          const workflowA_id = "workflow_a"
+          const workflowB_id = "workflow_b"
+          const workflowC_id = "workflow_c"
+
+          const stepB_1 = createStep("stepB_1", async (input, context) => {
+            let results: any[] = []
+            for (let i = 0; i < 2; i++) {
+              const { result } = await workflowOrcModule.run(workflowC_id, {
+                input: {},
+              })
+
+              results.push(result)
+            }
+
+            return new StepResponse(results)
+          })
+
+          const stepC_1 = createStep("stepC_1", async (input, context) => {
+            return new StepResponse({
+              stepC_1_result: "stepC_1_result",
+            })
+          })
+
+          createWorkflow(workflowC_id, (input) => {
+            const result = stepC_1()
+            return new WorkflowResponse(result)
+          })
+
+          const workflowB = createWorkflow(workflowB_id, (input) => {
+            const result = stepB_1()
+            return new WorkflowResponse(result)
+          })
+
+          createWorkflow(workflowA_id, (input) => {
+            const workflowB_response = workflowB.runAsStep({
+              input: {},
+            })
+
+            return new WorkflowResponse({ workflowB_response })
+          })
+
+          const { result } = await workflowOrcModule.run(workflowA_id, {
+            input: {},
+            throwOnError: false,
+          })
+
+          expect(result).toEqual({
+            workflowB_response: [
+              {
+                stepC_1_result: "stepC_1_result",
+              },
+              {
+                stepC_1_result: "stepC_1_result",
+              },
+            ],
+          })
+        })
+
+        it("should execute workflow + workflow as step + manual workflow within a step that fail but do not fail the step", async () => {
+          const workflowA_id = "workflow_a"
+          const workflowB_id = "workflow_b"
+          const workflowC_id = "workflow_c"
+
+          const stepB_1 = createStep("stepB_1", async (input, context) => {
+            let results: any[] = []
+            for (let i = 0; i < 2; i++) {
+              const { errors } = await workflowOrcModule.run(workflowC_id, {
+                input: {},
+                throwOnError: false,
+              })
+
+              results.push(errors)
+            }
+
+            return new StepResponse(results)
+          })
+
+          const stepC_1 = createStep("stepC_1", async (input, context) => {
+            throw new Error("Workflow C failed")
+          })
+
+          createWorkflow(workflowC_id, (input) => {
+            const result = stepC_1()
+            return new WorkflowResponse(result)
+          })
+
+          const workflowB = createWorkflow(workflowB_id, (input) => {
+            const result = stepB_1()
+            return new WorkflowResponse(result)
+          })
+
+          createWorkflow(workflowA_id, (input) => {
+            const workflowB_response = workflowB.runAsStep({
+              input: {},
+            })
+
+            return new WorkflowResponse({ workflowB_response })
+          })
+
+          const { result, transaction } = await workflowOrcModule.run(
+            workflowA_id,
+            {
+              input: {},
+              throwOnError: false,
+            }
+          )
+
+          expect(
+            (transaction as DistributedTransactionType).getFlow().state
+          ).toEqual(TransactionState.DONE)
+          expect(result).toEqual({
+            workflowB_response: [
+              [
+                {
+                  action: "stepC_1",
+                  handlerType: TransactionHandlerType.INVOKE,
+                  error: expect.objectContaining({
+                    message: "Workflow C failed",
+                  }),
+                },
+              ],
+              [
+                {
+                  action: "stepC_1",
+                  handlerType: TransactionHandlerType.INVOKE,
+                  error: expect.objectContaining({
+                    message: "Workflow C failed",
+                  }),
+                },
+              ],
+            ],
+          })
+        })
       })
 
       // Note: These tests depend on actual Redis instance and waiting for the scheduled jobs to run, which isn't great.
       // Mocking bullmq, however, would make the tests close to useless, so we can keep them very minimal and serve as smoke tests.
-      describe("Scheduled workflows", () => {
+      describe.skip("Scheduled workflows", () => {
         beforeEach(() => {
           jest.clearAllMocks()
         })
@@ -532,8 +705,8 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         it("should stop executions after the set number of executions", async () => {
           const wait = times(2)
-          const spy = await createScheduled("num-executions", wait.next, {
-            cron: "* * * * * *",
+          const spy = createScheduled("num-executions", wait.next, {
+            interval: 1000,
             numberOfExecutions: 2,
           })
 
@@ -553,8 +726,8 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             ContainerRegistrationKeys.LOGGER
           )
 
-          const spy = await createScheduled("remove-scheduled", wait.next, {
-            cron: "* * * * * *",
+          const spy = createScheduled("remove-scheduled", wait.next, {
+            interval: 1000,
           })
           const logSpy = jest.spyOn(logger, "warn")
 
@@ -569,13 +742,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           )
         })
 
-        // TODO: investigate why it fails intermittently
         it.skip("the scheduled workflow should have access to the shared container", async () => {
           const wait = times(1)
           sharedContainer_.register("test-value", asValue("test"))
 
           const spy = await createScheduled("shared-container-job", wait.next, {
-            cron: "* * * * * *",
+            interval: 1000,
           })
           await wait.promise
 

@@ -21,29 +21,31 @@ In this chapter, you'll learn about `moduleIntegrationTestRunner` from Medusa's 
 
 `moduleIntegrationTestRunner` creates integration tests for a module. The integration tests run on a test Medusa application with only the specified module enabled.
 
-For example, assuming you have a `hello` module, create a test file at `src/modules/hello/__tests__/service.spec.ts`:
+For example, assuming you have a `blog` module, create a test file at `src/modules/blog/__tests__/service.spec.ts`:
 
-```ts title="src/modules/hello/__tests__/service.spec.ts"
+```ts title="src/modules/blog/__tests__/service.spec.ts"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
-import { HELLO_MODULE } from ".."
-import HelloModuleService from "../service"
-import MyCustom from "../models/my-custom"
+import { BLOG_MODULE } from ".."
+import BlogModuleService from "../service"
+import Post from "../models/post"
 
-moduleIntegrationTestRunner<HelloModuleService>({
-  moduleName: HELLO_MODULE,
-  moduleModels: [MyCustom],
-  resolve: "./src/modules/hello",
+moduleIntegrationTestRunner<BlogModuleService>({
+  moduleName: BLOG_MODULE,
+  moduleModels: [Post],
+  resolve: "./src/modules/blog",
   testSuite: ({ service }) => {
     // TODO write tests
   },
 })
+
+jest.setTimeout(60 * 1000)
 ```
 
 The `moduleIntegrationTestRunner` function accepts as a parameter an object with the following properties:
 
 - `moduleName`: The name of the module.
 - `moduleModels`: An array of models in the module. Refer to [this section](#write-tests-for-modules-without-data-models) if your module doesn't have data models.
-- `resolve`: The path to the model.
+- `resolve`: The path to the module's directory.
 - `testSuite`: A function that defines the tests to run.
 
 The `testSuite` function accepts as a parameter an object having the `service` property, which is an instance of the module's main service.
@@ -63,12 +65,12 @@ The tests in the `testSuite` function are written using [Jest](https://jestjs.io
 Run the following command to run your module integration tests:
 
 ```bash npm2yarn
-npm run test:modules
+npm run test:integration:modules
 ```
 
 <Note title="Tip">
 
-If you don't have a `test:modules` script in `package.json`, refer to the [Medusa Testing Tools chapter](../page.mdx#add-test-commands).
+If you don't have a `test:integration:modules` script in `package.json`, refer to the [Medusa Testing Tools chapter](../page.mdx#add-test-commands).
 
 </Note>
 
@@ -84,9 +86,9 @@ For example:
 
 ```ts
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
-import HelloModuleService from "../service"
+import BlogModuleService from "../service"
 
-moduleIntegrationTestRunner<HelloModuleService>({
+moduleIntegrationTestRunner<BlogModuleService>({
   moduleOptions: {
     apiKey: "123",
   },
@@ -104,24 +106,26 @@ For example:
 
 ```ts
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
-import HelloModuleService from "../service"
+import BlogModuleService from "../service"
 import { model } from "@medusajs/framework/utils"
 
 const DummyModel = model.define("dummy_model", {
   id: model.id().primaryKey(),
 })
 
-moduleIntegrationTestRunner<HelloModuleService>({
+moduleIntegrationTestRunner<BlogModuleService>({
   moduleModels: [DummyModel],
   // ...
 })
+
+jest.setTimeout(60 * 1000)
 ```
 
 ---
 
 ### Other Options and Inputs
 
-Refer to [this reference in the Development Resources documentation](!resources!/test-tools-reference/moduleIntegrationTestRunner) for other available parameter options and inputs of the `testSuite` function.
+Refer to [the Test Tooling Reference](!resources!/test-tools-reference/moduleIntegrationTestRunner) for other available parameter options and inputs of the `testSuite` function.
 
 ---
 
@@ -129,4 +133,4 @@ Refer to [this reference in the Development Resources documentation](!resources!
 
 The `moduleIntegrationTestRunner` function creates a database with a random name before running the tests. Then, it drops that database after all the tests end.
 
-To manage that database, such as changing its name or perform operations on it in your tests, refer to the [references in the Development Resources documentation](!resources!/test-tools-reference/moduleIntegrationTestRunner).
+To manage that database, such as changing its name or perform operations on it in your tests, refer to [the Test Tooling Reference](!resources!/test-tools-reference/moduleIntegrationTestRunner).

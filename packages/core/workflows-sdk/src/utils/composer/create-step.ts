@@ -192,8 +192,6 @@ export function applyStep<
       ret.__step__ = newStepName
       WorkflowManager.update(this.workflowId, this.flow, this.handlers)
 
-      //const confRef = proxify(ret)
-
       if (global[OrchestrationUtils.SymbolMedusaWorkflowComposerCondition]) {
         const flagSteps =
           global[OrchestrationUtils.SymbolMedusaWorkflowComposerCondition].steps
@@ -343,12 +341,12 @@ function wrapConditionalStep(
  *   "createProductStep",
  *   async function (
  *     input: CreateProductInput,
- *     context
+ *     { container }
  *   ) {
- *     const productService = context.container.resolve(
- *       "productService"
+ *     const productModuleService = container.resolve(
+ *       "product"
  *     )
- *     const product = await productService.createProducts(input)
+ *     const product = await productModuleService.createProducts(input)
  *     return new StepResponse({
  *       product
  *     }, {
@@ -357,12 +355,15 @@ function wrapConditionalStep(
  *   },
  *   async function (
  *     input,
- *     context
+ *     { container }
  *   ) {
- *     const productService = context.container.resolve(
- *       "productService"
+ *     if (!input) {
+ *       return
+ *     }
+ *     const productModuleService = container.resolve(
+ *       "product"
  *     )
- *     await productService.deleteProducts(input.product_id)
+ *     await productModuleService.deleteProducts([input.product_id])
  *   }
  * )
  */

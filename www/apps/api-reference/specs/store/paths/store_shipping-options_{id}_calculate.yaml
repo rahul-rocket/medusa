@@ -60,6 +60,11 @@ post:
                 url: >-
                   https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/store_shipping-options_{id}_calculate/post.js
     - lang: Shell
       label: cURL
       source:

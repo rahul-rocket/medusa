@@ -475,11 +475,56 @@
  *       items:
  *         type: object
  *       title: $or
+ *   - name: currency_code
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: currency_code
+ *           description: Filter by a currency code. The promotions are filtered based on their application method's currency code.
+ *         - type: array
+ *           description: Filter by currency codes. The promotions are filtered based on their application method's currency code.
+ *           items:
+ *             type: string
+ *             title: currency_code
+ *             description: A currency code.
+ *   - name: application_method_type
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: application_method_type
+ *           description: Filter by an application method type. The promotions are filtered based on their application method's type.
+ *         - type: array
+ *           description: Filter by application method types. The promotions are filtered based on their application method's type.
+ *           items:
+ *             type: string
+ *             title: application_method_type
+ *             description: An application method type.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.promotion.list()
+ *       .then(({ promotions, count, limit, offset }) => {
+ *         console.log(promotions)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

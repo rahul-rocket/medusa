@@ -23,17 +23,55 @@ import {
 } from "../utils/order-validation"
 
 /**
- * This step validates that a shipment can be created for an order.
+ * The data to validate the order shipment creation.
+ */
+export type CreateShipmentValidateOrderStepInput = {
+  /**
+   * The order to create the shipment for.
+   */
+  order: OrderDTO
+  /**
+   * The shipment creation details.
+   */
+  input: OrderWorkflow.CreateOrderShipmentWorkflowInput
+}
+
+/**
+ * This step validates that a shipment can be created for an order. If the order is cancelled,
+ * the items don't exist in the order, or the fulfillment doesn't exist in the order, 
+ * the step will throw an error.
+ * 
+ * :::note
+ * 
+ * You can retrieve an order's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
+ * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
+ * 
+ * :::
+ * 
+ * @example
+ * const data = createShipmentValidateOrder({
+ *   order: {
+ *     id: "order_123",
+ *     // other order details...
+ *   },
+ *   input: {
+ *     order_id: "order_123",
+ *     fulfillment_id: "ful_123",
+ *     items: [
+ *       {
+ *         id: "orli_123",
+ *         quantity: 1
+ *       }
+ *     ]
+ *   }
+ * })
  */
 export const createShipmentValidateOrder = createStep(
   "create-shipment-validate-order",
   ({
     order,
     input,
-  }: {
-    order: OrderDTO
-    input: OrderWorkflow.CreateOrderShipmentWorkflowInput
-  }) => {
+  }: CreateShipmentValidateOrderStepInput) => {
     const inputItems = input.items
 
     throwIfOrderIsCancelled({ order })
@@ -76,16 +114,48 @@ function prepareRegisterShipmentData({
   }
 }
 
+/**
+ * The data to create a shipment for an order, along with custom data that's passed to the workflow's hooks.
+ */
+export type CreateOrderShipmentWorkflowInput = OrderWorkflow.CreateOrderShipmentWorkflowInput & AdditionalData
+
 export const createOrderShipmentWorkflowId = "create-order-shipment"
 /**
- * This workflow creates a shipment for an order.
+ * This workflow creates a shipment for an order. It's used by the [Create Order Shipment Admin API Route](https://docs.medusajs.com/api/admin#orders_postordersidfulfillmentsfulfillment_idshipments).
+ * 
+ * This workflow has a hook that allows you to perform custom actions on the created shipment. For example, you can pass under `additional_data` custom data that 
+ * allows you to create custom data models linked to the shipment.
+ * 
+ * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around creating a shipment.
+ * 
+ * @example
+ * const { result } = await createOrderShipmentWorkflow(container)
+ * .run({
+ *   input: {
+ *     order_id: "order_123",
+ *     fulfillment_id: "fulfillment_123",
+ *     items: [
+ *       {
+ *         id: "orli_123",
+ *         quantity: 1
+ *       }
+ *     ],
+ *     additional_data: {
+ *       oms_id: "123"
+ *     }
+ *   }
+ * })
+ * 
+ * @summary
+ * 
+ * Creates a shipment for an order.
+ * 
+ * @property hooks.shipmentCreated - This hook is executed after the shipment is created. You can consume this hook to perform custom actions on the created shipment.
  */
 export const createOrderShipmentWorkflow = createWorkflow(
   createOrderShipmentWorkflowId,
   (
-    input: WorkflowData<
-      OrderWorkflow.CreateOrderShipmentWorkflowInput & AdditionalData
-    >
+    input: WorkflowData<CreateOrderShipmentWorkflowInput>
   ) => {
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
@@ -125,7 +195,7 @@ export const createOrderShipmentWorkflow = createWorkflow(
 
     emitEventStep({
       eventName: FulfillmentEvents.SHIPMENT_CREATED,
-      data: { id: shipment.id },
+      data: { id: shipment.id, no_notification: input.no_notification },
     })
 
     const shipmentCreated = createHook("shipmentCreated", {

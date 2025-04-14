@@ -46,7 +46,6 @@ global[OrchestrationUtils.SymbolMedusaWorkflowComposerContext] = null
  * import {
  *   createProductStep,
  *   getProductStep,
- *   createPricesStep
  * } from "./steps"
  *
  * interface WorkflowInput {
@@ -60,7 +59,6 @@ global[OrchestrationUtils.SymbolMedusaWorkflowComposerContext] = null
  *    // during the execution. Including the data access.
  *
  *     const product = createProductStep(input)
- *     const prices = createPricesStep(product)
  *     return new WorkflowResponse(getProductStep(product.id))
  *   }
  * )
@@ -198,6 +196,7 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
             transactionId:
               step.__step__ + "-" + (stepContext.transactionId ?? ulid()),
             parentStepIdempotencyKey: stepContext.idempotencyKey,
+            preventReleaseEvents: true,
           },
         })
 
@@ -209,15 +208,12 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
         )
       },
       async (transaction, stepContext) => {
-        if (!transaction) {
-          return
-        }
-
         const { container, ...sharedContext } = stepContext
 
+        const transactionId = step.__step__ + "-" + stepContext.transactionId
         await workflow(container).cancel({
-          transaction: (transaction as WorkflowResult<any>).transaction,
-          transactionId: isString(transaction) ? transaction : undefined,
+          transaction: (transaction as WorkflowResult<any>)?.transaction,
+          transactionId,
           container,
           context: {
             ...sharedContext,

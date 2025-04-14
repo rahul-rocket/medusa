@@ -1,8 +1,9 @@
+import type { AdminOptions, ConfigModule, Logger } from "@medusajs/types"
+import { FileSystem, getConfigFile, getResolvedPlugins } from "@medusajs/utils"
+import chokidar from "chokidar"
+import { access, constants, copyFile, rm } from "fs/promises"
 import path from "path"
 import type tsStatic from "typescript"
-import { getConfigFile } from "@medusajs/utils"
-import { access, constants, copyFile, rm } from "fs/promises"
-import type { AdminOptions, ConfigModule, Logger } from "@medusajs/types"
 
 /**
  * The compiler exposes the opinionated APIs for compiling Medusa
@@ -23,15 +24,24 @@ import type { AdminOptions, ConfigModule, Logger } from "@medusajs/types"
 export class Compiler {
   #logger: Logger
   #projectRoot: string
-  #adminSourceFolder: string
+  #tsConfigPath: string
+  #pluginsDistFolder: string
+  #backendIgnoreFiles: string[]
   #adminOnlyDistFolder: string
   #tsCompiler?: typeof tsStatic
 
   constructor(projectRoot: string, logger: Logger) {
     this.#projectRoot = projectRoot
     this.#logger = logger
-    this.#adminSourceFolder = path.join(this.#projectRoot, "src/admin")
+    this.#tsConfigPath = path.join(this.#projectRoot, "tsconfig.json")
     this.#adminOnlyDistFolder = path.join(this.#projectRoot, ".medusa/admin")
+    this.#pluginsDistFolder = path.join(this.#projectRoot, ".medusa/server")
+    this.#backendIgnoreFiles = [
+      "integration-tests",
+      "test",
+      "unit-tests",
+      "src/admin",
+    ]
   }
 
   /**
@@ -125,6 +135,17 @@ export class Compiler {
   }
 
   /**
+   * Returns a boolean indicating if a file extension belongs
+   * to a JavaScript or TypeScript file
+   */
+  #isScriptFile(filePath: string) {
+    if (filePath.endsWith(".ts") && !filePath.endsWith(".d.ts")) {
+      return true
+    }
+    return filePath.endsWith(".js")
+  }
+
+  /**
    * Loads the medusa config file and prints the error to
    * the console (in case of any errors). Otherwise, the
    * file path and the parsed config is returned
@@ -139,6 +160,20 @@ export class Compiler {
     }
 
     return { configFilePath, configModule }
+  }
+
+  /**
+   * Prints typescript diagnostic messages
+   */
+  #printDiagnostics(ts: typeof tsStatic, diagnostics: tsStatic.Diagnostic[]) {
+    if (diagnostics.length) {
+      console.error(
+        ts.formatDiagnosticsWithColorAndContext(
+          diagnostics,
+          ts.createCompilerHost({})
+        )
+      )
+    }
   }
 
   /**
@@ -177,14 +212,7 @@ export class Compiler {
     /**
      * Log errors (if any)
      */
-    if (diagnostics.length) {
-      console.error(
-        ts.formatDiagnosticsWithColorAndContext(
-          diagnostics,
-          ts.createCompilerHost({})
-        )
-      )
-    }
+    this.#printDiagnostics(ts, diagnostics)
 
     return { emitResult, diagnostics }
   }
@@ -198,7 +226,7 @@ export class Compiler {
     let tsConfigErrors: tsStatic.Diagnostic[] = []
 
     const tsConfig = ts.getParsedCommandLineOfConfigFile(
-      path.join(this.#projectRoot, "tsconfig.json"),
+      this.#tsConfigPath,
       {
         inlineSourceMap: true,
         excludes: [],
@@ -223,18 +251,17 @@ export class Compiler {
     /**
      * Display all config errors using the diagnostics reporter
      */
+    this.#printDiagnostics(ts, tsConfigErrors)
+
+    /**
+     * Return undefined when there are errors in parsing the config
+     * file
+     */
     if (tsConfigErrors.length) {
-      const compilerHost = ts.createCompilerHost({})
-      this.#logger.error(
-        ts.formatDiagnosticsWithColorAndContext(tsConfigErrors, compilerHost)
-      )
       return
     }
 
-    /**
-     * If there are no errors, the `tsConfig` object will always exist.
-     */
-    return tsConfig!
+    return tsConfig
   }
 
   /**
@@ -262,7 +289,7 @@ export class Compiler {
      */
     const { emitResult, diagnostics } = await this.#emitBuildOutput(
       tsConfig,
-      ["integration-tests", "test", "unit-tests", "src/admin"],
+      this.#backendIgnoreFiles,
       dist
     )
 
@@ -286,12 +313,12 @@ export class Compiler {
       this.#logger.warn(
         `Backend build completed with errors (${tracker.getSeconds()}s)`
       )
-    } else {
-      this.#logger.info(
-        `Backend build completed successfully (${tracker.getSeconds()}s)`
-      )
+      return false
     }
 
+    this.#logger.info(
+      `Backend build completed successfully (${tracker.getSeconds()}s)`
+    )
     return true
   }
 
@@ -306,6 +333,7 @@ export class Compiler {
       build: (
         options: AdminOptions & {
           sources: string[]
+          plugins: string[]
           outDir: string
         }
       ) => Promise<void>
@@ -330,7 +358,7 @@ export class Compiler {
       this.#logger.info(
         "Skipping admin build, since its disabled inside the medusa-config file"
       )
-      return false
+      return true
     }
 
     /**
@@ -343,11 +371,30 @@ export class Compiler {
       )
     }
 
+    const plugins = await getResolvedPlugins(
+      this.#projectRoot,
+      configFile.configModule,
+      true
+    )
+
+    const adminSources = plugins
+      .map((plugin) =>
+        plugin.admin?.type === "local" ? plugin.admin.resolve : undefined
+      )
+      .filter(Boolean) as string[]
+
+    const adminPlugins = plugins
+      .map((plugin) =>
+        plugin.admin?.type === "package" ? plugin.admin.resolve : undefined
+      )
+      .filter(Boolean) as string[]
+
     try {
       this.#logger.info("Compiling frontend source...")
       await adminBundler.build({
         disable: false,
-        sources: [this.#adminSourceFolder],
+        sources: adminSources,
+        plugins: adminPlugins,
         ...configFile.configModule.admin,
         outDir: adminOnly
           ? this.#adminOnlyDistFolder
@@ -366,8 +413,147 @@ export class Compiler {
   }
 
   /**
-   * @todo. To be implemented
+   * Compiles the plugin source code to JavaScript using the
+   * TypeScript's official compiler
    */
-  buildPluginBackend() {}
-  developPluginBacked() {}
+  async buildPluginBackend(tsConfig: tsStatic.ParsedCommandLine) {
+    const tracker = this.#trackDuration()
+    const dist = ".medusa/server"
+    this.#logger.info("Compiling plugin source...")
+
+    /**
+     * Step 1: Cleanup existing build output
+     */
+    this.#logger.info(
+      `Removing existing "${path.relative(this.#projectRoot, dist)}" folder`
+    )
+    await this.#clean(dist)
+
+    /**
+     * Step 2: Compile TypeScript source code
+     */
+    const { emitResult, diagnostics } = await this.#emitBuildOutput(
+      tsConfig,
+      this.#backendIgnoreFiles,
+      dist
+    )
+
+    /**
+     * Exit early if no output is written to the disk
+     */
+    if (emitResult.emitSkipped) {
+      this.#logger.warn("Plugin build completed without emitting any output")
+      return false
+    }
+
+    /**
+     * Notify about the state of build
+     */
+    if (diagnostics.length) {
+      this.#logger.warn(
+        `Plugin build completed with errors (${tracker.getSeconds()}s)`
+      )
+      return false
+    }
+
+    this.#logger.info(
+      `Plugin build completed successfully (${tracker.getSeconds()}s)`
+    )
+    return true
+  }
+
+  /**
+   * Compiles the backend source code of a plugin project in watch
+   * mode. Type-checking is disabled to keep compilation fast.
+   *
+   * The "onFileChange" argument can be used to get notified when
+   * a file has changed.
+   */
+  async developPluginBackend(
+    transformer: (filePath: string) => Promise<string>,
+    onFileChange?: (
+      filePath: string,
+      action: "add" | "change" | "unlink"
+    ) => void
+  ) {
+    const fs = new FileSystem(this.#pluginsDistFolder)
+    await fs.createJson("medusa-plugin-options.json", {
+      srcDir: path.join(this.#projectRoot, "src"),
+    })
+
+    const watcher = chokidar.watch(["."], {
+      ignoreInitial: true,
+      cwd: this.#projectRoot,
+      ignored: [
+        /(^|[\\/\\])\../,
+        "node_modules",
+        "dist",
+        "static",
+        "private",
+        ".medusa/**/*",
+        ...this.#backendIgnoreFiles,
+      ],
+    })
+
+    watcher.on("add", async (file) => {
+      if (!this.#isScriptFile(file)) {
+        return
+      }
+      const relativePath = path.relative(this.#projectRoot, file)
+      const outputPath = relativePath.replace(/\.ts$/, ".js")
+
+      this.#logger.info(`${relativePath} updated: Republishing changes`)
+      await fs.create(outputPath, await transformer(file))
+
+      onFileChange?.(file, "add")
+    })
+    watcher.on("change", async (file) => {
+      if (!this.#isScriptFile(file)) {
+        return
+      }
+      const relativePath = path.relative(this.#projectRoot, file)
+      const outputPath = relativePath.replace(/\.ts$/, ".js")
+
+      this.#logger.info(`${relativePath} updated: Republishing changes`)
+      await fs.create(outputPath, await transformer(file))
+
+      onFileChange?.(file, "change")
+    })
+    watcher.on("unlink", async (file) => {
+      if (!this.#isScriptFile(file)) {
+        return
+      }
+      const relativePath = path.relative(this.#projectRoot, file)
+      const outputPath = relativePath.replace(/\.ts$/, ".js")
+
+      this.#logger.info(`${relativePath} removed: Republishing changes`)
+      await fs.remove(outputPath)
+      onFileChange?.(file, "unlink")
+    })
+
+    watcher.on("ready", () => {
+      this.#logger.info("watching for file changes")
+    })
+  }
+
+  async buildPluginAdminExtensions(bundler: {
+    plugin: (options: { root: string; outDir: string }) => Promise<void>
+  }) {
+    const tracker = this.#trackDuration()
+    this.#logger.info("Compiling plugin admin extensions...")
+
+    try {
+      await bundler.plugin({
+        root: this.#projectRoot,
+        outDir: this.#pluginsDistFolder,
+      })
+      this.#logger.info(
+        `Plugin admin extensions build completed successfully (${tracker.getSeconds()}s)`
+      )
+      return true
+    } catch (error) {
+      this.#logger.error(`Plugin admin extensions build failed`, error)
+      return false
+    }
+  }
 }

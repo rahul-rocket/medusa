@@ -2,7 +2,9 @@
  * @oas [post] /store/carts/{id}
  * operationId: PostCartsId
  * summary: Update a Cart
- * description: Update a cart's details. This unsets the shipping an payment methods chosen before, and the customer would have to choose them again.
+ * description: Update a cart's details. This unsets the payment methods chosen before, and the customer would have to choose them again. Also, if the customer has chosen a shipping method whose option
+ *   isn't valid for the cart's shipping address anymore, the shipping method will be unset. For example, if the shipping option is valid only in the US geo zone, and the shipping address's country code
+ *   is `DE`, the shipping method will be unset.
  * x-authenticated: false
  * parameters:
  *   - name: id
@@ -45,6 +47,29 @@
  *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  *         description: The properties to update in the cart item.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       sdk.store.cart.update("cart_123", {
+ *         region_id: "reg_123"
+ *       })
+ *       .then(({ cart }) => {
+ *         console.log(cart)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

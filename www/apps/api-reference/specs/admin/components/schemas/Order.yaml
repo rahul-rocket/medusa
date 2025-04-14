@@ -97,6 +97,82 @@ properties:
   summary:
     type: object
     description: The order's summary.
+    properties:
+      pending_difference:
+        type: number
+        title: pending_difference
+        description: The remaining amount to be paid or refunded.
+      current_order_total:
+        type: number
+        title: current_order_total
+        description: The order's current total.
+      original_order_total:
+        type: number
+        title: original_order_total
+        description: The order's total before any changes.
+      transaction_total:
+        type: number
+        title: transaction_total
+        description: >-
+          The total of the transactions (payments and refunds) made on the
+          order.
+      paid_total:
+        type: number
+        title: paid_total
+        description: The total paid amount.
+      refunded_total:
+        type: number
+        title: refunded_total
+        description: The total refunded amount.
+      credit_line_total:
+        type: number
+        title: credit_line_total
+        description: The total credit line amount.
+      accounting_total:
+        type: number
+        title: accounting_total
+        description: The total amount for accounting purposes.
+      raw_pending_difference:
+        type: object
+        description: The summary's raw pending difference.
+      raw_current_order_total:
+        type: object
+        description: The summary's raw current order total.
+      raw_original_order_total:
+        type: object
+        description: The summary's raw original order total.
+      raw_transaction_total:
+        type: object
+        description: The summary's raw transaction total.
+      raw_paid_total:
+        type: object
+        description: The summary's raw paid total.
+      raw_refunded_total:
+        type: object
+        description: The summary's raw refunded total.
+      raw_credit_line_total:
+        type: object
+        description: The summary's raw credit line total.
+      raw_accounting_total:
+        type: object
+        description: The summary's raw accounting total.
+    required:
+      - pending_difference
+      - current_order_total
+      - original_order_total
+      - transaction_total
+      - paid_total
+      - refunded_total
+      - credit_line_total
+      - accounting_total
+      - raw_pending_difference
+      - raw_current_order_total
+      - raw_original_order_total
+      - raw_transaction_total
+      - raw_paid_total
+      - raw_refunded_total
+      - raw_credit_line_total
+      - raw_accounting_total
   metadata:
     type: object
     description: The order's metadata, can hold custom key-value pairs.
@@ -218,3 +294,7 @@ properties:
       order.
     items:
       $ref: ./OrderCreditLine.yaml
+  is_draft_order:
+    type: boolean
+    title: is_draft_order
+    description: Whether the order is a draft order.

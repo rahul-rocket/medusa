@@ -1,5 +1,87 @@
 # @medusajs/js-sdk
 
+## 2.7.0
+
+### Patch Changes
+
+- [#11937](https://github.com/medusajs/medusa/pull/11937) [`c6f2f444ed0118b17ea970942d0256fe3bd4043a`](https://github.com/medusajs/medusa/commit/c6f2f444ed0118b17ea970942d0256fe3bd4043a) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(js-sdk): fix the return type of the `promotion.listRules` method
+
+- [#11871](https://github.com/medusajs/medusa/pull/11871) [`5ab15a29889870411b719ebad3fb94786baee45e`](https://github.com/medusajs/medusa/commit/5ab15a29889870411b719ebad3fb94786baee45e) Thanks [@riqwan](https://github.com/riqwan)! - feat(dashboard,js-sdk,admin-shared): add customer addresses + layout change
+
+- [#11876](https://github.com/medusajs/medusa/pull/11876) [`c3440e5e3812e3d1c6b82e9d4e41287398451611`](https://github.com/medusajs/medusa/commit/c3440e5e3812e3d1c6b82e9d4e41287398451611) Thanks [@riqwan](https://github.com/riqwan)! - feat(medusa,types,js-sdk): add enabled plugins route
+
+- [#11975](https://github.com/medusajs/medusa/pull/11975) [`0cc306bf562d8f1f1f1c09d9658463e2c8def465`](https://github.com/medusajs/medusa/commit/0cc306bf562d8f1f1f1c09d9658463e2c8def465) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(js-sdk, types): fixes types and deprecate duplicate methods
+
+- [#11936](https://github.com/medusajs/medusa/pull/11936) [`053326950d1e67bff1e39514527de3c6db33225b`](https://github.com/medusajs/medusa/commit/053326950d1e67bff1e39514527de3c6db33225b) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(js-sdk): fix the API route used in fulfillment.cancel method
+
+- [#11871](https://github.com/medusajs/medusa/pull/11871) [`5ab15a29889870411b719ebad3fb94786baee45e`](https://github.com/medusajs/medusa/commit/5ab15a29889870411b719ebad3fb94786baee45e) Thanks [@riqwan](https://github.com/riqwan)! - feat(dashboard,js-sdk,admin-shared): add customer addresses + layout change
+
+- Updated dependencies [[`74381addc3d6af42f0292e778948aabb60a6dad9`](https://github.com/medusajs/medusa/commit/74381addc3d6af42f0292e778948aabb60a6dad9), [`ec56a8bc857a74788df6523af25914da95c4c1d8`](https://github.com/medusajs/medusa/commit/ec56a8bc857a74788df6523af25914da95c4c1d8), [`95e89a39f347c8af6a5960943af56965bc3a07ba`](https://github.com/medusajs/medusa/commit/95e89a39f347c8af6a5960943af56965bc3a07ba), [`c3440e5e3812e3d1c6b82e9d4e41287398451611`](https://github.com/medusajs/medusa/commit/c3440e5e3812e3d1c6b82e9d4e41287398451611), [`3dba58785fb2d8e79f1ea89daa9e4ab8810821c8`](https://github.com/medusajs/medusa/commit/3dba58785fb2d8e79f1ea89daa9e4ab8810821c8), [`0625f76cd4f040963829b61dcc70563e1d1b7070`](https://github.com/medusajs/medusa/commit/0625f76cd4f040963829b61dcc70563e1d1b7070), [`0cc306bf562d8f1f1f1c09d9658463e2c8def465`](https://github.com/medusajs/medusa/commit/0cc306bf562d8f1f1f1c09d9658463e2c8def465), [`cb6249320e7322e8eabfec8434f1278f8d63e96c`](https://github.com/medusajs/medusa/commit/cb6249320e7322e8eabfec8434f1278f8d63e96c), [`1f8fab36361aa8e473ffe6c411c8598a916a6d3f`](https://github.com/medusajs/medusa/commit/1f8fab36361aa8e473ffe6c411c8598a916a6d3f), [`13e159d8ad7ebb3e6977969b4bb10877d7bb7850`](https://github.com/medusajs/medusa/commit/13e159d8ad7ebb3e6977969b4bb10877d7bb7850), [`9dd62d93bd9e2acccc2e9f22bc029fd2b0df3234`](https://github.com/medusajs/medusa/commit/9dd62d93bd9e2acccc2e9f22bc029fd2b0df3234), [`9ac74eead4760d6c92676d451e6f25c2305b1852`](https://github.com/medusajs/medusa/commit/9ac74eead4760d6c92676d451e6f25c2305b1852)]:
+  - @medusajs/types@2.7.0
+
+## 2.6.1
+
+### Patch Changes
+
+- [#11738](https://github.com/medusajs/medusa/pull/11738) [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Remove ranges on Medusa packages
+
+- Updated dependencies [[`b7678983a9b3e5c4d88282054b37b6c517329bd7`](https://github.com/medusajs/medusa/commit/b7678983a9b3e5c4d88282054b37b6c517329bd7)]:
+  - @medusajs/types@2.6.1
+
+## 2.6.0
+
+### Patch Changes
+
+- Updated dependencies [[`8bb0a25f573c62ca1d1bcd7af184b0d0cf98e125`](https://github.com/medusajs/medusa/commit/8bb0a25f573c62ca1d1bcd7af184b0d0cf98e125), [`698a520729a3045cd13eed5ee0e5120a563e9261`](https://github.com/medusajs/medusa/commit/698a520729a3045cd13eed5ee0e5120a563e9261), [`51b0af193c7dde4899a696a515b59373b465d907`](https://github.com/medusajs/medusa/commit/51b0af193c7dde4899a696a515b59373b465d907), [`93cbc6b6695f236fa39b66169de971228888f1b9`](https://github.com/medusajs/medusa/commit/93cbc6b6695f236fa39b66169de971228888f1b9), [`d1efad9bf05ca80959e8b50d74b74167fc1b0064`](https://github.com/medusajs/medusa/commit/d1efad9bf05ca80959e8b50d74b74167fc1b0064), [`d814d9540e76256be23d733b73cf5a63aa380c8b`](https://github.com/medusajs/medusa/commit/d814d9540e76256be23d733b73cf5a63aa380c8b), [`b42f151be31161a5d7a73132ee6794b990403d76`](https://github.com/medusajs/medusa/commit/b42f151be31161a5d7a73132ee6794b990403d76)]:
+  - @medusajs/types@2.6.0
+
+## 2.5.1
+
+### Patch Changes
+
+- [#11467](https://github.com/medusajs/medusa/pull/11467) [`32ad13813bc267a04ea95d34a479efa5309b3051`](https://github.com/medusajs/medusa/commit/32ad13813bc267a04ea95d34a479efa5309b3051) Thanks [@ranjithkumar8352](https://github.com/ranjithkumar8352)! - Implement custom storage configuration option in js-sdk to support react native
+
+- [#11514](https://github.com/medusajs/medusa/pull/11514) [`3b4997840e624ef8da1a75744b4bfb5c5a371f7c`](https://github.com/medusajs/medusa/commit/3b4997840e624ef8da1a75744b4bfb5c5a371f7c) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(medusa,js-sdk,types): Add basic draft order operations to js-sdk
+
+- [#11572](https://github.com/medusajs/medusa/pull/11572) [`f00e6bf660ab96b9d41bc3d424c8d78c54eaa8e7`](https://github.com/medusajs/medusa/commit/f00e6bf660ab96b9d41bc3d424c8d78c54eaa8e7) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(js-sdk): Export draft order methods
+
+- Updated dependencies [[`22276648ad0aef12206464b555efdce97e316bb4`](https://github.com/medusajs/medusa/commit/22276648ad0aef12206464b555efdce97e316bb4), [`d1cbe4c61ed99bbeccf1be49721e0aa7b74edd71`](https://github.com/medusajs/medusa/commit/d1cbe4c61ed99bbeccf1be49721e0aa7b74edd71), [`1a3843a92a6db83b9249e9c0aece7b3d13a600a9`](https://github.com/medusajs/medusa/commit/1a3843a92a6db83b9249e9c0aece7b3d13a600a9), [`3b4997840e624ef8da1a75744b4bfb5c5a371f7c`](https://github.com/medusajs/medusa/commit/3b4997840e624ef8da1a75744b4bfb5c5a371f7c), [`0c957350a6688c78572361b51c1f16a452a31aed`](https://github.com/medusajs/medusa/commit/0c957350a6688c78572361b51c1f16a452a31aed), [`065df75e7d5b90a4de43873d8c08e1aab65e3fd7`](https://github.com/medusajs/medusa/commit/065df75e7d5b90a4de43873d8c08e1aab65e3fd7), [`47edd01deec79b394552cea349f1e41b7b88723b`](https://github.com/medusajs/medusa/commit/47edd01deec79b394552cea349f1e41b7b88723b)]:
+  - @medusajs/types@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- [#11172](https://github.com/medusajs/medusa/pull/11172) [`65d8d6dc0eae23c7c969664d0c2d127511cc0bd9`](https://github.com/medusajs/medusa/commit/65d8d6dc0eae23c7c969664d0c2d127511cc0bd9) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(js-sdk,admin-bundler): Import resolve from qs in a way that works in both ESM and CJS projects, and add @medusajs/js-sdk to optimized deps
+
+- Updated dependencies [[`6db96c80d05730a9188937599baba2602f4e2a92`](https://github.com/medusajs/medusa/commit/6db96c80d05730a9188937599baba2602f4e2a92), [`9f1a3b2a4214ef23a22972e6d28c5f43f87da353`](https://github.com/medusajs/medusa/commit/9f1a3b2a4214ef23a22972e6d28c5f43f87da353), [`65fae943c9d919f658c8660e5b46626c1b302e31`](https://github.com/medusajs/medusa/commit/65fae943c9d919f658c8660e5b46626c1b302e31), [`f07af7b93c86673e730dc4e5eba8df2572013f9f`](https://github.com/medusajs/medusa/commit/f07af7b93c86673e730dc4e5eba8df2572013f9f), [`3c51709daf07dcdd5563fa08fec2446a42cc8058`](https://github.com/medusajs/medusa/commit/3c51709daf07dcdd5563fa08fec2446a42cc8058)]:
+  - @medusajs/types@2.5.0
+
+## 2.4.0
+
+### Patch Changes
+
+- [#10964](https://github.com/medusajs/medusa/pull/10964) [`d4e042e9ad838cfc3b3c83c342afaf76adb281d2`](https://github.com/medusajs/medusa/commit/d4e042e9ad838cfc3b3c83c342afaf76adb281d2) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(dashboard,js-sdk,types): Remove redundant body for markAsDelivered
+
+- Updated dependencies [[`d4e042e9ad838cfc3b3c83c342afaf76adb281d2`](https://github.com/medusajs/medusa/commit/d4e042e9ad838cfc3b3c83c342afaf76adb281d2), [`cc73802ab3821d2c667942bd887efb7476205547`](https://github.com/medusajs/medusa/commit/cc73802ab3821d2c667942bd887efb7476205547)]:
+  - @medusajs/types@2.4.0
+
+## 2.3.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/types@2.3.1
+
+## 2.3.0
+
+### Patch Changes
+
+- [#10630](https://github.com/medusajs/medusa/pull/10630) [`bc22b81cdf9591912744f448c74d45bcb0f11e0c`](https://github.com/medusajs/medusa/commit/bc22b81cdf9591912744f448c74d45bcb0f11e0c) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - feat(inventory,dashboard,core-flows,js-sdk,types,medusa): Improve inventory management UX
+
+- Updated dependencies [[`ff725090bb4ec848cb82c5411bdc25c4b72252ab`](https://github.com/medusajs/medusa/commit/ff725090bb4ec848cb82c5411bdc25c4b72252ab), [`5eab9e739919594ae7e7e416942ec93d84b699fd`](https://github.com/medusajs/medusa/commit/5eab9e739919594ae7e7e416942ec93d84b699fd), [`c75678d6d41d3b88d07681ad7e24472d6cbde672`](https://github.com/medusajs/medusa/commit/c75678d6d41d3b88d07681ad7e24472d6cbde672), [`c1930bd6568043d145e34d8360015e7207e18e4a`](https://github.com/medusajs/medusa/commit/c1930bd6568043d145e34d8360015e7207e18e4a), [`28febfc6438351fddb5b214b86f96aff89db688e`](https://github.com/medusajs/medusa/commit/28febfc6438351fddb5b214b86f96aff89db688e), [`bc22b81cdf9591912744f448c74d45bcb0f11e0c`](https://github.com/medusajs/medusa/commit/bc22b81cdf9591912744f448c74d45bcb0f11e0c)]:
+  - @medusajs/types@2.3.0
+
 ## 2.2.0
 
 ### Patch Changes

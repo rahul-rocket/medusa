@@ -21,6 +21,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostOrderEditsAddItemsReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_order-edits_{id}_items/post.js
     - lang: Shell
       label: cURL
       source:

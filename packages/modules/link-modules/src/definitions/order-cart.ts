@@ -25,6 +25,7 @@ export const OrderCart: ModuleJoinerConfig = {
       args: {
         methodSuffix: "Orders",
       },
+      hasMany: true,
     },
     {
       serviceName: Modules.CART,

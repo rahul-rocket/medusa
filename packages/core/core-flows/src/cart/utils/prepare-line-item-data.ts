@@ -5,6 +5,7 @@ import {
   InventoryItemDTO,
   LineItemAdjustmentDTO,
   LineItemTaxLineDTO,
+  ProductDTO,
   ProductVariantDTO,
 } from "@medusajs/framework/types"
 import {
@@ -48,6 +49,10 @@ interface PrepareItemLineItemInput {
   adjustments?: LineItemAdjustmentDTO[]
   cart_id?: string
   metadata?: Record<string, unknown> | null
+}
+
+type AddItemProductDTO = ProductDTO & {
+  shipping_profile: { id: string }
 }
 
 export interface PrepareVariantLineItemInput extends ProductVariantDTO {
@@ -106,17 +111,19 @@ export function prepareLineItemData(data: PrepareLineItemDataInput) {
     compareAtUnitPrice = variant.calculated_price.original_amount
   }
 
-  // Note: If any of the items require shipping, we enable fulfillment
-  // unless explicitly set to not require shipping by the item in the request
-  const someInventoryRequiresShipping = variant?.inventory_items?.length
-    ? variant.inventory_items.some(
-        (inventoryItem) => !!inventoryItem.inventory.requires_shipping
-      )
-    : true
+  const hasShippingProfile = isDefined(
+    (variant?.product as AddItemProductDTO)?.shipping_profile?.id
+  )
 
+  const someInventoryRequiresShipping = !!variant?.inventory_items?.some(
+    (inventoryItem) => !!inventoryItem.inventory.requires_shipping
+  )
+
+  // Note: If any of the items require shipping or product has a shipping profile set,
+  // we enable fulfillment unless explicitly set to not require shipping by the item in the request
   const requiresShipping = isDefined(item?.requires_shipping)
     ? item.requires_shipping
-    : someInventoryRequiresShipping
+    : hasShippingProfile || someInventoryRequiresShipping
 
   let lineItem: any = {
     quantity: item?.quantity,
@@ -143,6 +150,7 @@ export function prepareLineItemData(data: PrepareLineItemDataInput) {
     variant_option_values: item?.variant_option_values,
 
     is_discountable: variant?.product?.discountable ?? item?.is_discountable,
+    is_giftcard: variant?.product?.is_giftcard ?? false,
     requires_shipping: requiresShipping,
 
     unit_price: unitPrice,

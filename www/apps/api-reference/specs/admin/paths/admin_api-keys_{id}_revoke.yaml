@@ -41,6 +41,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminRevokeApiKey.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_api-keys_{id}_revoke/post.js
     - lang: Shell
       label: cURL
       source:

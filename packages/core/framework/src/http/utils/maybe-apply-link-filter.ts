@@ -1,9 +1,9 @@
-import {
-  arrayIntersection,
-  ContainerRegistrationKeys,
-  remoteQueryObjectFromString,
-} from "@medusajs/utils"
-import { MedusaNextFunction, MedusaRequest } from "../types"
+import { ContainerRegistrationKeys } from "@medusajs/utils"
+import type {
+  MedusaNextFunction,
+  MedusaRequest,
+  MedusaResponse,
+} from "../types"
 
 export function maybeApplyLinkFilter({
   entryPoint,
@@ -13,7 +13,7 @@ export function maybeApplyLinkFilter({
 }) {
   return async function linkFilter(
     req: MedusaRequest,
-    _,
+    _: MedusaResponse,
     next: MedusaNextFunction
   ) {
     const filterableFields = req.filterableFields
@@ -30,34 +30,28 @@ export function maybeApplyLinkFilter({
 
     delete filterableFields[filterableField]
 
-    const remoteQuery = req.scope.resolve(
-      ContainerRegistrationKeys.REMOTE_QUERY
-    )
-
-    const queryObject = remoteQueryObjectFromString({
-      entryPoint,
-      fields: [resourceId],
-      variables: { filters: { [filterableField]: idsToFilterBy } },
-    })
-
-    const resources = await remoteQuery(queryObject)
     let existingFilters = filterableFields[filterByField] as
       | string[]
       | string
       | undefined
 
-    if (existingFilters) {
-      if (typeof existingFilters === "string") {
-        existingFilters = [existingFilters]
-      }
+    const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-      filterableFields[filterByField] = arrayIntersection(
-        existingFilters,
-        resources.map((p) => p[resourceId])
-      )
-    } else {
-      filterableFields[filterByField] = resources.map((p) => p[resourceId])
+    const filters: Record<string, unknown> = {
+      [filterableField]: idsToFilterBy,
     }
+
+    if (existingFilters) {
+      filters[resourceId] = existingFilters
+    }
+
+    const { data: resources } = await query.graph({
+      entity: entryPoint,
+      fields: [resourceId],
+      filters,
+    })
+
+    filterableFields[filterByField] = resources.map((p) => p[resourceId])
 
     req.filterableFields = transformFilterableFields(filterableFields)
 

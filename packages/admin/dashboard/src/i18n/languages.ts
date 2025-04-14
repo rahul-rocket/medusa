@@ -1,7 +1,40 @@
-import { de, enUS, es, fr, it, ja, pl, ptBR, th, tr, uk } from "date-fns/locale"
+import {
+  de,
+  bg,
+  enUS,
+  es,
+  fr,
+  it,
+  ja,
+  pl,
+  ptBR,
+  th,
+  tr,
+  uk,
+  ro,
+  mk,
+  mn,
+  ar,
+  zhCN,
+  faIR,
+  cs,
+  ru,
+  el,
+  lt,
+  vi,
+  ko,
+  nl,
+  hu,
+} from "date-fns/locale"
 import { Language } from "./types"
 
 export const languages: Language[] = [
+  {
+    code: "bg",
+    display_name: "Български",
+    ltr: true,
+    date_locale: bg,
+  },
   {
     code: "en",
     display_name: "English",
@@ -15,6 +48,12 @@ export const languages: Language[] = [
     date_locale: es,
   },
   {
+    code: "el",
+    display_name: "Ελληνικά",
+    ltr: true,
+    date_locale: el,
+  },
+  {
     code: "de",
     display_name: "Deutsch",
     ltr: true,
@@ -25,6 +64,12 @@ export const languages: Language[] = [
     display_name: "Français",
     ltr: true,
     date_locale: fr,
+  },
+  {
+    code: "hu",
+    display_name: "Magyar",
+    ltr: true,
+    date_locale: hu,
   },
   {
     code: "it",
@@ -67,5 +112,77 @@ export const languages: Language[] = [
     display_name: "Українська",
     ltr: true,
     date_locale: uk,
+  },
+  {
+    code: "ro",
+    display_name: "Română",
+    ltr: true,
+    date_locale: ro,
+  },
+  {
+    code: "mk",
+    display_name: "Македонски",
+    ltr: true,
+    date_locale: mk,
+  },
+  {
+    code: "mn",
+    display_name: "Монгол",
+    ltr: true,
+    date_locale: mn,
+  },
+  {
+    code: "ar",
+    display_name: "العربية",
+    ltr: false,
+    date_locale: ar,
+  },
+  {
+    code: "zhCN",
+    display_name: "简体中文",
+    ltr: true,
+    date_locale: zhCN,
+  },
+  {
+    code: "fa",
+    display_name: "فارسی",
+    ltr: false,
+    date_locale: faIR,
+  },
+  {
+    code: "cs",
+    display_name: "Čeština",
+    ltr: true,
+    date_locale: cs,
+  },
+  {
+    code: "ru",
+    display_name: "Русский",
+    ltr: true,
+    date_locale: ru,
+  },
+  {
+    code: "lt",
+    display_name: "Lietuviškai",
+    ltr: true,
+    date_locale: lt,
+  },
+  {
+    code: "vi",
+    display_name: "Tiếng Việt",
+    ltr: true,
+    date_locale: vi,
+  },
+  {
+    code: "ko",
+    display_name: "한국어",
+    ltr: true,
+    date_locale: ko,
+  },
+  {
+    code: "nl",
+    display_name: "Nederlands",
+    ltr: true,
+    date_locale: nl,
   },
 ]

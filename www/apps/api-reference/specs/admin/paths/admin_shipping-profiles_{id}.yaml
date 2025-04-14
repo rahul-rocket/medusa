@@ -35,6 +35,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_shipping-profiles_{id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -113,6 +117,10 @@ post:
               type: object
               description: The shipping profile's metadata.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_shipping-profiles_{id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -156,6 +164,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_shipping-profiles_{id}/delete.js
     - lang: Shell
       label: cURL
       source:

@@ -1,5 +1,71 @@
 # @medusajs/admin-vite-plugin
 
+## 2.7.0
+
+### Patch Changes
+
+- [#11720](https://github.com/medusajs/medusa/pull/11720) [`ec56a8bc857a74788df6523af25914da95c4c1d8`](https://github.com/medusajs/medusa/commit/ec56a8bc857a74788df6523af25914da95c4c1d8) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(medusa,utils,test-utils,types,framework,dashboard,admin-vite-plugin,admib-bundler): Fix broken plugin dependencies in development server
+
+- Updated dependencies [[`5ab15a29889870411b719ebad3fb94786baee45e`](https://github.com/medusajs/medusa/commit/5ab15a29889870411b719ebad3fb94786baee45e), [`5ab15a29889870411b719ebad3fb94786baee45e`](https://github.com/medusajs/medusa/commit/5ab15a29889870411b719ebad3fb94786baee45e)]:
+  - @medusajs/admin-shared@2.7.0
+
+## 2.6.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.6.1
+
+## 2.6.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.6.0
+
+## 2.5.1
+
+### Patch Changes
+
+- [#11305](https://github.com/medusajs/medusa/pull/11305) [`a88f6576bd06522f86fb2f8bd4b49f94bd4017c1`](https://github.com/medusajs/medusa/commit/a88f6576bd06522f86fb2f8bd4b49f94bd4017c1) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - feat(dashboard,admin-vite-plugin): Add support for parallel routes
+
+- [#11414](https://github.com/medusajs/medusa/pull/11414) [`47edd01deec79b394552cea349f1e41b7b88723b`](https://github.com/medusajs/medusa/commit/47edd01deec79b394552cea349f1e41b7b88723b) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(admin-vite-plugin,admin-bundler,ui,icons,dashboard,framework,types): Update Vite dependencies
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- [#11361](https://github.com/medusajs/medusa/pull/11361) [`3dbef519d95cf694d06843cb694c0d2abdac2146`](https://github.com/medusajs/medusa/commit/3dbef519d95cf694d06843cb694c0d2abdac2146) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(admin-vite-plugin,icons,ui,dashboard): Upgrade vitest in all packages and align Vite version
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.5.0
+
+## 2.4.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.4.0
+
+## 2.3.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.3.1
+
+## 2.3.0
+
+### Patch Changes
+
+- [#10869](https://github.com/medusajs/medusa/pull/10869) [`1ba2fadf22a30de9f94aee4f195163ef5e9e84d2`](https://github.com/medusajs/medusa/commit/1ba2fadf22a30de9f94aee4f195163ef5e9e84d2) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - feat(admin-bundler,admin-vite-plugin): Support loading loading admin extensions from plugins.
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.3.0
+
 ## 2.2.0
 
 ### Patch Changes

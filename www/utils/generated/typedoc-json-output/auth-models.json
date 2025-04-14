@@ -1,5 +1,5 @@
 {
-	"id": 644,
+	"id": 650,
 	"name": "auth-models",
 	"variant": "project",
 	"kind": 1,
@@ -18,13 +18,21 @@
 	},
 	"children": [
 		{
-			"id": 645,
+			"id": 651,
 			"name": "AuthIdentity",
 			"variant": "declaration",
 			"kind": 32,
 			"flags": {
 				"isConst": true
 			},
+			"sources": [
+				{
+					"fileName": "auth-identity.ts",
+					"line": 4,
+					"character": 13,
+					"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/auth-identity.ts#L4"
+				}
+			],
 			"type": {
 				"type": "reference",
 				"target": {
@@ -42,14 +50,14 @@
 							{
 								"type": "reflection",
 								"declaration": {
-									"id": 646,
+									"id": 652,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 647,
+											"id": 653,
 											"name": "id",
 											"variant": "declaration",
 											"kind": 1024,
@@ -62,6 +70,14 @@
 													}
 												]
 											},
+											"sources": [
+												{
+													"fileName": "auth-identity.ts",
+													"line": 6,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/auth-identity.ts#L6"
+												}
+											],
 											"type": {
 												"type": "reference",
 												"target": {
@@ -85,7 +101,7 @@
 											"defaultValue": "..."
 										},
 										{
-											"id": 648,
+											"id": 654,
 											"name": "provider_identities",
 											"variant": "declaration",
 											"kind": 1024,
@@ -101,6 +117,14 @@
 													"@expandable"
 												]
 											},
+											"sources": [
+												{
+													"fileName": "auth-identity.ts",
+													"line": 7,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/auth-identity.ts#L7"
+												}
+											],
 											"type": {
 												"type": "reference",
 												"target": {
@@ -110,7 +134,7 @@
 												"typeArguments": [
 													{
 														"type": "reference",
-														"target": 661,
+														"target": 667,
 														"name": "ProviderIdentity"
 													}
 												],
@@ -120,7 +144,7 @@
 											"defaultValue": "..."
 										},
 										{
-											"id": 660,
+											"id": 666,
 											"name": "app_metadata",
 											"variant": "declaration",
 											"kind": 1024,
@@ -135,6 +159,14 @@
 													}
 												]
 											},
+											"sources": [
+												{
+													"fileName": "auth-identity.ts",
+													"line": 10,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/auth-identity.ts#L10"
+												}
+											],
 											"type": {
 												"type": "reference",
 												"target": {
@@ -151,10 +183,18 @@
 										{
 											"title": "Properties",
 											"children": [
-												647,
-												648,
-												660
+												653,
+												654,
+												666
 											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "auth-identity.ts",
+											"line": 5,
+											"character": 27,
+											"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/auth-identity.ts#L5"
 										}
 									]
 								}
@@ -174,13 +214,21 @@
 			"defaultValue": "..."
 		},
 		{
-			"id": 661,
+			"id": 667,
 			"name": "ProviderIdentity",
 			"variant": "declaration",
 			"kind": 32,
 			"flags": {
 				"isConst": true
 			},
+			"sources": [
+				{
+					"fileName": "provider-identity.ts",
+					"line": 4,
+					"character": 13,
+					"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/provider-identity.ts#L4"
+				}
+			],
 			"type": {
 				"type": "reference",
 				"target": {
@@ -198,14 +246,14 @@
 							{
 								"type": "reflection",
 								"declaration": {
-									"id": 662,
+									"id": 668,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 663,
+											"id": 669,
 											"name": "id",
 											"variant": "declaration",
 											"kind": 1024,
@@ -218,6 +266,14 @@
 													}
 												]
 											},
+											"sources": [
+												{
+													"fileName": "provider-identity.ts",
+													"line": 6,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/provider-identity.ts#L6"
+												}
+											],
 											"type": {
 												"type": "reference",
 												"target": {
@@ -241,7 +297,7 @@
 											"defaultValue": "..."
 										},
 										{
-											"id": 664,
+											"id": 670,
 											"name": "entity_id",
 											"variant": "declaration",
 											"kind": 1024,
@@ -254,6 +310,14 @@
 													}
 												]
 											},
+											"sources": [
+												{
+													"fileName": "provider-identity.ts",
+													"line": 7,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/provider-identity.ts#L7"
+												}
+											],
 											"type": {
 												"type": "reference",
 												"target": {
@@ -266,7 +330,7 @@
 											"defaultValue": "..."
 										},
 										{
-											"id": 665,
+											"id": 671,
 											"name": "provider",
 											"variant": "declaration",
 											"kind": 1024,
@@ -279,6 +343,14 @@
 													}
 												]
 											},
+											"sources": [
+												{
+													"fileName": "provider-identity.ts",
+													"line": 8,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/provider-identity.ts#L8"
+												}
+											],
 											"type": {
 												"type": "reference",
 												"target": {
@@ -291,7 +363,7 @@
 											"defaultValue": "..."
 										},
 										{
-											"id": 666,
+											"id": 672,
 											"name": "auth_identity",
 											"variant": "declaration",
 											"kind": 1024,
@@ -307,6 +379,14 @@
 													"@expandable"
 												]
 											},
+											"sources": [
+												{
+													"fileName": "provider-identity.ts",
+													"line": 9,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/provider-identity.ts#L9"
+												}
+											],
 											"type": {
 												"type": "reference",
 												"target": {
@@ -316,7 +396,7 @@
 												"typeArguments": [
 													{
 														"type": "reference",
-														"target": 645,
+														"target": 651,
 														"name": "AuthIdentity"
 													}
 												],
@@ -326,7 +406,7 @@
 											"defaultValue": "..."
 										},
 										{
-											"id": 675,
+											"id": 681,
 											"name": "user_metadata",
 											"variant": "declaration",
 											"kind": 1024,
@@ -341,6 +421,14 @@
 													}
 												]
 											},
+											"sources": [
+												{
+													"fileName": "provider-identity.ts",
+													"line": 12,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/provider-identity.ts#L12"
+												}
+											],
 											"type": {
 												"type": "reference",
 												"target": {
@@ -353,7 +441,7 @@
 											"defaultValue": "..."
 										},
 										{
-											"id": 676,
+											"id": 682,
 											"name": "provider_metadata",
 											"variant": "declaration",
 											"kind": 1024,
@@ -368,6 +456,14 @@
 													}
 												]
 											},
+											"sources": [
+												{
+													"fileName": "provider-identity.ts",
+													"line": 13,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/provider-identity.ts#L13"
+												}
+											],
 											"type": {
 												"type": "reference",
 												"target": {
@@ -384,13 +480,21 @@
 										{
 											"title": "Properties",
 											"children": [
-												663,
-												664,
-												665,
-												666,
-												675,
-												676
+												669,
+												670,
+												671,
+												672,
+												681,
+												682
 											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "provider-identity.ts",
+											"line": 5,
+											"character": 31,
+											"url": "https://github.com/medusajs/medusa/blob/e096af8b1b72b19e01f8d09cc50c7222d8459af1/packages/modules/auth/src/models/provider-identity.ts#L5"
 										}
 									]
 								}
@@ -414,142 +518,142 @@
 		{
 			"title": "Variables",
 			"children": [
-				645,
-				661
+				651,
+				667
 			]
 		}
 	],
 	"packageName": "@medusajs/auth",
 	"symbolIdMap": {
-		"644": {
+		"650": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/index.ts",
 			"qualifiedName": ""
 		},
-		"645": {
+		"651": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
 			"qualifiedName": "AuthIdentity"
 		},
-		"646": {
+		"652": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
 			"qualifiedName": "__object"
 		},
-		"647": {
+		"653": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
 			"qualifiedName": "__object.id"
 		},
-		"648": {
+		"654": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
 			"qualifiedName": "__object.provider_identities"
 		},
-		"649": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
-			"qualifiedName": "__function"
-		},
-		"650": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
-			"qualifiedName": "__function"
-		},
-		"651": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
-			"qualifiedName": "__object"
-		},
-		"652": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
-			"qualifiedName": "__object.id"
-		},
-		"653": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
-			"qualifiedName": "__object.entity_id"
-		},
-		"654": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
-			"qualifiedName": "__object.provider"
-		},
 		"655": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
-			"qualifiedName": "__object.auth_identity"
+			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
+			"qualifiedName": "__function"
 		},
 		"656": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
+			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
 			"qualifiedName": "__function"
 		},
 		"657": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
-			"qualifiedName": "__function"
+			"qualifiedName": "__object"
 		},
 		"658": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
-			"qualifiedName": "__object.user_metadata"
+			"qualifiedName": "__object.id"
 		},
 		"659": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
-			"qualifiedName": "__object.provider_metadata"
-		},
-		"660": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
-			"qualifiedName": "__object.app_metadata"
-		},
-		"661": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
-			"qualifiedName": "ProviderIdentity"
-		},
-		"662": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
-			"qualifiedName": "__object"
-		},
-		"663": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
-			"qualifiedName": "__object.id"
-		},
-		"664": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
 			"qualifiedName": "__object.entity_id"
 		},
-		"665": {
+		"660": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
 			"qualifiedName": "__object.provider"
 		},
-		"666": {
+		"661": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
 			"qualifiedName": "__object.auth_identity"
 		},
-		"667": {
+		"662": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
 			"qualifiedName": "__function"
 		},
-		"668": {
+		"663": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
 			"qualifiedName": "__function"
 		},
-		"669": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
-			"qualifiedName": "__object"
-		},
-		"670": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
-			"qualifiedName": "__object.id"
-		},
-		"671": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
-			"qualifiedName": "__object.provider_identities"
-		},
-		"672": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
-			"qualifiedName": "__function"
-		},
-		"673": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
-			"qualifiedName": "__function"
-		},
-		"674": {
-			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
-			"qualifiedName": "__object.app_metadata"
-		},
-		"675": {
+		"664": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
 			"qualifiedName": "__object.user_metadata"
 		},
+		"665": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
+			"qualifiedName": "__object.provider_metadata"
+		},
+		"666": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
+			"qualifiedName": "__object.app_metadata"
+		},
+		"667": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
+			"qualifiedName": "ProviderIdentity"
+		},
+		"668": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
+			"qualifiedName": "__object"
+		},
+		"669": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
+			"qualifiedName": "__object.id"
+		},
+		"670": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
+			"qualifiedName": "__object.entity_id"
+		},
+		"671": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
+			"qualifiedName": "__object.provider"
+		},
+		"672": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
+			"qualifiedName": "__object.auth_identity"
+		},
+		"673": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
+			"qualifiedName": "__function"
+		},
+		"674": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
+			"qualifiedName": "__function"
+		},
+		"675": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
+			"qualifiedName": "__object"
+		},
 		"676": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
+			"qualifiedName": "__object.id"
+		},
+		"677": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
+			"qualifiedName": "__object.provider_identities"
+		},
+		"678": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
+			"qualifiedName": "__function"
+		},
+		"679": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
+			"qualifiedName": "__function"
+		},
+		"680": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/auth-identity.ts",
+			"qualifiedName": "__object.app_metadata"
+		},
+		"681": {
+			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
+			"qualifiedName": "__object.user_metadata"
+		},
+		"682": {
 			"sourceFileName": "../../../../packages/modules/auth/src/models/provider-identity.ts",
 			"qualifiedName": "__object.provider_metadata"
 		}
@@ -559,7 +663,7 @@
 			"1": "../../../../packages/modules/auth/src/models/index.ts"
 		},
 		"reflections": {
-			"1": 644
+			"1": 650
 		}
 	}
 }

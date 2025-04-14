@@ -18,12 +18,41 @@
  *     schema:
  *       type: string
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       await sdk.auth.callback(
+ *         "customer",
+ *         "google",
+ *         {
+ *           code: "123",
+ *           state: "456"
+ *         }
+ *       )
+ * 
+ *       // all subsequent requests will use the token in the header
+ *       const { customer } = await sdk.store.customer.create({
+ *         email: "customer@gmail.com",
+ *         password: "supersecret"
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: curl '{backend_url}/auth/{actor_type}/{auth_provider}/callback'
  * tags:
  *   - "[actor_type]"
  * responses:
+ *   "200":
+ *     description: OK
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":

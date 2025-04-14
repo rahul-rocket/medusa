@@ -134,6 +134,10 @@ get:
                 - draft
                 - archived
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_orders/get.js
     - lang: Shell
       label: cURL
       source:

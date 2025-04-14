@@ -1,8 +1,9 @@
 /**
  * @oas [post] /admin/customers/{id}/customer-groups
  * operationId: PostCustomersIdCustomerGroups
- * summary: Add Customer Group to Customer
- * description: Add a Customer Group to a customer
+ * x-sidebar-summary: Manage Customer Groups
+ * summary: Manage Customer Groups of Customer
+ * description: Manage the customer groups of a customer, adding or removing the customer from those groups.
  * x-authenticated: true
  * parameters:
  *   - name: id
@@ -38,19 +39,39 @@
  *         properties:
  *           add:
  *             type: array
- *             description: The customer's add.
+ *             description: The customer groups to add the customer to.
  *             items:
  *               type: string
  *               title: add
- *               description: The add's details.
+ *               description: The ID of the group to add the customer to.
  *           remove:
  *             type: array
- *             description: The customer's remove.
+ *             description: The customer groups to remove the customer from.
  *             items:
  *               type: string
  *               title: remove
- *               description: The remove's details.
+ *               description: The ID of the group to remove the customer from.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.customer.batchCustomerGroups("cus_123", {
+ *         add: ["cusgroup_123"],
+ *         remove: ["cusgroup_321"]
+ *       })
+ *       .then(({ customer }) => {
+ *         console.log(customer)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

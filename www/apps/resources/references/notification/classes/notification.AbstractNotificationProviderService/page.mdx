@@ -1,26 +1,49 @@
 ---
 slug: /references/notification-provider-module
+tags:
+  - notification
+  - server
+  - how to
+sidebar_label: Create Notification Provider
 ---
 
 import { TypeList } from "docs-ui"
 
-# How to Create a Notification Provider Module
+# How to Create a Notification Module Provider
 
-In this document, you’ll learn how to create a notification provider module and the methods you must implement in it.
-
----
-
-## 1. Create Module Directory
-
-Start by creating a new directory for your module. For example, `src/modules/my-notification`.
+In this document, you’ll learn how to create a Notification Module Provider and the methods you must implement in it.
 
 ---
 
-## 2. Create the Notification Provider Service
+## Implementation Example
+      
+As you implement your Notification Module Provider, it can be useful to refer to an existing provider and how it's implemeted.
+
+If you need to refer to an existing implementation as an example, check the [SendGrid Notification Module Provider in the Medusa repository](https://github.com/medusajs/medusa/tree/develop/packages/modules/providers/notification-sendgrid).
+
+---
+
+## 1. Create Module Provider Directory
+
+Start by creating a new directory for your module provider.
+
+If you're creating the module provider in a Medusa application, create it under the `src/modules` directory. For example, `src/modules/my-notification`.
+
+If you're creating the module provider in a plugin, create it under the `src/providers` directory. For example, `src/providers/my-notification`.
+
+<Note>
+
+The rest of this guide always uses the `src/modules/my-notification` directory as an example.
+
+</Note>
+
+---
+
+## 2. Create the Notification Module Provider's Service
 
 Create the file `src/modules/my-notification/service.ts` that holds the implementation of the notification service.
 
-The Notification Provider Module's main service must extend the `AbstractNotificationProviderService` class imported from `@medusajs/framework/utils`:
+The Notification Module Provider's main service must extend the `AbstractNotificationProviderService` class imported from `@medusajs/framework/utils`:
 
 ```ts title="src/modules/my-notification/service.ts"
 import { 
@@ -78,6 +101,19 @@ class MyNotificationProviderService extends AbstractNotificationProviderService 
 export default MyNotificationProviderService
 ```
 
+### identifier
+
+Each notification provider has a unique ID used to identify it.
+
+#### Example
+
+```ts
+class MyNotificationProviderService extends AbstractNotificationProviderService {
+  static identifier = "my-notification"
+  // ...
+}
+```
+
 ### validateOptions
 
 This method validates the options of the provider set in `medusa-config.ts`.
@@ -103,10 +139,6 @@ class MyNotificationProviderService extends AbstractNotificationProviderService 
 #### Parameters
 
 <TypeList types={[{"name":"options","type":"`Record<any, any>`","description":"The provider's options.","optional":false,"defaultValue":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="validateOptions"/>
-
-#### Returns
-
-<TypeList types={[{"name":"void","type":"`void`","optional":false,"defaultValue":"","description":"This method validates the options of the provider set in `medusa-config.ts`.\nImplementing this method is optional. It's useful if your provider requires custom validation.\n\nIf the options aren't valid, throw an error.","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="validateOptions"/>
 
 ### send
 
@@ -144,11 +176,11 @@ class MyNotificationProviderService extends AbstractNotificationProviderService 
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;[ProviderSendNotificationResultsDTO](../../../types/NotificationTypes/interfaces/types.NotificationTypes.ProviderSendNotificationResultsDTO/page.mdx)&#62;","optional":false,"defaultValue":"","description":"The result of sending\nthe notification.","expandable":false,"children":[{"name":"ProviderSendNotificationResultsDTO","type":"[ProviderSendNotificationResultsDTO](../../../types/NotificationTypes/interfaces/types.NotificationTypes.ProviderSendNotificationResultsDTO/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the notification in the external system, if provided in the response","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="send"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[ProviderSendNotificationResultsDTO](../../../types/NotificationTypes/interfaces/types.NotificationTypes.ProviderSendNotificationResultsDTO/page.mdx)&#62;","optional":false,"defaultValue":"","description":"The result of sending\nthe notification.","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the notification in the external system, if provided in the response","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="send"/>
 
 ---
 
-## 3. Create Module Definition File
+## 3. Create Module Provider Definition File
 
 Create the file `src/modules/my-notification/index.ts` with the following content:
 
@@ -164,11 +196,11 @@ export default ModuleProvider(Modules.NOTIFICATION, {
 })
 ```
 
-This exports the module's definition, indicating that the `MyNotificationProviderService` is the module's service.
+This exports the module provider's definition, indicating that the `MyNotificationProviderService` is the module provider's service.
 
 ---
 
-## 4. Use Module
+## 4. Use Module Provider
 
 To use your Notification Module Provider, add it to the `providers` array of the Notification Module in `medusa-config.ts`:
 
@@ -196,6 +228,7 @@ module.exports = defineConfig({
             },
           },
           {
+            // if module provider is in a plugin, use `plugin-name/providers/my-notification`
             resolve: "./src/modules/my-notification",
             id: "my-notification",
             options: {

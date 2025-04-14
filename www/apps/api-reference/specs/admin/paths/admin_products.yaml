@@ -1188,6 +1188,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products/get.js
     - lang: Shell
       label: cURL
       source:
@@ -1289,6 +1293,10 @@ post:
                     `additional_data` parameter.
           description: The product's details.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products/post.js
     - lang: Shell
       label: cURL
       source:

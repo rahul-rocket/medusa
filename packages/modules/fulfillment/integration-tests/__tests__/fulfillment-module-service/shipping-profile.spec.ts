@@ -100,7 +100,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
               await service.createShippingProfiles(createData)
 
             expect(createdShippingProfiles).toHaveLength(2)
-            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(2)
+            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(1)
 
             let i = 0
             for (const data_ of createData) {
@@ -117,7 +117,11 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.SHIPPING_PROFILE_CREATED,
                     action: "created",
                     object: "shipping_profile",
-                    data: { id: createdShippingProfiles[i].id },
+                    data: {
+                      id: expect.arrayContaining([
+                        createdShippingProfiles[i].id,
+                      ]),
+                    },
                   }),
                 ]),
                 {

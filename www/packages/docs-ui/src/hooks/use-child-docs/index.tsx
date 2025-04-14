@@ -1,21 +1,25 @@
 "use client"
 
-import React, { useCallback, useMemo } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import {
   Card,
   CardList,
+  getLocalSearch,
   H2,
   H3,
   H4,
   Hr,
-  isSidebarItemLink,
+  LocalSearch,
   MarkdownContent,
+  SearchInput,
+  useIsBrowser,
   useSidebar,
 } from "../.."
-import { InteractiveSidebarItem, SidebarItem, SidebarItemLink } from "types"
+import { Sidebar } from "types"
 import slugify from "slugify"
 import { MDXComponents } from "../.."
-import { ChevronDoubleRight } from "@medusajs/icons"
+import { ChevronDoubleRight, ExclamationCircle } from "@medusajs/icons"
+import { isSidebarItemLink } from "../../utils/sidebar-utils"
 
 type HeadingComponent = (
   props: React.HTMLAttributes<HTMLHeadingElement>
@@ -29,9 +33,15 @@ export type UseChildDocsProps = {
   hideTitle?: boolean
   hideDescription?: boolean
   titleLevel?: number
-  childLevel?: number
+  startChildLevel?: number
+  endChildLevel?: number
   itemsPerRow?: number
   defaultItemsPerRow?: number
+  search?: {
+    enable: boolean
+    storageKey?: string
+    placeholder?: string
+  }
 }
 
 export const useChildDocs = ({
@@ -42,11 +52,22 @@ export const useChildDocs = ({
   hideTitle = false,
   hideDescription = false,
   titleLevel = 2,
-  childLevel = 1,
+  startChildLevel = 1,
+  endChildLevel = -1,
   itemsPerRow,
   defaultItemsPerRow,
+  search: {
+    enable: enableSearch = false,
+    storageKey = "child-docs",
+    ...searchProps
+  } = { enable: false },
 }: UseChildDocsProps) => {
-  const { currentItems, activeItem } = useSidebar()
+  const { shownSidebar, activeItem, getSidebarFirstLinkChild } = useSidebar()
+  const { isBrowser } = useIsBrowser()
+  const [searchQuery, setSearchQuery] = useState("")
+  const [localSearch, setLocalSearch] = useState<
+    LocalSearch<Sidebar.SidebarItemLink> | undefined
+  >()
   const TitleHeaderComponent = useCallback(
     (level: number): HeadingComponent => {
       switch (level) {
@@ -72,7 +93,7 @@ export const useChildDocs = ({
         : "all"
   }, [showItems, hideItems])
 
-  const filterCondition = (item: SidebarItem): boolean => {
+  const filterCondition = (item: Sidebar.SidebarItem): boolean => {
     if (item.type === "separator") {
       return false
     }
@@ -92,16 +113,13 @@ export const useChildDocs = ({
     }
   }
 
-  const filterItems = (items: SidebarItem[]): SidebarItem[] => {
-    return items
-      .filter(filterCondition)
+  const filterItems = (
+    items: Sidebar.SidebarItem[]
+  ): Sidebar.InteractiveSidebarItem[] => {
+    return (items.filter(filterCondition) as Sidebar.InteractiveSidebarItem[])
       .map((item) => Object.assign({}, item))
       .map((item) => {
-        if (
-          item.type !== "separator" &&
-          item.children &&
-          filterType === "hide"
-        ) {
+        if (item.children && filterType === "hide") {
           item.children = filterItems(item.children)
         }
 
@@ -109,50 +127,37 @@ export const useChildDocs = ({
       })
   }
 
-  const filteredItems = useMemo(() => {
-    const targetItems =
-      type === "sidebar"
-        ? currentItems
-          ? Object.assign({}, currentItems)
-          : undefined
-        : {
-            default: [...(activeItem?.children || [])],
-          }
-    if (filterType === "all" || !targetItems) {
-      return targetItems
-    }
-
-    return {
-      ...targetItems,
-      default: filterItems(targetItems.default),
-    }
-  }, [currentItems, type, activeItem, filterItems])
-
   const filterNonInteractiveItems = (
-    items: SidebarItem[] | undefined
-  ): InteractiveSidebarItem[] => {
+    items: Sidebar.SidebarItem[] | undefined
+  ): Sidebar.InteractiveSidebarItem[] => {
     return (
       (items?.filter(
         (item) => item.type !== "separator"
-      ) as InteractiveSidebarItem[]) || []
+      ) as Sidebar.InteractiveSidebarItem[]) || []
     )
   }
 
-  const getChildrenForLevel = (
-    item: InteractiveSidebarItem,
-    currentLevel = 1
-  ): InteractiveSidebarItem[] | undefined => {
-    if (currentLevel === childLevel) {
-      return filterNonInteractiveItems(item.children)
-    }
-    if (!item.children) {
+  const getChildrenForLevel = ({
+    item,
+    currentLevel = 1,
+  }: {
+    item: Sidebar.InteractiveSidebarItem
+    currentLevel?: number
+  }): Sidebar.InteractiveSidebarItem[] | undefined => {
+    if ((endChildLevel > 0 && currentLevel > endChildLevel) || !item.children) {
       return
     }
+    if (currentLevel >= startChildLevel) {
+      return filterNonInteractiveItems(item.children)
+    }
 
-    const childrenResult: InteractiveSidebarItem[] = []
+    const childrenResult: Sidebar.InteractiveSidebarItem[] = []
 
     filterNonInteractiveItems(item.children).forEach((child) => {
-      const childChildren = getChildrenForLevel(child, currentLevel + 1)
+      const childChildren = getChildrenForLevel({
+        item: child,
+        currentLevel: currentLevel + 1,
+      })
 
       if (!childChildren) {
         return
@@ -164,47 +169,165 @@ export const useChildDocs = ({
     return childrenResult
   }
 
-  const getTopLevelElms = (items?: SidebarItem[]) => {
+  const filteredItems = useMemo(() => {
+    let targetItems =
+      type === "sidebar"
+        ? shownSidebar && "items" in shownSidebar
+          ? shownSidebar.items
+          : shownSidebar?.children || []
+        : [...(activeItem?.children || [])]
+    if (filterType !== "all" && targetItems) {
+      targetItems = filterItems(targetItems)
+    }
+
+    return filterNonInteractiveItems(targetItems)
+  }, [shownSidebar, type, activeItem, filterType])
+
+  const searchableItems = useMemo(() => {
+    const searchableItems: Sidebar.SidebarItemLink[] = []
+    if (!enableSearch) {
+      return searchableItems
+    }
+    if (onlyTopLevel) {
+      filteredItems.forEach((item) => {
+        if (isSidebarItemLink(item)) {
+          searchableItems.push(item)
+        } else {
+          const firstChild = item.children?.find((child) =>
+            isSidebarItemLink(child)
+          )
+          if (firstChild) {
+            searchableItems.push(firstChild as Sidebar.SidebarItemLink)
+          }
+        }
+      })
+    } else {
+      filteredItems?.forEach((item) => {
+        const childItems: Sidebar.SidebarItemLink[] =
+          (getChildrenForLevel({ item })?.filter((childItem) => {
+            return isSidebarItemLink(childItem)
+          }) as Sidebar.SidebarItemLink[]) || []
+        searchableItems.push(...childItems)
+      })
+    }
+
+    return searchableItems
+  }, [filteredItems, onlyTopLevel, enableSearch])
+
+  useEffect(() => {
+    if (!enableSearch && localSearch) {
+      setLocalSearch(undefined)
+      return
+    }
+    if (!enableSearch || !searchableItems?.length || localSearch) {
+      return
+    }
+
+    setLocalSearch(
+      getLocalSearch<Sidebar.SidebarItemLink>({
+        docs: searchableItems,
+        searchableFields: ["title", "description"],
+        options: {
+          storeFields: ["title", "description", "path", "type"],
+          searchOptions: {
+            boost: { title: 2 },
+            prefix: true,
+            fuzzy: 0.2,
+          },
+          idField: "path",
+        },
+      })
+    )
+  }, [searchableItems, enableSearch, localSearch])
+
+  const searchResult = useMemo(() => {
+    return localSearch?.search(searchQuery) || []
+  }, [localSearch, searchQuery])
+
+  useEffect(() => {
+    if (!isBrowser || !enableSearch) {
+      return
+    }
+
+    const storedQuery = localStorage.getItem(`${storageKey}-query`)
+    if (storedQuery) {
+      setSearchQuery(storedQuery)
+    }
+  }, [isBrowser, storageKey, enableSearch])
+
+  useEffect(() => {
+    if (!isBrowser || !enableSearch) {
+      return
+    }
+
+    localStorage.setItem(`${storageKey}-query`, searchQuery)
+  }, [isBrowser, searchQuery, storageKey, enableSearch])
+
+  const getTopLevelElms = (items?: Sidebar.InteractiveSidebarItem[]) => {
+    const itemsToShow: {
+      [k: string]: Sidebar.InteractiveSidebarItem
+    } = {}
+    items?.forEach((childItem) => {
+      const href = isSidebarItemLink(childItem)
+        ? childItem.path
+        : childItem.type === "sidebar"
+          ? getSidebarFirstLinkChild(childItem)?.path
+          : (
+              childItem.children?.find((item) =>
+                isSidebarItemLink(item)
+              ) as Sidebar.SidebarItemLink
+            )?.path
+
+      if (!href) {
+        return
+      }
+
+      itemsToShow[href] = childItem
+    })
+    const itemsToShowEntries = Object.entries(itemsToShow)
+    if (!itemsToShowEntries.length) {
+      return <></>
+    }
     return (
       <CardList
-        items={
-          filterNonInteractiveItems(items).map((childItem) => {
-            const href = isSidebarItemLink(childItem)
-              ? childItem.path
-              : childItem.children?.length
-                ? (
-                    childItem.children.find((item) =>
-                      isSidebarItemLink(item)
-                    ) as SidebarItemLink
-                  )?.path
-                : "#"
-            return {
-              title: childItem.title,
-              href,
-              rightIcon:
-                childItem.type === "ref" ? ChevronDoubleRight : undefined,
-            }
-          }) || []
-        }
+        items={itemsToShowEntries.map(([href, childItem]) => {
+          return {
+            title: childItem.title,
+            href,
+            rightIcon:
+              childItem.type === "ref" ? ChevronDoubleRight : undefined,
+            text: childItem.description,
+          }
+        })}
         itemsPerRow={itemsPerRow}
         defaultItemsPerRow={defaultItemsPerRow}
       />
     )
   }
 
-  const getAllLevelsElms = (
-    items?: SidebarItem[],
-    headerLevel = titleLevel
-  ) => {
-    const filteredItems = filterNonInteractiveItems(items)
-    return filteredItems.map((item, key) => {
-      const itemChildren = getChildrenForLevel(item)
+  const getAllLevelsElms = ({
+    items,
+    headerLevel = titleLevel,
+    currentLevel = 1,
+  }: {
+    items?: Sidebar.InteractiveSidebarItem[]
+    headerLevel?: number
+    currentLevel?: number
+  }) => {
+    return items?.map((item, key) => {
+      const itemChildren = getChildrenForLevel({ item, currentLevel })
       const HeadingComponent = itemChildren?.length
         ? TitleHeaderComponent(headerLevel)
         : undefined
-      const isChildrenCategory = itemChildren?.every(
-        (child) => child.type === "category" || child.type === "sub-category"
-      )
+      const linkChildren =
+        itemChildren?.filter(
+          (item) => isSidebarItemLink(item) || item.type === "sidebar"
+        ) || []
+      const categoryChildren =
+        itemChildren?.filter(
+          (child) => child.type === "category" || child.type === "sub-category"
+        ) || []
+      const showLinkAsCard = !HeadingComponent && isSidebarItemLink(item)
 
       return (
         <React.Fragment key={key}>
@@ -224,29 +347,41 @@ export const useChildDocs = ({
                   )}
                 </>
               )}
-              {isChildrenCategory &&
-                getAllLevelsElms(itemChildren, headerLevel + 1)}
-              {!isChildrenCategory && (
+              {linkChildren.length > 0 && (
                 <CardList
                   items={
-                    itemChildren?.map((childItem) => ({
-                      title: childItem.title,
-                      href: isSidebarItemLink(childItem) ? childItem.path : "",
-                      text: childItem.description,
-                      rightIcon:
-                        childItem.type === "ref"
-                          ? ChevronDoubleRight
-                          : undefined,
-                    })) || []
+                    linkChildren.map((childItem) => {
+                      const href = isSidebarItemLink(childItem)
+                        ? childItem.path
+                        : getSidebarFirstLinkChild(
+                            childItem as Sidebar.SidebarItemSidebar
+                          )?.path
+                      return {
+                        title: childItem.title,
+                        href,
+                        text: childItem.description,
+                        rightIcon:
+                          childItem.type === "ref"
+                            ? ChevronDoubleRight
+                            : undefined,
+                      }
+                    }) || []
                   }
                   itemsPerRow={itemsPerRow}
                   defaultItemsPerRow={defaultItemsPerRow}
+                  className="mb-docs_1"
                 />
               )}
-              {key !== filteredItems.length - 1 && headerLevel === 2 && <Hr />}
+              {categoryChildren.length > 0 &&
+                getAllLevelsElms({
+                  items: categoryChildren,
+                  headerLevel: headerLevel + 1,
+                  currentLevel: currentLevel + 1,
+                })}
+              {key !== items.length - 1 && headerLevel === 2 && <Hr />}
             </>
           )}
-          {!HeadingComponent && isSidebarItemLink(item) && (
+          {showLinkAsCard && (
             <Card
               title={item.title}
               href={item.path}
@@ -259,12 +394,66 @@ export const useChildDocs = ({
     })
   }
 
-  const getElms = (items?: SidebarItem[]) => {
-    return onlyTopLevel ? getTopLevelElms(items) : getAllLevelsElms(items)
+  const getSearchResultElms = () => {
+    const Heading = TitleHeaderComponent(titleLevel)
+    return (
+      <>
+        <Heading>Search Results</Heading>
+        {searchResult.length > 0 && (
+          <CardList
+            items={searchResult.map((item) => ({
+              title: item.title,
+              href: item.path,
+              text: item.description,
+              rightIcon: item.type === "ref" ? ChevronDoubleRight : undefined,
+              highlightText: item.terms,
+            }))}
+            itemsPerRow={itemsPerRow}
+            defaultItemsPerRow={defaultItemsPerRow}
+            className="my-docs_2"
+          />
+        )}
+        {!searchResult.length && (
+          <div className="flex flex-col justify-center items-center gap-docs_0.75">
+            <ExclamationCircle className="text-medusa-fg-subtle" />
+            <span className="text-compact-small-plus text-medusa-fg-base text-center">
+              No results found matching your query.
+            </span>
+            <span className="text-compact-small text-medusa-fg-subtle text-center">
+              Try searching with another term or clearing the search.
+            </span>
+          </div>
+        )}
+      </>
+    )
+  }
+
+  const getElms = () => {
+    return (
+      <>
+        {enableSearch && (
+          <SearchInput
+            value={searchQuery || ""}
+            onChange={setSearchQuery}
+            {...searchProps}
+          />
+        )}
+        {searchQuery && getSearchResultElms()}
+        {!searchQuery && (
+          <>
+            {onlyTopLevel
+              ? getTopLevelElms(filteredItems)
+              : getAllLevelsElms({
+                  items: filteredItems,
+                })}
+          </>
+        )}
+      </>
+    )
   }
 
   return {
     items: filteredItems,
-    component: getElms(filteredItems?.default),
+    component: getElms(),
   }
 }

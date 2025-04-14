@@ -1,5 +1,13 @@
-/** @type {import('types').RawSidebarItem[]} */
+/** @type {import('types').Sidebar.SidebarItem[]} */
 export const recipesSidebar = [
+  {
+    type: "link",
+    path: "/recipes",
+    title: "Overview",
+  },
+  {
+    type: "separator",
+  },
   {
     type: "link",
     path: "/recipes/marketplace",
@@ -43,8 +51,27 @@ export const recipesSidebar = [
   },
   {
     type: "link",
+    path: "/recipes/erp",
+    title: "Integrate ERP",
+    children: [
+      {
+        type: "link",
+        path: "/recipes/erp/odoo",
+        title: "Example: Odoo Integration",
+      },
+    ],
+  },
+  {
+    type: "link",
     path: "/recipes/b2b",
     title: "B2B",
+    children: [
+      {
+        type: "link",
+        path: "/examples/guides/quote-management",
+        title: "Example: Quote Management",
+      },
+    ],
   },
   {
     type: "link",
@@ -62,11 +89,6 @@ export const recipesSidebar = [
     type: "link",
     path: "/recipes/ecommerce",
     title: "Ecommerce",
-  },
-  {
-    type: "link",
-    path: "/recipes/integrate-ecommerce-stack",
-    title: "Integrate Ecommerce Stack",
   },
   {
     type: "link",

@@ -27,6 +27,25 @@
  *       schema:
  *         $ref: "#/components/schemas/AdminCreateInventoryItem"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.inventoryItem.create({
+ *         sku: "SHIRT"
+ *       })
+ *       .then(({ inventory_item }) => {
+ *         console.log(inventory_item)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

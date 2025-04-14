@@ -40,6 +40,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostReceiveReturnsReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_returns_{id}_receive/post.js
     - lang: Shell
       label: cURL
       source:
@@ -85,6 +89,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_returns_{id}_receive/delete.js
     - lang: Shell
       label: cURL
       source:

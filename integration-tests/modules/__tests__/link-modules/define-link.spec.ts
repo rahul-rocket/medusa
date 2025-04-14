@@ -46,6 +46,7 @@ medusaIntegrationTestRunner({
               entity: "Currency",
               primaryKey: "code",
               foreignKey: "currency_code",
+              hasMany: false,
               alias: "currency",
               args: {
                 methodSuffix: "Currencies",
@@ -58,6 +59,7 @@ medusaIntegrationTestRunner({
               primaryKey: "id",
               foreignKey: "region_id",
               alias: "region",
+              hasMany: false,
               args: {
                 methodSuffix: "Regions",
               },
@@ -145,6 +147,7 @@ medusaIntegrationTestRunner({
               entity: "ProductVariant",
               primaryKey: "id",
               foreignKey: "product_variant_id",
+              hasMany: false,
               alias: "product_variant",
               args: {
                 methodSuffix: "ProductVariants",
@@ -156,6 +159,7 @@ medusaIntegrationTestRunner({
               entity: "Region",
               primaryKey: "id",
               foreignKey: "region_id",
+              hasMany: false,
               alias: "region",
               args: {
                 methodSuffix: "Regions",
@@ -249,6 +253,7 @@ medusaIntegrationTestRunner({
               entity: "Currency",
               primaryKey: "code",
               foreignKey: "currency_code",
+              hasMany: false,
               alias: "currency",
               args: {
                 methodSuffix: "Currencies",
@@ -260,6 +265,7 @@ medusaIntegrationTestRunner({
               entity: "Region",
               primaryKey: "id",
               foreignKey: "region_id",
+              hasMany: false,
               alias: "region",
               args: {
                 methodSuffix: "Regions",
@@ -347,6 +353,7 @@ medusaIntegrationTestRunner({
               entity: "Currency",
               primaryKey: "code",
               foreignKey: "currency_code",
+              hasMany: false,
               alias: "currency",
               args: {
                 methodSuffix: "Currencies",
@@ -358,6 +365,7 @@ medusaIntegrationTestRunner({
               entity: "Region",
               primaryKey: "id",
               foreignKey: "region_id",
+              hasMany: true,
               alias: "region",
               args: {
                 methodSuffix: "Regions",
@@ -383,6 +391,218 @@ medusaIntegrationTestRunner({
                 foreignKey: "code",
                 alias: "region_link",
                 isList: true,
+              },
+            },
+            {
+              serviceName: "region",
+              entity: "Region",
+              fieldAlias: {
+                currency: {
+                  path: "currency_link.currency",
+                  isList: false,
+                  forwardArgumentsOnPath: ["currency_link.currency"],
+                },
+              },
+              relationship: {
+                serviceName: "CurrencyCurrencyRegionRegionLink",
+                entity: "LinkCurrencyCurrencyRegionRegion",
+                primaryKey: "region_id",
+                foreignKey: "id",
+                alias: "currency_link",
+                isList: false,
+              },
+            },
+          ],
+        })
+      })
+
+      it("should generate a proper link with both sides using explicit isList=true", async () => {
+        const currencyLinks = CurrencyModule.linkable
+        const regionLinks = RegionModule.linkable
+
+        const link = defineLink(
+          {
+            linkable: currencyLinks.currency,
+            isList: true,
+          },
+          {
+            linkable: regionLinks.region,
+            isList: true,
+          }
+        )
+
+        const linkDefinition = MedusaModule.getCustomLinks()
+          .map((linkDefinition: any) => {
+            const definition = linkDefinition(
+              MedusaModule.getAllJoinerConfigs()
+            )
+            return definition.serviceName === link.serviceName && definition
+          })
+          .filter(Boolean)[0]
+
+        expect(link.serviceName).toEqual("CurrencyCurrencyRegionRegionLink")
+        expect(linkDefinition).toEqual({
+          serviceName: "CurrencyCurrencyRegionRegionLink",
+          isLink: true,
+          alias: [
+            {
+              name: ["currency_region"],
+              args: {
+                entity: "LinkCurrencyCurrencyRegionRegion",
+              },
+            },
+          ],
+          primaryKeys: ["id", "currency_code", "region_id"],
+          relationships: [
+            {
+              serviceName: "currency",
+              entity: "Currency",
+              primaryKey: "code",
+              foreignKey: "currency_code",
+              hasMany: true,
+              alias: "currency",
+              args: {
+                methodSuffix: "Currencies",
+              },
+              deleteCascade: false,
+            },
+            {
+              serviceName: "region",
+              entity: "Region",
+              primaryKey: "id",
+              foreignKey: "region_id",
+              hasMany: true,
+              alias: "region",
+              args: {
+                methodSuffix: "Regions",
+              },
+              deleteCascade: false,
+            },
+          ],
+          extends: [
+            {
+              serviceName: "currency",
+              entity: "Currency",
+              fieldAlias: {
+                regions: {
+                  path: "region_link.region",
+                  isList: true,
+                  forwardArgumentsOnPath: ["region_link.region"],
+                },
+              },
+              relationship: {
+                serviceName: "CurrencyCurrencyRegionRegionLink",
+                entity: "LinkCurrencyCurrencyRegionRegion",
+                primaryKey: "currency_code",
+                foreignKey: "code",
+                alias: "region_link",
+                isList: true,
+              },
+            },
+            {
+              serviceName: "region",
+              entity: "Region",
+              fieldAlias: {
+                currencies: {
+                  path: "currency_link.currency",
+                  isList: true,
+                  forwardArgumentsOnPath: ["currency_link.currency"],
+                },
+              },
+              relationship: {
+                serviceName: "CurrencyCurrencyRegionRegionLink",
+                entity: "LinkCurrencyCurrencyRegionRegion",
+                primaryKey: "region_id",
+                foreignKey: "id",
+                alias: "currency_link",
+                isList: true,
+              },
+            },
+          ],
+        })
+      })
+
+      it("should generate a proper link with both sides using explicit isList=false", async () => {
+        const currencyLinks = CurrencyModule.linkable
+        const regionLinks = RegionModule.linkable
+
+        const link = defineLink(
+          {
+            linkable: currencyLinks.currency,
+            isList: false,
+          },
+          {
+            linkable: regionLinks.region,
+            isList: false,
+          }
+        )
+
+        const linkDefinition = MedusaModule.getCustomLinks()
+          .map((linkDefinition: any) => {
+            const definition = linkDefinition(
+              MedusaModule.getAllJoinerConfigs()
+            )
+            return definition.serviceName === link.serviceName && definition
+          })
+          .filter(Boolean)[0]
+
+        expect(link.serviceName).toEqual("CurrencyCurrencyRegionRegionLink")
+        expect(linkDefinition).toEqual({
+          serviceName: "CurrencyCurrencyRegionRegionLink",
+          isLink: true,
+          alias: [
+            {
+              name: ["currency_region"],
+              args: {
+                entity: "LinkCurrencyCurrencyRegionRegion",
+              },
+            },
+          ],
+          primaryKeys: ["id", "currency_code", "region_id"],
+          relationships: [
+            {
+              serviceName: "currency",
+              entity: "Currency",
+              primaryKey: "code",
+              foreignKey: "currency_code",
+              hasMany: false,
+              alias: "currency",
+              args: {
+                methodSuffix: "Currencies",
+              },
+              deleteCascade: false,
+            },
+            {
+              serviceName: "region",
+              entity: "Region",
+              primaryKey: "id",
+              foreignKey: "region_id",
+              hasMany: false,
+              alias: "region",
+              args: {
+                methodSuffix: "Regions",
+              },
+              deleteCascade: false,
+            },
+          ],
+          extends: [
+            {
+              serviceName: "currency",
+              entity: "Currency",
+              fieldAlias: {
+                region: {
+                  path: "region_link.region",
+                  isList: false,
+                  forwardArgumentsOnPath: ["region_link.region"],
+                },
+              },
+              relationship: {
+                serviceName: "CurrencyCurrencyRegionRegionLink",
+                entity: "LinkCurrencyCurrencyRegionRegion",
+                primaryKey: "currency_code",
+                foreignKey: "code",
+                alias: "region_link",
+                isList: false,
               },
             },
             {

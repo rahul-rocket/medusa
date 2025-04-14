@@ -6,12 +6,14 @@ const authProviderOptions: FormattingOptionsType = {
     reflectionGroups: {
       Constructors: false,
     },
-    reflectionDescription: `In this document, you’ll learn how to create an auth provider module and the methods you must implement in its main service.`,
+    reflectionDescription: `In this document, you’ll learn how to create an Auth Module Provider and the methods you must implement in its main service.`,
     frontmatterData: {
       slug: "/references/auth/provider",
+      tags: ["auth", "server", "how to"],
+      sidebar_label: "Create Auth Provider",
     },
     reflectionTitle: {
-      fullReplacement: "How to Create an Auth Provider Module",
+      fullReplacement: "How to Create an Auth Module Provider",
     },
     shouldIncrementAfterStartSections: true,
     expandMembers: true,
@@ -22,12 +24,27 @@ const authProviderOptions: FormattingOptionsType = {
       reflection_typeParameters: false,
     },
     startSections: [
-      `## 1. Create Module Directory
+      `## Implementation Example
+      
+As you implement your Auth Module Provider, it can be useful to refer to an existing provider and how it's implemeted.
 
-Start by creating a new directory for your module. For example, \`src/modules/my-auth\`.`,
-      `## 2. Create the Auth Provider Service
+If you need to refer to an existing implementation as an example, check the [Google Auth Module Provider in the Medusa repository](https://github.com/medusajs/medusa/tree/develop/packages/modules/providers/auth-google).`,
+      `## 1. Create Module Provider Directory
 
-Create the file \`src/modules/my-auth/service.ts\` that holds the module's main service. It must extend the \`AbstractAuthModuleProvider\` class imported from \`@medusajs/framework/utils\`:
+Start by creating a new directory for your module provider.
+
+If you're creating the module provider in a Medusa application, create it under the \`src/modules\` directory. For example, \`src/modules/my-auth\`.
+
+If you're creating the module provider in a plugin, create it under the \`src/providers\` directory. For example, \`src/providers/my-auth\`.
+
+<Note>
+
+The rest of this guide always uses the \`src/modules/my-auth\` directory as an example.
+
+</Note>`,
+      `## 2. Create the Auth Module Provider's Service
+
+Create the file \`src/modules/my-auth/service.ts\` that holds the module provider's main service. It must extend the \`AbstractAuthModuleProvider\` class imported from \`@medusajs/framework/utils\`:
 
 \`\`\`ts title="src/modules/my-auth/service.ts"
 import { AbstractAuthModuleProvider } from "@medusajs/framework/utils"
@@ -40,7 +57,7 @@ export default MyAuthProviderService
 \`\`\``,
     ],
     endSections: [
-      `## 3. Create Module Definition File
+      `## 3. Create Module Provider Definition File
 
 Create the file \`src/modules/my-auth/index.ts\` with the following content:
 
@@ -56,8 +73,8 @@ export default ModuleProvider(Modules.AUTH, {
 })
 \`\`\`
 
-This exports the module's definition, indicating that the \`MyAuthProviderService\` is the module's service.`,
-      `## 4. Use Module
+This exports the module provider's definition, indicating that the \`MyAuthProviderService\` is the module provider's service.`,
+      `## 4. Use Module Provider
 
 To use your Auth Module Provider, add it to the \`providers\` array of the Auth Module in \`medusa-config.ts\`:
 
@@ -78,6 +95,7 @@ module.exports = defineConfig({
             id: "emailpass",
           },
           {
+            // if module provider is in a plugin, use \`plugin-name/providers/my-auth\`
             resolve: "./src/modules/my-auth",
             id: "my-auth",
             dependencies: [Modules.CACHE, ContainerRegistrationKeys.LOGGER],
@@ -94,9 +112,9 @@ module.exports = defineConfig({
 `,
       `## 5. Test it Out
 
-To test out your authentication provider, use any of the [Authentication Routes](https://docs.medusajs.com/v2/resources/commerce-modules/auth/authentication-route), using your provider's ID as a path parameter.
+To test out your Authentication Module Provider, use any of the [Authentication Routes](https://docs.medusajs.com/v2/resources/commerce-modules/auth/authentication-route), using your provider's ID as a path parameter.
 
-For example, to get a registration token for an admin user, send a \`POST\` request to \`/auth/user/my-auth/register\` replacing \`my-auth\` with your authentication provider's ID:
+For example, to get a registration token for an admin user, send a \`POST\` request to \`/auth/user/my-auth/register\` replacing \`my-auth\` with your Authentication Module Provider's ID:
 
 \`\`\`bash
 curl -X POST http://localhost:9000/auth/user/my-auth/register
@@ -107,7 +125,7 @@ curl -X POST http://localhost:9000/auth/user/my-auth/register
 }'
 \`\`\`
 
-Change the request body to pass the data required for your authentication provider to register the user.
+Change the request body to pass the data required for your Authentication Module Provider to register the user.
 
 If registration is successful, the response will have a \`token\` property.
       `,

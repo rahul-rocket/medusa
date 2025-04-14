@@ -1,6 +1,14 @@
-import { IRegionModuleService, RemoteQueryFunction } from "@medusajs/types"
-import { ContainerRegistrationKeys, Modules } from "@medusajs/utils"
+import { RemoteJoiner } from "@medusajs/framework/orchestration"
+import CustomerModule from "@medusajs/medusa/customer"
+import RegionModule from "@medusajs/medusa/region"
+import { MedusaModule } from "@medusajs/modules-sdk"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import {
+  IRegionModuleService,
+  ModuleJoinerConfig,
+  RemoteQueryFunction,
+} from "@medusajs/types"
+import { ContainerRegistrationKeys, defineLink, Modules } from "@medusajs/utils"
 import { createAdminUser } from "../../..//helpers/create-admin-user"
 import { adminHeaders } from "../../../helpers/create-admin-user"
 
@@ -67,6 +75,77 @@ medusaIntegrationTestRunner({
 
         await expect(getNonExistingRegion).rejects.toThrow(
           "Region id not found: region_123"
+        )
+      })
+
+      it("should fail to retrieve not passing primary key in filters", async () => {
+        const noPk = remoteQuery(
+          {
+            region: {
+              fields: ["id", "currency_code"],
+            },
+          },
+          { throwIfKeyNotFound: true }
+        )
+        await expect(noPk).rejects.toThrow(
+          "Region: Primary key(s) [id, iso_2] not found in filters"
+        )
+
+        const noPk2 = remoteQuery(
+          {
+            country: {
+              fields: ["*"],
+            },
+          },
+          { throwIfKeyNotFound: true }
+        )
+        await expect(noPk2).rejects.toThrow(
+          "Country: Primary key(s) [id, iso_2] not found in filters"
+        )
+
+        const noPk3 = remoteQuery(
+          {
+            country: {
+              fields: ["*"],
+              __args: {
+                iso_2: undefined,
+              },
+            },
+          },
+          { throwIfKeyNotFound: true }
+        )
+        await expect(noPk3).rejects.toThrow(
+          "Country: Value for primary key iso_2 not found in filters"
+        )
+
+        const noPk4 = remoteQuery(
+          {
+            region: {
+              fields: ["id", "currency_code"],
+              __args: {
+                id: null,
+              },
+            },
+          },
+          { throwIfKeyNotFound: true }
+        )
+        await expect(noPk4).rejects.toThrow(
+          "Region: Value for primary key id not found in filters"
+        )
+
+        const noPk5 = remoteQuery(
+          {
+            region: {
+              fields: ["id", "currency_code"],
+              __args: {
+                currency_code: "EUR",
+              },
+            },
+          },
+          { throwIfKeyNotFound: true }
+        )
+        await expect(noPk5).rejects.toThrow(
+          "Region: Primary key(s) [id, iso_2] not found in filters"
         )
       })
 
@@ -209,9 +288,18 @@ medusaIntegrationTestRunner({
       beforeEach(async () => {
         await createAdminUser(dbConnection, adminHeaders, appContainer)
 
+        const shippingProfile = (
+          await api.post(
+            `/admin/shipping-profiles`,
+            { name: "Test", type: "default" },
+            adminHeaders
+          )
+        ).data.shipping_profile
+
         const payload = {
           title: "Test Giftcard",
           is_giftcard: true,
+          shipping_profile_id: shippingProfile.id,
           description: "test-giftcard-description",
           options: [{ title: "Denominations", values: ["100"] }],
           variants: [
@@ -347,6 +435,90 @@ medusaIntegrationTestRunner({
             ],
           }),
         ])
+      })
+
+      it("should handle multiple fieldAlias when multiple links between two modules are defined", async () => {
+        const customer = CustomerModule.linkable.customer
+        const customerGroup = CustomerModule.linkable.customerGroup
+
+        const region = RegionModule.linkable.region
+        const country = RegionModule.linkable.country
+
+        defineLink(customer, region)
+        defineLink(customerGroup, region)
+
+        defineLink(customer, country)
+        defineLink(customerGroup, country)
+
+        const modulesLoaded = MedusaModule.getLoadedModules().map(
+          (mod) => Object.values(mod)[0]
+        )
+
+        const servicesConfig_: ModuleJoinerConfig[] = []
+
+        for (const mod of modulesLoaded || []) {
+          if (!mod.__definition.isQueryable) {
+            continue
+          }
+
+          servicesConfig_!.push(mod.__joinerConfig)
+        }
+        const linkDefinition = MedusaModule.getCustomLinks().map(
+          (linkDefinition: any) => {
+            const definition = linkDefinition(
+              MedusaModule.getAllJoinerConfigs()
+            )
+            return definition
+          }
+        )
+        servicesConfig_.push(...(linkDefinition as any))
+
+        const remoteJoiner = new RemoteJoiner(
+          servicesConfig_,
+          (() => {}) as any
+        )
+
+        const fieldAlias = (remoteJoiner as any).getServiceConfig({
+          entity: "Customer",
+        }).fieldAlias
+
+        expect(fieldAlias).toEqual(
+          expect.objectContaining({
+            account_holders: {
+              path: "account_holder_link.account_holder",
+              isList: true,
+              entity: "Customer",
+            },
+            region: [
+              {
+                path: "region_link.region",
+                isList: false,
+                forwardArgumentsOnPath: ["region_link.region"],
+                entity: "Customer",
+              },
+              {
+                path: "region_link.region",
+                isList: false,
+                forwardArgumentsOnPath: ["region_link.region"],
+                entity: "CustomerGroup",
+              },
+            ],
+            country: [
+              {
+                path: "country_link.country",
+                isList: false,
+                forwardArgumentsOnPath: ["country_link.country"],
+                entity: "Customer",
+              },
+              {
+                path: "country_link.country",
+                isList: false,
+                forwardArgumentsOnPath: ["country_link.country"],
+                entity: "CustomerGroup",
+              },
+            ],
+          })
+        )
       })
     })
   },

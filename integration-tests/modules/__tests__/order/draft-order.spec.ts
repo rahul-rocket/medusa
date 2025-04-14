@@ -17,7 +17,7 @@ import {
 } from "../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../fixtures"
 
-jest.setTimeout(50000)
+jest.setTimeout(100000)
 
 const env = { MEDUSA_FF_MEDUSA_V2: true }
 
@@ -165,6 +165,14 @@ medusaIntegrationTestRunner({
               inventory_item_id: inventoryItem.id,
             },
           },
+          {
+            [Modules.PRODUCT]: {
+              variant_id: product_2.variants[0].id,
+            },
+            [Modules.INVENTORY]: {
+              inventory_item_id: inventoryItem.id,
+            },
+          },
         ])
 
         await setupTaxStructure(taxModule)
@@ -236,7 +244,7 @@ medusaIntegrationTestRunner({
               summary: expect.objectContaining({
                 // TODO: add summary fields
               }),
-              items: [
+              items: expect.arrayContaining([
                 expect.objectContaining({
                   title: "Test variant",
                   subtitle: "Test product",
@@ -335,7 +343,7 @@ medusaIntegrationTestRunner({
                     value: "1",
                   }),
                 }),
-              ],
+              ]),
               shipping_address: expect.objectContaining({
                 last_name: "Test",
                 address_1: "Test",

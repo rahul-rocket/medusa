@@ -3,9 +3,11 @@ import {
   CreateOrderShippingMethodDTO,
   FulfillmentWorkflow,
   OrderDTO,
+  ReturnDTO,
   OrderWorkflow,
   ShippingOptionDTO,
   WithCalculatedPrice,
+  AdditionalData,
 } from "@medusajs/framework/types"
 import {
   MathBN,
@@ -16,6 +18,8 @@ import {
 } from "@medusajs/framework/utils"
 import {
   WorkflowData,
+  WorkflowResponse,
+  createHook,
   createStep,
   createWorkflow,
   parallelize,
@@ -34,6 +38,7 @@ import {
   throwIfOrderIsCancelled,
 } from "../../utils/order-validation"
 import { validateReturnReasons } from "../../utils/validate-return-reason"
+import { pricingContextResult } from "../../../cart/utils/schemas"
 
 function prepareShippingMethodData({
   orderId,
@@ -184,6 +189,7 @@ function prepareFulfillmentData({
 function prepareReturnShippingOptionQueryVariables({
   order,
   input,
+  setPricingContextResult,
 }: {
   order: {
     currency_code: string
@@ -192,11 +198,13 @@ function prepareReturnShippingOptionQueryVariables({
   input: {
     return_shipping?: OrderWorkflow.CreateOrderReturnWorkflowInput["return_shipping"]
   }
+  setPricingContextResult?: any
 }) {
   const variables = {
     id: input.return_shipping?.option_id,
     calculated_price: {
       context: {
+        ...(setPricingContextResult ? setPricingContextResult : {}),
         currency_code: order.currency_code,
       },
     },
@@ -210,18 +218,53 @@ function prepareReturnShippingOptionQueryVariables({
 }
 
 /**
+ * The data to validate that a return can be created and completed.
+ */
+export type CreateCompleteReturnValidationStepInput = {
+  /**
+   * The order's details.
+   */
+  order
+  /**
+   * The data to create a return.
+   */
+  input: OrderWorkflow.CreateOrderReturnWorkflowInput
+}
+
+/**
  * This step validates that a return can be created and completed for an order.
+ * If the order is canceled, the items do not exist in the order,
+ * the return reasons are invalid, or the refund amount is greater than the order total,
+ * the step will throw an error.
+ *
+ * :::note
+ *
+ * You can retrieve an order details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
+ * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
+ *
+ * :::
+ *
+ * @example
+ * const data = createCompleteReturnValidationStep({
+ *   order: {
+ *     id: "order_123",
+ *     // other order details...
+ *   },
+ *   input: {
+ *     order_id: "order_123",
+ *     items: [
+ *       {
+ *         id: "orli_123",
+ *         quantity: 1,
+ *       }
+ *     ]
+ *   }
+ * })
  */
 export const createCompleteReturnValidationStep = createStep(
   "create-return-order-validation",
   async function (
-    {
-      order,
-      input,
-    }: {
-      order
-      input: OrderWorkflow.CreateOrderReturnWorkflowInput
-    },
+    { order, input }: CreateCompleteReturnValidationStepInput,
     context
   ) {
     if (!input.items) {
@@ -244,13 +287,73 @@ export const createCompleteReturnValidationStep = createStep(
 export const createAndCompleteReturnOrderWorkflowId =
   "create-complete-return-order"
 /**
- * This workflow creates and completes a return.
+ * This workflow creates and completes a return from the storefront. The admin would receive the return and
+ * process it from the dashboard. This workflow is used by the
+ * [Create Return Store API Route](https://docs.medusajs.com/api/store#return_postreturn).
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to create a return
+ * for an order in your custom flow.
+ *
+ * @example
+ * const { result } = await createAndCompleteReturnOrderWorkflow(container)
+ * .run({
+ *   input: {
+ *     order_id: "order_123",
+ *     items: [
+ *       {
+ *         id: "orli_123",
+ *         quantity: 1,
+ *       }
+ *     ]
+ *   }
+ * })
+ *
+ * @summary
+ *
+ * Create and complete a return for an order.
+ * 
+ * @property hooks.setPricingContext - This hook is executed before the return's shipping method is created. You can consume this hook to return any custom context useful for the prices retrieval of the shipping method's option.
+ * 
+ * For example, assuming you have the following custom pricing rule:
+ * 
+ * ```json
+ * {
+ *   "attribute": "location_id",
+ *   "operator": "eq",
+ *   "value": "sloc_123",
+ * }
+ * ```
+ * 
+ * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
+ * 
+ * ```ts
+ * import { createAndCompleteReturnOrderWorkflow } from "@medusajs/medusa/core-flows";
+ * import { StepResponse } from "@medusajs/workflows-sdk";
+ * 
+ * createAndCompleteReturnOrderWorkflow.hooks.setPricingContext((
+ *   { order, additional_data }, { container }
+ * ) => {
+ *   return new StepResponse({
+ *     location_id: "sloc_123", // Special price for in-store purchases
+ *   });
+ * });
+ * ```
+ * 
+ * The price of the shipping method's option will now be retrieved using the context you return.
+ * 
+ * :::note
+ * 
+ * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
+ * 
+ * :::
  */
 export const createAndCompleteReturnOrderWorkflow = createWorkflow(
   createAndCompleteReturnOrderWorkflowId,
   function (
-    input: WorkflowData<OrderWorkflow.CreateOrderReturnWorkflowInput>
-  ): WorkflowData<void> {
+    input: WorkflowData<
+      OrderWorkflow.CreateOrderReturnWorkflowInput & AdditionalData
+    >
+  ) {
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
       fields: [
@@ -269,8 +372,20 @@ export const createAndCompleteReturnOrderWorkflow = createWorkflow(
 
     createCompleteReturnValidationStep({ order, input })
 
+    const setPricingContext = createHook(
+      "setPricingContext",
+      {
+        order,
+        additional_data: input.additional_data,
+      },
+      {
+        resultValidator: pricingContextResult,
+      }
+    )
+    const setPricingContextResult = setPricingContext.getResult()
+
     const returnShippingOptionsVariables = transform(
-      { input, order },
+      { input, order, setPricingContextResult },
       prepareReturnShippingOptionQueryVariables
     )
 
@@ -287,7 +402,6 @@ export const createAndCompleteReturnOrderWorkflow = createWorkflow(
       ],
       variables: returnShippingOptionsVariables,
       list: false,
-      throw_if_key_not_found: true,
     }).config({ name: "return-shipping-option" })
 
     const shippingMethodData = transform(
@@ -355,5 +469,9 @@ export const createAndCompleteReturnOrderWorkflow = createWorkflow(
         },
       }).config({ name: "emit-return-received-event" })
     )
+
+    return new WorkflowResponse(returnCreated as ReturnDTO, {
+      hooks: [setPricingContext] as const,
+    })
   }
 )

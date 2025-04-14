@@ -43,6 +43,10 @@ post:
         schema:
           $ref: ../components/schemas/StoreCreateCustomer.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_customers/post.js
     - lang: Shell
       label: cURL
       source:

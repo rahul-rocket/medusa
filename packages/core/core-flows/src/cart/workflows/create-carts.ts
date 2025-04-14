@@ -35,14 +35,86 @@ import { confirmVariantInventoryWorkflow } from "./confirm-variant-inventory"
 import { refreshPaymentCollectionForCartWorkflow } from "./refresh-payment-collection"
 import { updateCartPromotionsWorkflow } from "./update-cart-promotions"
 import { updateTaxLinesWorkflow } from "./update-tax-lines"
+import { validateSalesChannelStep } from "../steps/validate-sales-channel"
+import { pricingContextResult } from "../utils/schemas"
+
+/**
+ * The data to create the cart, along with custom data that's passed to the workflow's hooks.
+ */
+export type CreateCartWorkflowInput = CreateCartWorkflowInputDTO &
+  AdditionalData
 
 export const createCartWorkflowId = "create-cart"
 /**
- * This workflow creates a cart.
+ * This workflow creates and returns a cart. You can set the cart's items, region, customer, and other details. This workflow is executed by the
+ * [Create Cart Store API Route](https://docs.medusajs.com/api/store#carts_postcarts).
+ *
+ * This workflow has a hook that allows you to perform custom actions on the created cart. You can see an example in [this guide](https://docs.medusajs.com/resources/commerce-modules/cart/extend#step-4-consume-cartcreated-workflow-hook).
+ *
+ * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around cart creation.
+ *
+ * @example
+ * const { result } = await createCartWorkflow(container)
+ *   .run({
+ *     input: {
+ *       region_id: "reg_123",
+ *       items: [
+ *         {
+ *           variant_id: "var_123",
+ *           quantity: 1,
+ *         }
+ *       ],
+ *       customer_id: "cus_123",
+ *       additional_data: {
+ *         external_id: "123"
+ *       }
+ *     }
+ *   })
+ *
+ * @summary
+ *
+ * Create a cart specifying region, items, and more.
+ *
+ * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
+ * @property hooks.cartCreated - This hook is executed after a cart is created. You can consume this hook to perform custom actions on the created cart.
+ * @property hooks.setPricingContext - This hook is executed after the cart is retrieved and before the line items are created. You can consume this hook to return any custom context useful for the prices retrieval of the variants to be added to the cart.
+ * 
+ * For example, assuming you have the following custom pricing rule:
+ * 
+ * ```json
+ * {
+ *   "attribute": "location_id",
+ *   "operator": "eq",
+ *   "value": "sloc_123",
+ * }
+ * ```
+ * 
+ * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
+ * 
+ * ```ts
+ * import { createCartWorkflow } from "@medusajs/medusa/core-flows";
+ * import { StepResponse } from "@medusajs/workflows-sdk";
+ * 
+ * createCartWorkflow.hooks.setPricingContext((
+ *   { region, variantIds, salesChannel, customerData, additional_data }, { container }
+ * ) => {
+ *   return new StepResponse({
+ *     location_id: "sloc_123", // Special price for in-store purchases
+ *   });
+ * });
+ * ```
+ * 
+ * The variants' prices will now be retrieved using the context you return.
+ * 
+ * :::note
+ * 
+ * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
+ * 
+ * :::
  */
 export const createCartWorkflow = createWorkflow(
   createCartWorkflowId,
-  (input: WorkflowData<CreateCartWorkflowInputDTO & AdditionalData>) => {
+  (input: WorkflowData<CreateCartWorkflowInput>) => {
     const variantIds = transform({ input }, (data) => {
       return (data.input.items ?? []).map((i) => i.variant_id).filter(Boolean)
     })
@@ -60,15 +132,32 @@ export const createCartWorkflow = createWorkflow(
       })
     )
 
+    validateSalesChannelStep({ salesChannel })
+    const setPricingContext = createHook(
+      "setPricingContext",
+      {
+        region,
+        variantIds,
+        salesChannel,
+        customerData,
+        additional_data: input.additional_data,
+      },
+      {
+        resultValidator: pricingContextResult,
+      }
+    )
+    const setPricingContextResult = setPricingContext.getResult()
+
     // TODO: This is on par with the context used in v1.*, but we can be more flexible.
     const pricingContext = transform(
-      { input, region, customerData },
+      { input, region, customerData, setPricingContextResult },
       (data) => {
         if (!data.region) {
           throw new MedusaError(MedusaError.Types.NOT_FOUND, "No regions found")
         }
 
         return {
+          ...(data.setPricingContextResult ? data.setPricingContextResult : {}),
           currency_code: data.input.currency_code ?? data.region.currency_code,
           region_id: data.region.id,
           customer_id: data.customerData.customer?.id,
@@ -119,9 +208,7 @@ export const createCartWorkflow = createWorkflow(
           data_.email = data.input?.email ?? data.customerData.customer.email
         }
 
-        if (data.salesChannel?.id) {
-          data_.sales_channel_id = data.salesChannel.id
-        }
+        data_.sales_channel_id = data.salesChannel!.id
 
         // If there is only one country in the region, we prepare a shipping address with that country's code.
         if (
@@ -172,6 +259,11 @@ export const createCartWorkflow = createWorkflow(
       }
     })
 
+    const validate = createHook("validate", {
+      input: cartInput,
+      cart: cartToCreate,
+    })
+
     const carts = createCartsStep([cartToCreate])
     const cart = transform({ carts }, (data) => data.carts?.[0])
 
@@ -206,7 +298,7 @@ export const createCartWorkflow = createWorkflow(
     })
 
     return new WorkflowResponse(cart, {
-      hooks: [cartCreated],
+      hooks: [validate, cartCreated, setPricingContext] as const,
     })
   }
 )

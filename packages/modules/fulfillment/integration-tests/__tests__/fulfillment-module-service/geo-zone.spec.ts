@@ -154,7 +154,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
             const geoZones = await service.createGeoZones(data)
 
             expect(geoZones).toHaveLength(2)
-            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(2)
+            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(1)
 
             let i = 0
             for (const data_ of data) {
@@ -172,7 +172,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.GEO_ZONE_CREATED,
                     action: "created",
                     object: "geo_zone",
-                    data: { id: geoZones[i].id },
+                    data: { id: expect.arrayContaining([geoZones[i].id]) },
                   }),
                 ]),
                 {
@@ -331,7 +331,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
             const updatedGeoZones = await service.updateGeoZones(updateData)
 
             expect(updatedGeoZones).toHaveLength(2)
-            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(2)
+            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(1)
 
             for (const data_ of updateData) {
               const expectedGeoZone = updatedGeoZones.find(
@@ -352,7 +352,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.GEO_ZONE_UPDATED,
                     action: "updated",
                     object: "geo_zone",
-                    data: { id: expectedGeoZone.id },
+                    data: { id: expect.arrayContaining([expectedGeoZone.id]) },
                   }),
                 ]),
                 {

@@ -1,5 +1,69 @@
 # Change Log
 
+## 2.7.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.7.0
+
+## 2.6.1
+
+### Patch Changes
+
+- [#11738](https://github.com/medusajs/medusa/pull/11738) [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Remove ranges on Medusa packages
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.6.1
+
+## 2.6.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.6.0
+
+## 2.5.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- [#11037](https://github.com/medusajs/medusa/pull/11037) [`a16eaad6c97e1233bd30142adf314065d322af50`](https://github.com/medusajs/medusa/commit/a16eaad6c97e1233bd30142adf314065d322af50) Thanks [@Gederooney](https://github.com/Gederooney)! - Fix issue where create-medusa-app repeatedly asked for database credentials even when --db-url was specified. The logic in MedusaProjectCreator->create()->initializeProject()->setupDatabase() always defines a dbName. Updated the getDbClientAndCredentials() method to check db-url first
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.5.0
+
+## 2.4.0
+
+### Patch Changes
+
+- [#11071](https://github.com/medusajs/medusa/pull/11071) [`cd758067d41ef29139c7dcdcc0639e9d9d520bd8`](https://github.com/medusajs/medusa/commit/cd758067d41ef29139c7dcdcc0639e9d9d520bd8) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(create-medusa-app): fix database name from input not used in setup
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.4.0
+
+## 2.3.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.3.1
+
+## 2.3.0
+
+### Patch Changes
+
+- [#10908](https://github.com/medusajs/medusa/pull/10908) [`c895ed8013fe2feae7b0a92a5d0aad937f58a08a`](https://github.com/medusajs/medusa/commit/c895ed8013fe2feae7b0a92a5d0aad937f58a08a) Thanks [@adrien2p](https://github.com/adrien2p)! - Feat/plugin scaffolding
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.3.0
+
 ## 2.2.0
 
 ### Patch Changes

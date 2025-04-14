@@ -3,7 +3,7 @@
  * operationId: PostUsersId
  * summary: Update a User
  * description: Update a user's details.
- * x-authenticated: false
+ * x-authenticated: true
  * parameters:
  *   - name: id
  *     in: path
@@ -29,6 +29,26 @@
  *       schema:
  *         $ref: "#/components/schemas/AdminUpdateUser"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.user.update("user_123", {
+ *         first_name: "John",
+ *         last_name: "Doe",
+ *       })
+ *       .then(({ user }) => {
+ *         console.log(user)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -61,6 +81,9 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateUsersWorkflow
+ * security:
+ *   - cookie_auth: []
+ *   - jwt_token: []
  * 
 */
 

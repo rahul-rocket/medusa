@@ -8,7 +8,7 @@ post:
     header is retrieved from the `/auth/user/emailpass/register` API route (or a
     provider other than `emailpass`). The user can then authenticate using the
     `/auth/user/emailpass` API route.
-  x-authenticated: false
+  x-authenticated: true
   requestBody:
     content:
       application/json:
@@ -30,6 +30,10 @@ post:
               title: last_name
               description: The user's last name.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_invites_accept/post.js
     - lang: Shell
       label: cURL
       source:
@@ -72,3 +76,6 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: acceptInviteWorkflow
+  security:
+    - cookie_auth: []
+    - jwt_token: []

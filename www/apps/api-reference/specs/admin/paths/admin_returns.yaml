@@ -124,46 +124,6 @@ get:
           type: string
           title: sales_channel_id
           description: A sales channel's ID.
-    - name: fulfillment_status
-      in: query
-      description: Filter by fulfillment statuses.
-      required: false
-      schema:
-        type: array
-        description: Filter by fulfillment statuses.
-        items:
-          type: string
-          description: A fulfillment status.
-          enum:
-            - canceled
-            - not_fulfilled
-            - partially_fulfilled
-            - fulfilled
-            - partially_shipped
-            - shipped
-            - partially_delivered
-            - delivered
-    - name: payment_status
-      in: query
-      description: Filter by payment statuses.
-      required: false
-      schema:
-        type: array
-        description: Filter by payment statuses.
-        items:
-          type: string
-          description: A payment status.
-          enum:
-            - canceled
-            - not_paid
-            - awaiting
-            - authorized
-            - partially_authorized
-            - captured
-            - partially_captured
-            - partially_refunded
-            - refunded
-            - requires_action
     - name: region_id
       in: query
       description: Filter by region IDs to retrieve their associated returns.
@@ -744,6 +704,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_returns/get.js
     - lang: Shell
       label: cURL
       source:
@@ -834,6 +798,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostReturnsReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_returns/post.js
     - lang: Shell
       label: cURL
       source:

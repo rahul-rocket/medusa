@@ -1,4 +1,7 @@
-import { validateAndTransformQuery } from "@medusajs/framework"
+import {
+  featureFlagRouter,
+  validateAndTransformQuery,
+} from "@medusajs/framework"
 import {
   applyDefaultFilters,
   applyParamsAsFilters,
@@ -8,6 +11,7 @@ import {
   MiddlewareRoute,
 } from "@medusajs/framework/http"
 import { isPresent, ProductStatus } from "@medusajs/framework/utils"
+import IndexEngineFeatureFlag from "../../../loaders/feature-flags/index-engine"
 import {
   filterByValidSalesChannels,
   normalizeDataForContext,
@@ -30,11 +34,24 @@ export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.listProductQueryConfig
       ),
       filterByValidSalesChannels(),
-      maybeApplyLinkFilter({
-        entryPoint: "product_sales_channel",
-        resourceId: "product_id",
-        filterableField: "sales_channel_id",
-      }),
+      (req, res, next) => {
+        const canUseIndex = !(
+          isPresent(req.filterableFields.tags) ||
+          isPresent(req.filterableFields.categories)
+        )
+        if (
+          featureFlagRouter.isFeatureEnabled(IndexEngineFeatureFlag.key) &&
+          canUseIndex
+        ) {
+          return next()
+        }
+
+        return maybeApplyLinkFilter({
+          entryPoint: "product_sales_channel",
+          resourceId: "product_id",
+          filterableField: "sales_channel_id",
+        })(req, res, next)
+      },
       applyDefaultFilters({
         status: ProductStatus.PUBLISHED,
         // TODO: the type here seems off and the implementation does not take into account $and and $or possible filters. Might be worth re working (original type used here was StoreGetProductsParamsType)

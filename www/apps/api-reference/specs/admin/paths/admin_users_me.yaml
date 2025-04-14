@@ -2,7 +2,7 @@ get:
   operationId: GetUsersMe
   summary: Get Logged-In User
   description: Retrieve the logged-in user's details.
-  x-authenticated: false
+  x-authenticated: true
   parameters:
     - name: fields
       in: query
@@ -23,6 +23,10 @@ get:
         externalDocs:
           url: '#select-fields-and-relations'
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_users_me/get.js
     - lang: Shell
       label: cURL
       source:
@@ -48,3 +52,6 @@ get:
       $ref: ../components/responses/invalid_request_error.yaml
     '500':
       $ref: ../components/responses/500_error.yaml
+  security:
+    - cookie_auth: []
+    - jwt_token: []

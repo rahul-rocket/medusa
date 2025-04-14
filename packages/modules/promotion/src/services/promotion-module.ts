@@ -2,10 +2,13 @@ import {
   CampaignBudgetTypeValues,
   Context,
   DAL,
+  FilterablePromotionProps,
+  FindConfig,
   InferEntityType,
   InternalModuleDeclaration,
   ModuleJoinerConfig,
   ModulesSdkTypes,
+  PromotionDTO,
   PromotionTypes,
 } from "@medusajs/framework/types"
 import {
@@ -24,6 +27,7 @@ import {
   MedusaContext,
   MedusaError,
   MedusaService,
+  PromotionStatus,
   PromotionType,
   toMikroORMEntity,
   transformPropertiesToBigNumber,
@@ -135,11 +139,44 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  listActivePromotions(
+    filters?: FilterablePromotionProps,
+    config?: FindConfig<PromotionDTO>,
+    sharedContext?: Context
+  ): Promise<PromotionDTO[]> {
+    // Ensure we share the same now date across all filters
+    const now = new Date()
+    const activeFilters = {
+      status: PromotionStatus.ACTIVE,
+      $or: [
+        {
+          campaign_id: null,
+          ...filters,
+        },
+        {
+          ...filters,
+          campaign: {
+            ...filters?.campaign,
+            $and: [
+              {
+                $or: [{ starts_at: null }, { starts_at: { $lte: now } }],
+              },
+              {
+                $or: [{ ends_at: null }, { ends_at: { $gt: now } }],
+              },
+            ],
+          },
+        },
+      ],
+    }
+
+    return this.listPromotions(activeFilters, config, sharedContext)
+  }
+
+  @InjectTransactionManager()
   async registerUsage(
     computedActions: PromotionTypes.UsageComputedActions[],
-    @MedusaContext()
-    @MedusaContext()
-    sharedContext: Context = {}
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<void> {
     const promotionCodes = computedActions
       .map((computedAction) => computedAction.code)
@@ -148,11 +185,9 @@ export default class PromotionModuleService
     const campaignBudgetMap = new Map<string, UpdateCampaignBudgetDTO>()
     const promotionCodeUsageMap = new Map<string, boolean>()
 
-    const existingPromotions = await this.listPromotions(
+    const existingPromotions = await this.listActivePromotions(
       { code: promotionCodes },
-      {
-        relations: ["campaign", "campaign.budget"],
-      },
+      { relations: ["campaign", "campaign.budget"] },
       sharedContext
     )
 
@@ -189,16 +224,19 @@ export default class PromotionModuleService
           continue
         }
 
-        campaignBudgetData.used = MathBN.add(
+        // Calculate the new budget value
+        const newUsedValue = MathBN.add(
           campaignBudgetData.used ?? 0,
           computedAction.amount
         )
 
         if (
           campaignBudget.limit &&
-          MathBN.gt(campaignBudgetData.used, campaignBudget.limit)
+          MathBN.gt(newUsedValue, campaignBudget.limit)
         ) {
           continue
+        } else {
+          campaignBudgetData.used = newUsedValue
         }
 
         campaignBudgetMap.set(campaignBudget.id, campaignBudgetData)
@@ -212,25 +250,30 @@ export default class PromotionModuleService
           continue
         }
 
-        const campaignBudgetData = {
-          id: campaignBudget.id,
-          used: MathBN.add(campaignBudget.used ?? 0, 1),
-        }
+        const newUsedValue = MathBN.add(campaignBudget.used ?? 0, 1)
 
+        // Check if it exceeds the limit and cap it if necessary
         if (
           campaignBudget.limit &&
-          MathBN.gt(campaignBudgetData.used, campaignBudget.limit)
+          MathBN.gt(newUsedValue, campaignBudget.limit)
         ) {
-          continue
+          campaignBudgetMap.set(campaignBudget.id, {
+            id: campaignBudget.id,
+            used: campaignBudget.limit,
+          })
+        } else {
+          campaignBudgetMap.set(campaignBudget.id, {
+            id: campaignBudget.id,
+            used: newUsedValue,
+          })
         }
-
-        campaignBudgetMap.set(campaignBudget.id, campaignBudgetData)
 
         promotionCodeUsageMap.set(promotion.code!, true)
       }
+    }
 
+    if (campaignBudgetMap.size > 0) {
       const campaignBudgetsData: UpdateCampaignBudgetDTO[] = []
-
       for (const [_, campaignBudgetData] of campaignBudgetMap) {
         campaignBudgetsData.push(campaignBudgetData)
       }
@@ -242,7 +285,7 @@ export default class PromotionModuleService
     }
   }
 
-  @InjectManager()
+  @InjectTransactionManager()
   async revertUsage(
     computedActions: PromotionTypes.UsageComputedActions[],
     @MedusaContext() sharedContext: Context = {}
@@ -250,15 +293,13 @@ export default class PromotionModuleService
     const promotionCodeUsageMap = new Map<string, boolean>()
     const campaignBudgetMap = new Map<string, UpdateCampaignBudgetDTO>()
 
-    const existingPromotions = await this.listPromotions(
+    const existingPromotions = await this.listActivePromotions(
       {
         code: computedActions
           .map((computedAction) => computedAction.code)
           .filter(Boolean),
       },
-      {
-        relations: ["campaign", "campaign.budget"],
-      },
+      { relations: ["campaign", "campaign.budget"] },
       sharedContext
     )
 
@@ -295,11 +336,13 @@ export default class PromotionModuleService
           continue
         }
 
-        campaignBudgetData.used = MathBN.sub(
+        // Calculate new used value and ensure it doesn't go below 0
+        const newUsedValue = MathBN.sub(
           campaignBudgetData.used ?? 0,
           computedAction.amount
         )
 
+        campaignBudgetData.used = MathBN.lt(newUsedValue, 0) ? 0 : newUsedValue
         campaignBudgetMap.set(campaignBudget.id, campaignBudgetData)
       }
 
@@ -311,16 +354,21 @@ export default class PromotionModuleService
           continue
         }
 
+        // Calculate new used value and ensure it doesn't go below 0
+        const newUsedValue = MathBN.sub(campaignBudget.used ?? 0, 1)
+        const usedValue = MathBN.lt(newUsedValue, 0) ? 0 : newUsedValue
+
         campaignBudgetMap.set(campaignBudget.id, {
           id: campaignBudget.id,
-          used: MathBN.sub(campaignBudget.used ?? 0, 1),
+          used: usedValue,
         })
 
         promotionCodeUsageMap.set(promotion.code!, true)
       }
+    }
 
+    if (campaignBudgetMap.size > 0) {
       const campaignBudgetsData: UpdateCampaignBudgetDTO[] = []
-
       for (const [_, campaignBudgetData] of campaignBudgetMap) {
         campaignBudgetsData.push(campaignBudgetData)
       }
@@ -343,75 +391,70 @@ export default class PromotionModuleService
     const computedActions: PromotionTypes.ComputeActions[] = []
     const { items = [], shipping_methods: shippingMethods = [] } =
       applicationContext
-    const appliedItemCodes: string[] = []
-    const appliedShippingCodes: string[] = []
+
     const codeAdjustmentMap = new Map<
       string,
-      PromotionTypes.ComputeActionAdjustmentLine[]
+      {
+        items: PromotionTypes.ComputeActionAdjustmentLine[]
+        shipping: PromotionTypes.ComputeActionAdjustmentLine[]
+      }
     >()
+
+    // Pre-process items and shipping methods to build adjustment map efficiently
+    for (const item of items) {
+      if (!item.adjustments?.length) continue
+
+      for (const adjustment of item.adjustments) {
+        if (!isString(adjustment.code)) continue
+
+        if (!codeAdjustmentMap.has(adjustment.code)) {
+          codeAdjustmentMap.set(adjustment.code, { items: [], shipping: [] })
+        }
+
+        codeAdjustmentMap.get(adjustment.code)!.items.push(adjustment)
+      }
+    }
+
+    for (const shippingMethod of shippingMethods) {
+      if (!shippingMethod.adjustments?.length) continue
+
+      for (const adjustment of shippingMethod.adjustments) {
+        if (!isString(adjustment.code)) continue
+
+        if (!codeAdjustmentMap.has(adjustment.code)) {
+          codeAdjustmentMap.set(adjustment.code, { items: [], shipping: [] })
+        }
+
+        codeAdjustmentMap.get(adjustment.code)!.shipping.push(adjustment)
+      }
+    }
+
+    const appliedCodes = Array.from(codeAdjustmentMap.keys())
+
     const methodIdPromoValueMap = new Map<string, number>()
-    // Keeps a map of all elgible items in the buy section and its eligible quantity
-    const eligibleBuyItemMap = new Map<
-      string,
-      ComputeActionUtils.EligibleItem[]
-    >()
-    // Keeps a map of all elgible items in the target section and its eligible quantity
-    const eligibleTargetItemMap = new Map<
-      string,
-      ComputeActionUtils.EligibleItem[]
-    >()
+
     const automaticPromotions = preventAutoPromotions
       ? []
-      : await this.listPromotions(
+      : await this.listActivePromotions(
           { is_automatic: true },
           { select: ["code"] },
           sharedContext
         )
 
-    // Promotions we need to apply includes all the codes that are passed as an argument
-    // to this method, along with any automatic promotions that can be applied to the context
     const automaticPromotionCodes = automaticPromotions.map((p) => p.code!)
     const promotionCodesToApply = [
       ...promotionCodes,
       ...automaticPromotionCodes,
+      ...appliedCodes,
     ]
 
-    items.forEach((item) => {
-      item.adjustments?.forEach((adjustment) => {
-        if (isString(adjustment.code)) {
-          const adjustments = codeAdjustmentMap.get(adjustment.code) || []
+    const uniquePromotionCodes = Array.from(new Set(promotionCodesToApply))
 
-          adjustments.push(adjustment)
-
-          codeAdjustmentMap.set(adjustment.code, adjustments)
-          appliedItemCodes.push(adjustment.code)
-        }
-      })
-    })
-
-    shippingMethods.forEach((shippingMethod) => {
-      shippingMethod.adjustments?.forEach((adjustment) => {
-        if (isString(adjustment.code)) {
-          const adjustments = codeAdjustmentMap.get(adjustment.code) || []
-
-          adjustments.push(adjustment)
-
-          codeAdjustmentMap.set(adjustment.code, adjustments)
-          appliedShippingCodes.push(adjustment.code)
-        }
-      })
-    })
-
-    const promotions = await this.listPromotions(
-      {
-        code: [
-          ...promotionCodesToApply,
-          ...appliedItemCodes,
-          ...appliedShippingCodes,
-        ],
-      },
+    const promotions = await this.listActivePromotions(
+      { code: uniquePromotionCodes },
       {
         take: null,
+        order: { application_method: { value: "DESC" } },
         relations: [
           "application_method",
           "application_method.target_rules",
@@ -423,42 +466,51 @@ export default class PromotionModuleService
           "campaign",
           "campaign.budget",
         ],
-      }
+      },
+      sharedContext
     )
 
     const existingPromotionsMap = new Map<string, PromotionTypes.PromotionDTO>(
       promotions.map((promotion) => [promotion.code!, promotion])
     )
 
-    // We look at any existing promo codes applied in the context and recommend
-    // them to be removed to start calculations from the beginning and refresh
-    // the adjustments if they are requested to be applied again
-    const appliedCodes = [...appliedShippingCodes, ...appliedItemCodes]
-
-    for (const appliedCode of appliedCodes) {
-      const adjustments = codeAdjustmentMap.get(appliedCode) || []
-      const action = appliedShippingCodes.includes(appliedCode)
-        ? ComputedActions.REMOVE_SHIPPING_METHOD_ADJUSTMENT
-        : ComputedActions.REMOVE_ITEM_ADJUSTMENT
-
-      adjustments.forEach((adjustment) =>
+    for (const [code, adjustments] of codeAdjustmentMap.entries()) {
+      for (const adjustment of adjustments.items) {
         computedActions.push({
-          action,
+          action: ComputedActions.REMOVE_ITEM_ADJUSTMENT,
           adjustment_id: adjustment.id,
-          code: appliedCode,
+          code,
         })
-      )
+      }
+
+      for (const adjustment of adjustments.shipping) {
+        computedActions.push({
+          action: ComputedActions.REMOVE_SHIPPING_METHOD_ADJUSTMENT,
+          adjustment_id: adjustment.id,
+          code,
+        })
+      }
     }
 
-    // We sort the promo codes to apply with buy get type first as they
-    // are likely to be most valuable.
-    const sortedPermissionsToApply = promotions
-      .filter((p) => promotionCodesToApply.includes(p.code!))
+    const sortedPromotionsToApply = promotions
+      .filter(
+        (p) =>
+          promotionCodes.includes(p.code!) ||
+          automaticPromotionCodes.includes(p.code!)
+      )
       .sort(ComputeActionUtils.sortByBuyGetType)
 
-    for (const promotionToApply of sortedPermissionsToApply) {
-      const promotion = existingPromotionsMap.get(promotionToApply.code!)!
+    const eligibleBuyItemMap = new Map<
+      string,
+      ComputeActionUtils.EligibleItem[]
+    >()
+    const eligibleTargetItemMap = new Map<
+      string,
+      ComputeActionUtils.EligibleItem[]
+    >()
 
+    for (const promotionToApply of sortedPromotionsToApply) {
+      const promotion = existingPromotionsMap.get(promotionToApply.code!)!
       const {
         application_method: applicationMethod,
         rules: promotionRules = [],
@@ -489,9 +541,7 @@ export default class PromotionModuleService
           )
 
         computedActions.push(...computedActionsForItems)
-      }
-
-      if (promotion.type === PromotionType.STANDARD) {
+      } else if (promotion.type === PromotionType.STANDARD) {
         const isTargetOrder =
           applicationMethod.target_type === ApplicationMethodTargetType.ORDER
         const isTargetItems =
@@ -539,12 +589,14 @@ export default class PromotionModuleService
     sharedContext?: Context
   ): Promise<PromotionTypes.PromotionDTO>
 
+  // @ts-expect-error
   async createPromotions(
     data: PromotionTypes.CreatePromotionDTO[],
     sharedContext?: Context
   ): Promise<PromotionTypes.PromotionDTO[]>
 
   @InjectManager()
+  // @ts-expect-error
   async createPromotions(
     data:
       | PromotionTypes.CreatePromotionDTO
@@ -583,11 +635,20 @@ export default class PromotionModuleService
     const promotionsData: CreatePromotionDTO[] = []
     const applicationMethodsData: CreateApplicationMethodDTO[] = []
     const campaignsData: CreateCampaignDTO[] = []
-    const existingCampaigns = await this.campaignService_.list(
-      { id: data.map((d) => d.campaign_id).filter((id) => isString(id)) },
-      { relations: ["budget"] },
-      sharedContext
-    )
+
+    const campaignIds = data
+      .filter((d) => d.campaign_id)
+      .map((d) => d.campaign_id)
+      .filter((id): id is string => isString(id))
+
+    const existingCampaigns =
+      campaignIds.length > 0
+        ? await this.campaignService_.list(
+            { id: campaignIds },
+            { relations: ["budget"] },
+            sharedContext
+          )
+        : []
 
     const promotionCodeApplicationMethodDataMap = new Map<
       string,
@@ -635,7 +696,6 @@ export default class PromotionModuleService
 
       if (!campaignData && !campaignId) {
         promotionsData.push({ ...promotionData })
-
         continue
       }
 
@@ -746,24 +806,28 @@ export default class PromotionModuleService
         }
       }
 
-      await this.createPromotionRulesAndValues_(
-        promotionCodeRulesDataMap.get(promotion.code) || [],
-        "promotions",
-        promotion,
-        sharedContext
-      )
+      if (promotionCodeRulesDataMap.has(promotion.code)) {
+        await this.createPromotionRulesAndValues_(
+          promotionCodeRulesDataMap.get(promotion.code) || [],
+          "promotions",
+          promotion,
+          sharedContext
+        )
+      }
     }
 
     const createdApplicationMethods =
-      await this.applicationMethodService_.create(
-        applicationMethodsData,
-        sharedContext
-      )
+      applicationMethodsData.length > 0
+        ? await this.applicationMethodService_.create(
+            applicationMethodsData,
+            sharedContext
+          )
+        : []
 
-    const createdCampaigns = await this.createCampaigns(
-      campaignsData,
-      sharedContext
-    )
+    const createdCampaigns =
+      campaignsData.length > 0
+        ? await this.createCampaigns(campaignsData, sharedContext)
+        : []
 
     for (const campaignData of campaignsData) {
       const promotions = campaignData.promotions
@@ -771,30 +835,36 @@ export default class PromotionModuleService
         (c) => c.campaign_identifier === campaignData.campaign_identifier
       )
 
-      if (!campaign || !promotions || !promotions.length) {
-        continue
+      if (campaign && promotions && promotions.length) {
+        await this.addPromotionsToCampaign(
+          { id: campaign.id, promotion_ids: promotions.map((p) => p.id) },
+          sharedContext
+        )
       }
-
-      await this.addPromotionsToCampaign(
-        { id: campaign.id, promotion_ids: promotions.map((p) => p.id) },
-        sharedContext
-      )
     }
 
     for (const applicationMethod of createdApplicationMethods) {
-      await this.createPromotionRulesAndValues_(
-        methodTargetRulesMap.get(applicationMethod.promotion.id) || [],
-        "method_target_rules",
-        applicationMethod,
-        sharedContext
+      const targetRules = methodTargetRulesMap.get(
+        applicationMethod.promotion.id
       )
+      if (targetRules && targetRules.length > 0) {
+        await this.createPromotionRulesAndValues_(
+          targetRules,
+          "method_target_rules",
+          applicationMethod,
+          sharedContext
+        )
+      }
 
-      await this.createPromotionRulesAndValues_(
-        methodBuyRulesMap.get(applicationMethod.promotion.id) || [],
-        "method_buy_rules",
-        applicationMethod,
-        sharedContext
-      )
+      const buyRules = methodBuyRulesMap.get(applicationMethod.promotion.id)
+      if (buyRules && buyRules.length > 0) {
+        await this.createPromotionRulesAndValues_(
+          buyRules,
+          "method_buy_rules",
+          applicationMethod,
+          sharedContext
+        )
+      }
     }
 
     return createdPromotions
@@ -806,12 +876,14 @@ export default class PromotionModuleService
     sharedContext?: Context
   ): Promise<PromotionTypes.PromotionDTO>
 
+  // @ts-expect-error
   async updatePromotions(
     data: PromotionTypes.UpdatePromotionDTO[],
     sharedContext?: Context
   ): Promise<PromotionTypes.PromotionDTO[]>
 
   @InjectManager()
+  // @ts-expect-error
   async updatePromotions(
     data:
       | PromotionTypes.UpdatePromotionDTO
@@ -1260,18 +1332,20 @@ export default class PromotionModuleService
     )
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   async createCampaigns(
     data: PromotionTypes.CreateCampaignDTO,
     sharedContext?: Context
   ): Promise<PromotionTypes.CampaignDTO>
 
+  // @ts-expect-error
   async createCampaigns(
     data: PromotionTypes.CreateCampaignDTO[],
     sharedContext?: Context
   ): Promise<PromotionTypes.CampaignDTO[]>
 
   @InjectManager()
+  // @ts-expect-error
   async createCampaigns(
     data: PromotionTypes.CreateCampaignDTO | PromotionTypes.CreateCampaignDTO[],
     @MedusaContext() sharedContext: Context = {}
@@ -1369,18 +1443,20 @@ export default class PromotionModuleService
     }
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   async updateCampaigns(
     data: PromotionTypes.UpdateCampaignDTO,
     sharedContext?: Context
   ): Promise<PromotionTypes.CampaignDTO>
 
+  // @ts-expect-error
   async updateCampaigns(
     data: PromotionTypes.UpdateCampaignDTO[],
     sharedContext?: Context
   ): Promise<PromotionTypes.CampaignDTO[]>
 
   @InjectManager()
+  // @ts-expect-error
   async updateCampaigns(
     data: PromotionTypes.UpdateCampaignDTO | PromotionTypes.UpdateCampaignDTO[],
     @MedusaContext() sharedContext: Context = {}

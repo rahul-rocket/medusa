@@ -1,9 +1,9 @@
-/** @type {import('types').RawSidebarItem[]} */
+/** @type {import('types').Sidebar.SidebarItem[]} */
 export const promotionSidebar = [
   {
-    type: "category",
+    type: "sidebar",
+    sidebar_id: "promotion",
     title: "Promotion Module",
-    isChildSidebar: true,
     children: [
       {
         type: "link",
@@ -16,7 +16,6 @@ export const promotionSidebar = [
       {
         type: "category",
         title: "Concepts",
-        initialOpen: false,
         children: [
           {
             type: "link",
@@ -49,8 +48,8 @@ export const promotionSidebar = [
         type: "category",
         title: "Server Guides",
         autogenerate_tags: "server+promotion",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to use the Promotion Module in your customizations on the Medusa application server.",
         children: [
@@ -65,8 +64,8 @@ export const promotionSidebar = [
         type: "category",
         title: "Storefront Guides",
         autogenerate_tags: "storefront+promotion,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to integrate the Promotion Module's features into your storefront.",
       },
@@ -74,24 +73,23 @@ export const promotionSidebar = [
         type: "category",
         title: "Admin Guides",
         autogenerate_tags: "admin+promotion,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize administative features of the Promotion Module.",
       },
       {
         type: "category",
-        title: "User Guides",
-        autogenerate_tags: "userGuides+promotion",
-        initialOpen: false,
+        title: "Admin User Guides",
+        autogenerate_tags: "userGuide+promotion",
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize and manage Promotion features in the Medusa Admin dashboard.",
       },
       {
         type: "category",
         title: "References",
-        initialOpen: false,
         description:
           "Find references for tools and resources related to the Promotion Module, such as data models, methods, and more. These are useful for your customizations.",
         children: [
@@ -106,12 +104,14 @@ export const promotionSidebar = [
                 title: "Workflows",
                 autogenerate_tags: "workflow+promotion",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "category",
                 title: "Steps",
                 autogenerate_tags: "step+promotion",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -128,6 +128,7 @@ export const promotionSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Store API Routes related to the Promotion Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "sub-category",
@@ -136,6 +137,7 @@ export const promotionSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Admin API Routes related to the Promotion Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -145,12 +147,19 @@ export const promotionSidebar = [
             title: "Admin Widget Zones",
           },
           {
-            type: "link",
-            path: "/references/promotion",
+            type: "sidebar",
+            sidebar_id: "promotion-service-reference",
             title: "Main Service Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Promotion Module's Main Service Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/promotion",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Methods",
@@ -161,12 +170,19 @@ export const promotionSidebar = [
             ],
           },
           {
-            type: "link",
-            path: "/references/promotion/models",
+            type: "sidebar",
+            sidebar_id: "promotion-models-reference",
             title: "Data Models Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Promotion Module Data Models Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/promotion/models",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Data Models",

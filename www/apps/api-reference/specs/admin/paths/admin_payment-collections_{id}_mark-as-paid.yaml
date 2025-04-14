@@ -49,6 +49,11 @@ post:
               title: order_id
               description: The ID of the order associated with the payment collection.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_payment-collections_{id}_mark-as-paid/post.js
     - lang: Shell
       label: cURL
       source:

@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation"
 import React, { createContext, useContext, useMemo } from "react"
-import { NavigationItem } from "types"
+import { MenuItem, NavigationItem, NavigationItemDropdown } from "types"
 import { useSiteConfig } from "../SiteConifg"
 
 export type MainNavContext = {
@@ -16,19 +16,57 @@ const MainNavContext = createContext<MainNavContext | null>(null)
 
 export type MainNavProviderProps = {
   navItems: NavigationItem[]
-  editDate?: string
   children?: React.ReactNode
 }
 
 export const MainNavProvider = ({
   navItems,
   children,
-  editDate,
 }: MainNavProviderProps) => {
   const pathname = usePathname()
   const { config } = useSiteConfig()
 
   const baseUrl = `${config.baseUrl}${config.basePath}`
+
+  const findActiveItem = (
+    items: NavigationItemDropdown["children"],
+    currentUrl: string
+  ) => {
+    let item: MenuItem | undefined
+    let fallbackIndex: number | undefined
+    items.some((childItem, index) => {
+      if (childItem.type !== "link" && childItem.type !== "sub-menu") {
+        return false
+      }
+
+      if (childItem.type === "sub-menu") {
+        const activeChildRes = findActiveItem(childItem.items, currentUrl)
+        item = activeChildRes.item
+        fallbackIndex = activeChildRes.fallbackIndex
+        return !!item
+      }
+
+      const isItemActive = currentUrl.startsWith(childItem.link)
+
+      if (!isItemActive) {
+        return false
+      }
+
+      if (childItem.useAsFallback && fallbackIndex === undefined) {
+        fallbackIndex = index
+        return false
+      }
+
+      item = childItem
+
+      return true
+    })
+
+    return {
+      item,
+      fallbackIndex,
+    }
+  }
 
   const activeItemIndex = useMemo(() => {
     const currentUrl = `${baseUrl}${pathname}`.replace(/\/$/, "")
@@ -37,31 +75,22 @@ export const MainNavProvider = ({
 
     const index = navItems.findIndex((item, index) => {
       if (item.type === "dropdown") {
-        return item.children.some((childItem) => {
-          if (childItem.type !== "link") {
-            return
-          }
+        const { item: activeChild, fallbackIndex: childFallbackIndex } =
+          findActiveItem(item.children, currentUrl)
 
-          const isItemActive = currentUrl.startsWith(childItem.link)
+        if (activeChild) {
+          fallbackIndex = childFallbackIndex
+          return true
+        }
 
-          if (
-            isItemActive &&
-            childItem.useAsFallback &&
-            fallbackIndex === undefined
-          ) {
-            fallbackIndex = index
-            return false
-          }
-
-          return isItemActive
-        })
+        return item.link && currentUrl.startsWith(item.link)
       }
 
       if (item.project && item.project !== config.project.key) {
         return false
       }
 
-      const isItemActive = currentUrl.startsWith(item.path)
+      const isItemActive = currentUrl.startsWith(item.link)
 
       if (isItemActive && item.useAsFallback && fallbackIndex === undefined) {
         fallbackIndex = index
@@ -87,7 +116,6 @@ export const MainNavProvider = ({
       value={{
         navItems,
         activeItemIndex,
-        editDate,
         activeItem,
       }}
     >

@@ -9,13 +9,24 @@ import {
 } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
+/**
+ * The details of the carts to update.
+ */
+export type UpdateCartsStepInput = UpdateCartWorkflowInputDTO[]
+
 export const updateCartsStepId = "update-carts"
 /**
  * This step updates a cart.
+ *
+ * @example
+ * const data = updateCartsStep([{
+ *   id: "cart_123",
+ *   email: "customer@gmail.com",
+ * }])
  */
 export const updateCartsStep = createStep(
   updateCartsStepId,
-  async (data: UpdateCartWorkflowInputDTO[], { container }) => {
+  async (data: UpdateCartsStepInput, { container }) => {
     const cartModule = container.resolve<ICartModuleService>(Modules.CART)
 
     const { selects, relations } = getSelectsAndRelationsFromObjectArray(data)
@@ -46,6 +57,7 @@ export const updateCartsStep = createStep(
         email: cart.email,
         currency_code: cart.currency_code,
         metadata: cart.metadata,
+        completed_at: cart.completed_at,
       })
     }
 

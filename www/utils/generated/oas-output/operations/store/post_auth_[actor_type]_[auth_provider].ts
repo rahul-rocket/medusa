@@ -33,15 +33,42 @@
  * 
  *           For the Google and GitHub authentication providers, you can pass `callback_url` to indicate the URL in the frontend that the customer should be redirected to after completing their authentication. This will override the provider's `callbackUrl` configurations in `medusa-config.ts`.
  * x-codeSamples:
- *   - lang: Shell
- *     label: EmailPass Provider
- *     source:  |-
- *       curl -X POST '{backend_url}/auth/customer/emailpass' \
- *       -H 'Content-Type: application/json' \
- *       --data-raw '{
- *         "email": "customer@gmail.com",
- *         "password": "supersecret"
- *       }'
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       const result = await sdk.auth.login(
+ *         "customer",
+ *         "emailpass",
+ *         {
+ *           email: "customer@gmail.com",
+ *           password: "supersecret"
+ *         }
+ *       )
+ * 
+ *       if (typeof result !== "string") {
+ *         alert("Authentication requires additional steps")
+ *         // replace with the redirect logic of your application
+ *         window.location.href = result.location
+ *         return
+ *       }
+ * 
+ *       // customer is now authenticated
+ *       // all subsequent requests will use the token in the header
+ *       const { customer } = await sdk.store.customer.retrieve()
  *   - lang: Bash
  *     label: Google Provider
  *     source:  |-

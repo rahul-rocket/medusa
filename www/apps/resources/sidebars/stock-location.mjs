@@ -1,9 +1,9 @@
-/** @type {import('types').RawSidebarItem[]} */
+/** @type {import('types').Sidebar.SidebarItem[]} */
 export const stockLocationSidebar = [
   {
-    type: "category",
+    type: "sidebar",
+    sidebar_id: "stock-location",
     title: "Stock Location Module",
-    isChildSidebar: true,
     children: [
       {
         type: "link",
@@ -16,7 +16,8 @@ export const stockLocationSidebar = [
       {
         type: "category",
         title: "Concepts",
-        initialOpen: false,
+        autogenerate_tags: "concept+stockLocation",
+        autogenerate_as_ref: true,
         children: [
           {
             type: "link",
@@ -34,8 +35,8 @@ export const stockLocationSidebar = [
         type: "category",
         title: "Server Guides",
         autogenerate_tags: "server+stockLocation",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to use the Stock Location Module in your customizations on the Medusa application server.",
       },
@@ -43,8 +44,8 @@ export const stockLocationSidebar = [
         type: "category",
         title: "Storefront Guides",
         autogenerate_tags: "storefront+stockLocation,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to integrate the Stock Location Module's features into your storefront.",
       },
@@ -52,24 +53,23 @@ export const stockLocationSidebar = [
         type: "category",
         title: "Admin Guides",
         autogenerate_tags: "admin+stockLocation,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize administative features of the Stock Location Module.",
       },
       {
         type: "category",
-        title: "User Guides",
-        autogenerate_tags: "userGuides+stockLocation",
-        initialOpen: false,
+        title: "Admin User Guides",
+        autogenerate_tags: "userGuide+stockLocation",
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize and manage Stock Location features in the Medusa Admin dashboard.",
       },
       {
         type: "category",
         title: "References",
-        initialOpen: false,
         description:
           "Find references for tools and resources related to the Stock Location Module, such as data models, methods, and more. These are useful for your customizations.",
         children: [
@@ -84,12 +84,14 @@ export const stockLocationSidebar = [
                 title: "Workflows",
                 autogenerate_tags: "workflow+stockLocation",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "category",
                 title: "Steps",
                 autogenerate_tags: "step+stockLocation",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -106,6 +108,7 @@ export const stockLocationSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Store API Routes related to the Stock Location Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "sub-category",
@@ -114,6 +117,7 @@ export const stockLocationSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Admin API Routes related to the Stock Location Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -123,12 +127,19 @@ export const stockLocationSidebar = [
             title: "Admin Widget Zones",
           },
           {
-            type: "link",
-            path: "/references/stock-location-next",
+            type: "sidebar",
+            sidebar_id: "stock-location-service-reference",
             title: "Main Service Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Stock Location Module's Main Service Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/stock-location-next",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Methods",
@@ -138,12 +149,19 @@ export const stockLocationSidebar = [
             ],
           },
           {
-            type: "link",
-            path: "/references/stock-location-next/models",
+            type: "sidebar",
+            sidebar_id: "stock-location-models-reference",
             title: "Data Models Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Stock Location Module Data Models Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/stock-location-next/models",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Data Models",

@@ -30,6 +30,11 @@ post:
             email: customer@gmail.com
             password: supersecret
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/auth_customer_{auth_provider}_register/post.js
     - lang: Shell
       label: cURL
       source:

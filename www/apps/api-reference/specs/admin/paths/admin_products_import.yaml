@@ -16,6 +16,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminImportProductRequest.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products_import/post.js
     - lang: Shell
       label: cURL
       source:

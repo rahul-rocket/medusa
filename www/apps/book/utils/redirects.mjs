@@ -113,6 +113,51 @@ const redirects = async () => {
       destination: "/learn/fundamentals/module-links/link",
       permanent: true,
     },
+    {
+      source: "/learn/debugging-and-testing",
+      destination: "/learn/debugging-and-testing/testing-tools",
+      permanent: true,
+    },
+    {
+      source: "/learn/more-resources",
+      destination: "/learn/resources/contribution-guidelines/docs",
+      permanent: true,
+    },
+    {
+      source: "/learn/conventions/:path*",
+      destination: "/learn/configurations/:path*",
+      permanent: true,
+    },
+    {
+      source: "/learn/fundamentals/data-models/configure-properties",
+      destination: "/learn/fundamentals/data-models/properties",
+      permanent: true,
+    },
+    {
+      source: "/learn/fundamentals/data-models/default-properties",
+      destination: "/learn/fundamentals/data-models/properties",
+      permanent: true,
+    },
+    {
+      source: "/learn/fundamentals/data-models/primary-key",
+      destination: "/learn/fundamentals/data-models/properties",
+      permanent: true,
+    },
+    {
+      source: "/learn/fundamentals/data-models/property-types",
+      destination: "/learn/fundamentals/data-models/properties",
+      permanent: true,
+    },
+    {
+      source: "/learn/fundamentals/data-models/searchable-property",
+      destination: "/learn/fundamentals/data-models/properties",
+      permanent: true,
+    },
+    {
+      source: "/starters/nextjs-medusa-starter",
+      destination: "/resources/nextjs-starter",
+      permanent: true,
+    },
   ]
 }
 

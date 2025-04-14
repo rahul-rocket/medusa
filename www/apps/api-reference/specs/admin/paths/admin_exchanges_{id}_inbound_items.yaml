@@ -24,6 +24,10 @@ post:
           $ref: >-
             ../components/schemas/AdminPostExchangesReturnRequestItemsReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_exchanges_{id}_inbound_items/post.js
     - lang: Shell
       label: cURL
       source:

@@ -1,4 +1,4 @@
-import { ChildDocs } from "docs-ui"
+import { CardList, Card } from "docs-ui"
 
 export const metadata = {
   title: `Deployments`,
@@ -24,7 +24,9 @@ With Medusa Cloud, you maintain full customization control as you deploy your ow
 - Preview environments for new PRs.
 - Test on production-like data.
 
-[Sign up and learn more about Medusa Cloud](https://medusajs.com/contact)
+Medusa Cloud users also gets early access to new features (for example, Gift Cards and Draft Orders).
+
+[Sign up and learn more about Medusa Cloud](https://medusajs.com/pricing/)
 
 ---
 
@@ -32,7 +34,20 @@ With Medusa Cloud, you maintain full customization control as you deploy your ow
 
 To host and maintain Medusa on your own, check out the following guides.
 
-<ChildDocs showItems={["Self-Hosting"]} hideTitle={true} />
+<CardList
+  items={[
+    {
+      title: "General Guide",
+      href: "https://docs.medusajs.com/learn/deployment/general",
+      text: "General steps to deploy Medusa.",
+    },
+    {
+      title: "Railway",
+      href: "/deployment/medusa-application/railway",
+      text: "Deploy Medusa on Railway.",
+    }
+  ]}
+/>
 
 ---
 
@@ -40,4 +55,8 @@ To host and maintain Medusa on your own, check out the following guides.
 
 Learn how to deploy the Next.js Starter Storefront.
 
-<ChildDocs showItems={["Next.js Starter"]} hideTitle={true} />
+<Card
+  title="Vercel"
+  path="/deployment/storefront/vercel"
+  text="Deploy the Next.js Starter Storefront on Vercel."
+/>

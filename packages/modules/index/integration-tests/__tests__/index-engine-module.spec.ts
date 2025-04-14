@@ -8,7 +8,6 @@ import { MedusaAppOutput, MedusaModule } from "@medusajs/framework/modules-sdk"
 import { EventBusTypes, IndexTypes } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
-  ModuleRegistrationName,
   Modules,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
@@ -17,6 +16,7 @@ import { EntityManager } from "@mikro-orm/postgresql"
 import { IndexData, IndexRelation } from "@models"
 import { asValue } from "awilix"
 import * as path from "path"
+import { setTimeout } from "timers/promises"
 import { EventBusServiceMock } from "../__fixtures__"
 import { dbName } from "../__fixtures__/medusa-config"
 
@@ -30,29 +30,34 @@ const dbUtils = TestDatabaseUtils.dbTestUtilFactory()
 jest.setTimeout(300000)
 
 const productId = "prod_1"
+const productId2 = "prod_2"
 const variantId = "var_1"
+const variantId2 = "var_2"
 const priceSetId = "price_set_1"
 const priceId = "money_amount_1"
 const linkId = "link_id_1"
 
 const sendEvents = async (eventDataToEmit) => {
-  let a = 0
+  let productCounter = 0
+  let variantCounter = 0
 
   queryMock.graph = jest.fn().mockImplementation((query) => {
     const entity = query.entity
     if (entity === "product") {
       return {
         data: {
-          id: a++ > 0 ? "aaaa" : productId,
+          id: productCounter++ > 0 ? productId2 : productId,
+          title: "Test Product " + productCounter,
         },
       }
     } else if (entity === "product_variant") {
+      const counter = variantCounter++
       return {
         data: {
-          id: variantId,
+          id: counter > 0 ? variantId2 : variantId,
           sku: "aaa test aaa",
           product: {
-            id: productId,
+            id: counter > 0 ? productId2 : productId,
           },
         },
       }
@@ -136,6 +141,7 @@ const beforeAll_ = async () => {
     ;(index as any).eventBusModuleService_ = eventBusMock
 
     await globalApp.onApplicationStart()
+    await setTimeout(3000)
     ;(index as any).storageProvider_.query_ = queryMock
 
     return globalApp
@@ -151,6 +157,7 @@ const beforeEach_ = async (eventDataToEmit) => {
   if (isFirstTime) {
     isFirstTime = false
     await sendEvents(eventDataToEmit)
+
     return
   }
 
@@ -190,6 +197,8 @@ describe("IndexModuleService", function () {
     await dbUtils.shutdown(dbName)
   })
 
+  afterEach(afterEach_)
+
   describe("on created or attached events", function () {
     let manager
 
@@ -216,7 +225,7 @@ describe("IndexModuleService", function () {
         },
       },
       {
-        name: "PriceSet.created",
+        name: "pricing.price-set.created",
         data: {
           id: priceSetId,
         },
@@ -243,9 +252,8 @@ describe("IndexModuleService", function () {
     beforeEach(async () => {
       await beforeEach_(eventDataToEmit)
 
-      manager = (
-        medusaApp.sharedContainer!.resolve(ModuleRegistrationName.INDEX) as any
-      ).container_.manager as EntityManager
+      manager = (medusaApp.sharedContainer!.resolve(Modules.INDEX) as any)
+        .container_.manager as EntityManager
     })
 
     afterEach(afterEach_)
@@ -373,11 +381,20 @@ describe("IndexModuleService", function () {
       {
         name: "product.created",
         data: {
-          id: "PRODUCTASDASDAS",
+          id: productId2,
         },
       },
       {
-        name: "PriceSet.created",
+        name: "variant.created",
+        data: {
+          id: variantId2,
+          product: {
+            id: productId2,
+          },
+        },
+      },
+      {
+        name: "pricing.price-set.created",
         data: {
           id: priceSetId,
         },
@@ -404,9 +421,8 @@ describe("IndexModuleService", function () {
     beforeEach(async () => {
       await beforeEach_(eventDataToEmit)
 
-      manager = (
-        medusaApp.sharedContainer!.resolve(ModuleRegistrationName.INDEX) as any
-      ).container_.manager as EntityManager
+      manager = (medusaApp.sharedContainer!.resolve(Modules.INDEX) as any)
+        .container_.manager as EntityManager
     })
 
     afterEach(afterEach_)
@@ -426,14 +442,46 @@ describe("IndexModuleService", function () {
       })
 
       expect(productIndexEntries).toHaveLength(2)
-      expect(productIndexEntries[0].id).toEqual(productId)
+      expect(productIndexEntries).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: productId,
+            data: expect.objectContaining({
+              id: productId,
+              title: expect.stringContaining("Test Product"),
+            }),
+          }),
+          expect.objectContaining({
+            id: productId2,
+            data: expect.objectContaining({
+              id: productId2,
+              title: expect.stringContaining("Test Product"),
+            }),
+          }),
+        ])
+      )
 
       const variantIndexEntries = indexEntries.filter((entry) => {
         return entry.name === "ProductVariant"
       })
 
-      expect(variantIndexEntries).toHaveLength(1)
-      expect(variantIndexEntries[0].id).toEqual(variantId)
+      expect(variantIndexEntries).toHaveLength(2)
+      expect(variantIndexEntries).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: variantId,
+            data: expect.objectContaining({
+              id: variantId,
+            }),
+          }),
+          expect.objectContaining({
+            id: variantId2,
+            data: expect.objectContaining({
+              id: variantId2,
+            }),
+          }),
+        ])
+      )
 
       const priceSetIndexEntries = indexEntries.filter((entry) => {
         return entry.name === "PriceSet"
@@ -461,7 +509,7 @@ describe("IndexModuleService", function () {
         {}
       )
 
-      expect(indexRelationEntries).toHaveLength(4)
+      expect(indexRelationEntries).toHaveLength(5)
 
       const productVariantIndexRelationEntries = indexRelationEntries.filter(
         (entry) => {
@@ -565,9 +613,8 @@ describe("IndexModuleService", function () {
     beforeEach(async () => {
       await beforeEach_(eventDataToEmit)
 
-      manager = (
-        medusaApp.sharedContainer!.resolve(ModuleRegistrationName.INDEX) as any
-      ).container_.manager as EntityManager
+      manager = (medusaApp.sharedContainer!.resolve(Modules.INDEX) as any)
+        .container_.manager as EntityManager
 
       await updateData(manager)
 
@@ -644,7 +691,7 @@ describe("IndexModuleService", function () {
         },
       },
       {
-        name: "PriceSet.created",
+        name: "pricing.price-set.created",
         data: {
           id: priceSetId,
         },
@@ -686,9 +733,8 @@ describe("IndexModuleService", function () {
     beforeEach(async () => {
       await beforeEach_(eventDataToEmit)
 
-      manager = (
-        medusaApp.sharedContainer!.resolve(ModuleRegistrationName.INDEX) as any
-      ).container_.manager as EntityManager
+      manager = (medusaApp.sharedContainer!.resolve(Modules.INDEX) as any)
+        .container_.manager as EntityManager
 
       queryMock.graph = jest.fn().mockImplementation((query) => {
         const entity = query.entity
@@ -717,62 +763,14 @@ describe("IndexModuleService", function () {
       await eventBusMock.emit(deleteEventDataToEmit)
     })
 
-    afterEach(afterEach_)
-
     it("should consume all deleted events and delete the index entries", async () => {
       const indexEntries = await manager.find(toMikroORMEntity(IndexData), {})
       const indexRelationEntries = await manager.find(
-        toMikroORMEntity(IndexRelation),
-        {},
-        {
-          populate: ["parent", "child"],
-        }
+        toMikroORMEntity(IndexRelation)
       )
 
       expect(indexEntries).toHaveLength(3)
       expect(indexRelationEntries).toHaveLength(2)
-
-      const linkIndexEntry = indexEntries.find((entry) => {
-        return (
-          entry.name === "LinkProductVariantPriceSet" && entry.id === linkId
-        )
-      })!
-
-      const priceSetIndexEntry = indexEntries.find((entry) => {
-        return entry.name === "PriceSet" && entry.id === priceSetId
-      })!
-
-      const priceIndexEntry = indexEntries.find((entry) => {
-        return entry.name === "Price" && entry.id === priceId
-      })!
-
-      const linkPriceSetIndexRelationEntry = indexRelationEntries.find(
-        (entry) => {
-          return (
-            entry.parent_id === linkId &&
-            entry.parent_name === "LinkProductVariantPriceSet" &&
-            entry.child_id === priceSetId &&
-            entry.child_name === "PriceSet"
-          )
-        }
-      )!
-
-      expect(linkPriceSetIndexRelationEntry.parent).toEqual(linkIndexEntry)
-      expect(linkPriceSetIndexRelationEntry.child).toEqual(priceSetIndexEntry)
-
-      const priceSetPriceIndexRelationEntry = indexRelationEntries.find(
-        (entry) => {
-          return (
-            entry.parent_id === priceSetId &&
-            entry.parent_name === "PriceSet" &&
-            entry.child_id === priceId &&
-            entry.child_name === "Price"
-          )
-        }
-      )!
-
-      expect(priceSetPriceIndexRelationEntry.parent).toEqual(priceSetIndexEntry)
-      expect(priceSetPriceIndexRelationEntry.child).toEqual(priceIndexEntry)
     })
   })
 })

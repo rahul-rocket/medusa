@@ -1,5 +1,27 @@
 # @medusajs/admin-shared
 
+## 2.7.0
+
+### Patch Changes
+
+- [#11871](https://github.com/medusajs/medusa/pull/11871) [`5ab15a29889870411b719ebad3fb94786baee45e`](https://github.com/medusajs/medusa/commit/5ab15a29889870411b719ebad3fb94786baee45e) Thanks [@riqwan](https://github.com/riqwan)! - feat(dashboard,js-sdk,admin-shared): add customer addresses + layout change
+
+- [#11871](https://github.com/medusajs/medusa/pull/11871) [`5ab15a29889870411b719ebad3fb94786baee45e`](https://github.com/medusajs/medusa/commit/5ab15a29889870411b719ebad3fb94786baee45e) Thanks [@riqwan](https://github.com/riqwan)! - feat(dashboard,js-sdk,admin-shared): add customer addresses + layout change
+
+## 2.6.1
+
+## 2.6.0
+
+## 2.5.1
+
+## 2.5.0
+
+## 2.4.0
+
+## 2.3.1
+
+## 2.3.0
+
 ## 2.2.0
 
 ## 2.1.3

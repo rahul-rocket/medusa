@@ -966,6 +966,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_customer-groups/get.js
     - lang: Shell
       label: cURL
       source:
@@ -1056,6 +1060,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminCreateCustomerGroup.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_customer-groups/post.js
     - lang: Shell
       label: cURL
       source:

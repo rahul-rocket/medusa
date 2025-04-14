@@ -25,6 +25,7 @@ export const RegionPaymentProvider: ModuleJoinerConfig = {
       args: {
         methodSuffix: "Regions",
       },
+      hasMany: true,
     },
     {
       serviceName: Modules.PAYMENT,
@@ -33,6 +34,7 @@ export const RegionPaymentProvider: ModuleJoinerConfig = {
       foreignKey: "payment_provider_id",
       alias: "payment_provider",
       args: { methodSuffix: "PaymentProviders" },
+      hasMany: true,
     },
   ],
   extends: [

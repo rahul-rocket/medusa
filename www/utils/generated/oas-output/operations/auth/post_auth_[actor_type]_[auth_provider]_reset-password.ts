@@ -18,12 +18,37 @@
  *     schema:
  *       type: string
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.auth.resetPassword(
+ *         "customer",
+ *         "emailpass",
+ *         {
+ *           identifier: "customer@gmail.com"
+ *         }
+ *       )
+ *       .then(() => {
+ *         // user receives token
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: curl -X POST '{backend_url}/auth/{actor_type}/{auth_provider}/reset-password'
  * tags:
  *   - "[actor_type]"
  * responses:
+ *   "200":
+ *     description: OK
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":

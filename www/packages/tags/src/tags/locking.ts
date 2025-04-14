@@ -1,30 +1,54 @@
 export const locking = [
   {
     "title": "reserveInventoryStep",
-    "path": "/references/medusa-workflows/steps/reserveInventoryStep"
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/reserveInventoryStep"
   },
   {
     "title": "completeCartWorkflow",
-    "path": "/references/medusa-workflows/completeCartWorkflow"
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/completeCartWorkflow"
+  },
+  {
+    "title": "adjustInventoryLevelsStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/adjustInventoryLevelsStep"
+  },
+  {
+    "title": "cancelOrderFulfillmentWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/cancelOrderFulfillmentWorkflow"
   },
   {
     "title": "confirmClaimRequestWorkflow",
-    "path": "/references/medusa-workflows/confirmClaimRequestWorkflow"
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmClaimRequestWorkflow"
   },
   {
     "title": "confirmExchangeRequestWorkflow",
-    "path": "/references/medusa-workflows/confirmExchangeRequestWorkflow"
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmExchangeRequestWorkflow"
   },
   {
     "title": "confirmOrderEditRequestWorkflow",
-    "path": "/references/medusa-workflows/confirmOrderEditRequestWorkflow"
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmOrderEditRequestWorkflow"
+  },
+  {
+    "title": "confirmReturnReceiveWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmReturnReceiveWorkflow"
+  },
+  {
+    "title": "createOrderFulfillmentWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createOrderFulfillmentWorkflow"
   },
   {
     "title": "createReservationsStep",
-    "path": "/references/medusa-workflows/steps/createReservationsStep"
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/createReservationsStep"
   },
   {
     "title": "createReservationsWorkflow",
-    "path": "/references/medusa-workflows/createReservationsWorkflow"
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createReservationsWorkflow"
+  },
+  {
+    "title": "Use Locking Module",
+    "path": "https://docs.medusajs.com/resources/references/locking-service"
+  },
+  {
+    "title": "Create Locking Provider",
+    "path": "https://docs.medusajs.com/resources/references/locking-module-provider"
   }
 ]

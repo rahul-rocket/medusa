@@ -9,9 +9,16 @@ import {
 export function normalizeDataForContext() {
   return async (req: AuthenticatedMedusaRequest, _, next: NextFunction) => {
     // If the product pricing is not requested, we don't need region information
-    let withCalculatedPrice = req.queryConfig.fields.some((field) =>
+    const calculatedPriceIndex = req.queryConfig.fields.findIndex((field) =>
       field.startsWith("variants.calculated_price")
     )
+
+    let withCalculatedPrice = false
+    if (calculatedPriceIndex !== -1) {
+      req.queryConfig.fields[calculatedPriceIndex] =
+        "variants.calculated_price.*"
+      withCalculatedPrice = true
+    }
 
     // If the region is passed, we calculate the prices without requesting them.
     // TODO: This seems a bit messy, reconsider if we want to keep this logic.

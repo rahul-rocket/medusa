@@ -1,3 +1,4 @@
+import { BigNumberRawValue } from "@medusajs/types"
 import {
   BeforeCreate,
   Collection,
@@ -13,11 +14,11 @@ import {
   Unique,
   wrap,
 } from "@mikro-orm/core"
-import { mikroOrmBaseRepositoryFactory } from "../../mikro-orm-repository"
+import { defineConfig } from "@mikro-orm/postgresql"
+import BigNumber from "bignumber.js"
 import { dropDatabase } from "pg-god"
 import { MikroOrmBigNumberProperty } from "../../big-number-field"
-import BigNumber from "bignumber.js"
-import { BigNumberRawValue } from "@medusajs/types"
+import { mikroOrmBaseRepositoryFactory } from "../../mikro-orm-repository"
 import { getDatabaseURL, pgGodCredentials } from "../__fixtures__/database"
 
 const dbName = "mikroorm-integration-1"
@@ -78,7 +79,7 @@ class Entity2 {
     nullable: true,
     mapToPk: true,
     fieldName: "entity1_id",
-    onDelete: "set null",
+    deleteRule: "set null",
   })
   entity1_id: string
 
@@ -143,11 +144,12 @@ describe("mikroOrmRepository", () => {
       pgGodCredentials
     )
 
-    orm = await MikroORM.init({
-      entities: [Entity1, Entity2],
-      clientUrl: getDatabaseURL(dbName),
-      type: "postgresql",
-    })
+    orm = await MikroORM.init(
+      defineConfig({
+        entities: [Entity1, Entity2],
+        clientUrl: getDatabaseURL(dbName),
+      })
+    )
 
     const generator = orm.getSchemaGenerator()
     await generator.ensureDatabase()
@@ -691,6 +693,96 @@ describe("mikroOrmRepository", () => {
       )
     })
 
+    it("should successfully update, create, and delete subentities an entity with a one-to-many relation within a transaction", async () => {
+      const entity1 = {
+        id: "1",
+        title: "en1",
+        entity2: [
+          { id: "2", title: "en2-1", handle: "some-handle" },
+          { id: "3", title: "en2-2", handle: "some-other-handle" },
+        ] as any[],
+      }
+
+      const { entities: entities1, performedActions: performedActions1 } =
+        await manager1().transaction(async (txManager) => {
+          return await manager1().upsertWithReplace(
+            [entity1],
+            {
+              relations: ["entity2"],
+            },
+            {
+              transactionManager: txManager,
+            }
+          )
+        })
+
+      expect(performedActions1).toEqual({
+        created: {
+          [Entity1.name]: [expect.objectContaining({ id: entity1.id })],
+          [Entity2.name]: entities1[0].entity2.map((entity2) =>
+            expect.objectContaining({ id: entity2.id })
+          ),
+        },
+        updated: {},
+        deleted: {},
+      })
+
+      entity1.entity2 = [
+        { id: "2", title: "newen2-1" },
+        { title: "en2-3", handle: "some-new-handle" },
+      ]
+
+      const { entities: entities2, performedActions: performedActions2 } =
+        await manager1().transaction(async (txManager) => {
+          return await manager1().upsertWithReplace(
+            [entity1],
+            {
+              relations: ["entity2"],
+            },
+            { transactionManager: txManager }
+          )
+        })
+
+      const entity2En23 = entities2[0].entity2.find((e) => e.title === "en2-3")!
+
+      expect(performedActions2).toEqual({
+        created: {
+          [Entity2.name]: [expect.objectContaining({ id: entity2En23.id })],
+        },
+        updated: {
+          [Entity1.name]: [expect.objectContaining({ id: entity1.id })],
+          [Entity2.name]: [expect.objectContaining({ id: "2" })],
+        },
+        deleted: {
+          [Entity2.name]: [expect.objectContaining({ id: "3" })],
+        },
+      })
+
+      const listedEntities = await manager1().find({
+        where: { id: "1" },
+        options: { populate: ["entity2"] },
+      })
+
+      expect(listedEntities).toHaveLength(1)
+      expect(listedEntities[0]).toEqual(
+        expect.objectContaining({
+          id: "1",
+          title: "en1",
+        })
+      )
+      expect(listedEntities[0].entity2.getItems()).toHaveLength(2)
+      expect(listedEntities[0].entity2.getItems()).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            title: "newen2-1",
+          }),
+          expect.objectContaining({
+            title: "en2-3",
+          }),
+        ])
+      )
+    })
+
     it("should update an entity with a one-to-many relation that has the same unique constraint key", async () => {
       const entity1 = {
         id: "1",
@@ -1104,7 +1196,9 @@ describe("mikroOrmRepository", () => {
   describe("error mapping", () => {
     it("should map UniqueConstraintViolationException to MedusaError on upsertWithReplace", async () => {
       const entity3 = { title: "en3" }
+
       await manager3().upsertWithReplace([entity3])
+
       const err = await manager3()
         .upsertWithReplace([entity3])
         .catch((e) => e.message)

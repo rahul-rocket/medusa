@@ -7,7 +7,7 @@ info:
     url: https://github.com/medusajs/medusa/blob/master/LICENSE
 tags:
   - name: Auth
-    description: >
+    description: |
       Auth API routes allow you to manage a customer's authentication.
   - name: Carts
     description: >
@@ -21,7 +21,7 @@ tags:
       These API routes allow customers to create and manage their cart, and place an order.
     externalDocs:
       description: How to implement cart functionality in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/cart
+      url: https://docs.medusajs.com/resources/storefront-development/cart
     x-associatedSchema:
       $ref: "#/components/schemas/StoreCart"
   - name: Collections
@@ -33,7 +33,7 @@ tags:
       These API routes allow customers to browse collections and their products.
     externalDocs:
       description: How to list product collections in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/products/collections/list
+      url: https://docs.medusajs.com/resources/storefront-development/products/collections/list
     x-associatedSchema:
       $ref: "#/components/schemas/StoreCollection"
   - name: Currencies
@@ -48,7 +48,7 @@ tags:
       These API routes allow customers to browse currencies.
     externalDocs:
       description: How to retrieve product variant prices in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/products/price
+      url: https://docs.medusajs.com/resources/storefront-development/products/price
     x-associatedSchema:
       $ref: "#/components/schemas/StoreCurrency"
   - name: Customers
@@ -62,7 +62,7 @@ tags:
       These API routes allow customers to create and manage their accounts.
     externalDocs:
       description: How to implement customer account functionalities in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/customers
+      url: https://docs.medusajs.com/resources/storefront-development/customers
     x-associatedSchema:
       $ref: "#/components/schemas/StoreCustomer"
   - name: Orders
@@ -80,7 +80,7 @@ tags:
       Use these API routes during checkout to set the cart's payment provider and authorize its payment session.
     externalDocs:
       description: How to implement payment during checkout.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+      url: https://docs.medusajs.com/resources/storefront-development/checkout/payment
     x-associatedSchema:
       $ref: "#/components/schemas/StorePaymentCollection"
   - name: Payment Providers
@@ -94,7 +94,7 @@ tags:
       These API routes allow customers to view available payment providers in their region.
     externalDocs:
       description: How to implement payment during checkout.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+      url: https://docs.medusajs.com/resources/storefront-development/checkout/payment
     x-associatedSchema:
       $ref: "#/components/schemas/StorePaymentProvider"
   - name: Product Categories
@@ -104,9 +104,15 @@ tags:
       These API routes allow customers to browse categories and their products.
     externalDocs:
       description: How to list product categories in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/products/categories/list
+      url: https://docs.medusajs.com/resources/storefront-development/products/categories/list
     x-associatedSchema:
       $ref: "#/components/schemas/StoreProductCategory"
+  - name: Product Tags
+    x-associatedSchema:
+      $ref: "#/components/schemas/StoreProductTag"
+  - name: Product Types
+    x-associatedSchema:
+      $ref: "#/components/schemas/StoreProductType"
   - name: Products
     description: >
       Customers browse products for their purchase.
@@ -118,7 +124,7 @@ tags:
       These API routes allow customers to browse products.
     externalDocs:
       description: How to list products, get their prices, and more in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/products
+      url: https://docs.medusajs.com/resources/storefront-development/products
     x-associatedSchema:
       $ref: "#/components/schemas/StoreProduct"
   - name: Regions
@@ -133,7 +139,7 @@ tags:
       Use these API routes to retrieve available regions in the store.
     externalDocs:
       description: How to retrieve and store selected region in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/regions
+      url: https://docs.medusajs.com/resources/storefront-development/regions
     x-associatedSchema:
       $ref: "#/components/schemas/StoreRegion"
   - name: Return
@@ -164,7 +170,7 @@ tags:
       These API routes allow customers to retrieve available shipping options for their context.
     externalDocs:
       description: How to implement shipping during checkout.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping
+      url: https://docs.medusajs.com/resources/storefront-development/checkout/shipping
     x-associatedSchema:
       $ref: "#/components/schemas/StoreShippingOption"
 servers:
@@ -343,3 +349,8 @@ components:
       x-displayName: Cookie Session ID
       in: cookie
       name: connect.sid
+    reset_password:
+      type: http
+      x-displayName: Reset Password Token
+      scheme: bearer
+      x-is-auth: false

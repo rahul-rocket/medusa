@@ -3,7 +3,7 @@
  * operationId: GetInvites
  * summary: List Invites
  * description: Retrieve a list of invites. The invites can be filtered by fields such as `id`. The invites can also be sorted or paginated.
- * x-authenticated: false
+ * x-authenticated: true
  * parameters:
  *   - name: fields
  *     in: query
@@ -459,6 +459,23 @@
  *         type: object
  *       title: $or
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.invite.list()
+ *       .then(({ invites, count, limit, offset }) => {
+ *         console.log(invites)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: curl '{backend_url}/admin/invites'
@@ -512,6 +529,10 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
+ * security:
+ *   - api_token: []
+ *   - cookie_auth: []
+ *   - jwt_token: []
  * 
 */
 

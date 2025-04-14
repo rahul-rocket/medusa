@@ -101,6 +101,34 @@
  *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  *         description: The shipment's details.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.order.createShipment(
+ *         "order_123",
+ *         "ful_123",
+ *         {
+ *           items: [
+ *             {
+ *               id: "fulit_123",
+ *               quantity: 1
+ *             }
+ *           ]
+ *         }
+ *       )
+ *       .then(({ order }) => {
+ *         console.log(order)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

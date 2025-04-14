@@ -32,25 +32,20 @@ export class Invite {
    * @returns The user's details.
    * 
    * @example
-   * const token = await sdk.auth.register("user", "emailpass", {
+   * await sdk.auth.register("user", "emailpass", {
    *   email: "user@gmail.com",
    *   password: "supersecret"
    * })
    * 
-   * sdk.admin.invite.accept(
+   * // all subsequent requests will use the token in the header
+   * const { user } = await sdk.admin.invite.accept(
    *   {
    *     email: "user@gmail.com",
    *     first_name: "John",
    *     last_name: "Smith",
    *     invite_token: "12345..."
    *   },
-   *   {
-   *     Authorization: `Bearer ${token}`
-   *   }
    * )
-   * .then(({ user }) => {
-   *   console.log(user)
-   * })
    */
   async accept(
     input: HttpTypes.AdminAcceptInvite & { 

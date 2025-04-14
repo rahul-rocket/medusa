@@ -17,6 +17,7 @@ moduleIntegrationTestRunner<ICartModuleService>({
 
         expect(Object.keys(linkable)).toEqual([
           "cart",
+          "creditLine",
           "address",
           "lineItem",
           "lineItemAdjustment",
@@ -38,6 +39,15 @@ moduleIntegrationTestRunner<ICartModuleService>({
               primaryKey: "id",
               serviceName: "cart",
               field: "cart",
+            },
+          },
+          creditLine: {
+            id: {
+              entity: "CreditLine",
+              field: "creditLine",
+              linkable: "credit_line_id",
+              primaryKey: "id",
+              serviceName: "cart",
             },
           },
           address: {
@@ -662,6 +672,34 @@ moduleIntegrationTestRunner<ICartModuleService>({
               title: "test2",
             }
           )
+
+          expect(updatedItem.title).toBe("test2")
+        })
+
+        it("should update a line item in cart succesfully with data only approach", async () => {
+          const [createdCart] = await service.createCarts([
+            {
+              currency_code: "eur",
+            },
+          ])
+
+          const [item] = await service.addLineItems(createdCart.id, [
+            {
+              quantity: 1,
+              unit_price: 100,
+              title: "test",
+              tax_lines: [],
+            },
+          ])
+
+          expect(item.title).toBe("test")
+
+          const [updatedItem] = await service.updateLineItems([
+            {
+              id: item.id,
+              title: "test2",
+            },
+          ])
 
           expect(updatedItem.title).toBe("test2")
         })
@@ -2234,6 +2272,343 @@ moduleIntegrationTestRunner<ICartModuleService>({
         })
       })
 
+      describe("setShippingMethodTaxLines", () => {
+        it("should set shipping item tax lines for a cart", async () => {
+          const [createdCart] = await service.createCarts([
+            {
+              currency_code: "eur",
+            },
+          ])
+
+          const [itemOne] = await service.addShippingMethods(createdCart.id, [
+            {
+              name: "test",
+              amount: 100,
+            },
+          ])
+
+          const [itemTwo] = await service.addShippingMethods(createdCart.id, [
+            {
+              name: "test-2",
+              amount: 200,
+            },
+          ])
+
+          const taxLines = await service.setShippingMethodTaxLines(
+            createdCart.id,
+            [
+              {
+                shipping_method_id: itemOne.id,
+                rate: 20,
+                code: "TX",
+              },
+              {
+                shipping_method_id: itemTwo.id,
+                rate: 20,
+                code: "TX",
+              },
+            ]
+          )
+
+          expect(taxLines).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                shipping_method_id: itemOne.id,
+                rate: 20,
+                code: "TX",
+              }),
+              expect.objectContaining({
+                shipping_method_id: itemTwo.id,
+                rate: 20,
+                code: "TX",
+              }),
+            ])
+          )
+        })
+
+        it("should replace shipping item tax lines for a cart", async () => {
+          const [createdCart] = await service.createCarts([
+            {
+              currency_code: "eur",
+            },
+          ])
+
+          const [itemOne] = await service.addShippingMethods(createdCart.id, [
+            {
+              name: "test",
+              amount: 100,
+            },
+          ])
+
+          const taxLines = await service.setShippingMethodTaxLines(
+            createdCart.id,
+            [
+              {
+                shipping_method_id: itemOne.id,
+                rate: 20.753,
+                code: "TX",
+              },
+            ]
+          )
+
+          expect(taxLines).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                shipping_method_id: itemOne.id,
+                rate: 20.753,
+                code: "TX",
+              }),
+            ])
+          )
+
+          await service.setShippingMethodTaxLines(createdCart.id, [
+            {
+              shipping_method_id: itemOne.id,
+              rate: 25.14789,
+              code: "TX-2",
+            },
+          ])
+
+          const cart = await service.retrieveCart(createdCart.id, {
+            relations: ["shipping_methods.tax_lines"],
+          })
+
+          expect(cart.shipping_methods).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: itemOne.id,
+                tax_lines: expect.arrayContaining([
+                  expect.objectContaining({
+                    shipping_method_id: itemOne.id,
+                    rate: 25.14789,
+                    code: "TX-2",
+                  }),
+                ]),
+              }),
+            ])
+          )
+
+          expect(cart.shipping_methods?.length).toBe(1)
+          expect(cart.shipping_methods?.[0].tax_lines?.length).toBe(1)
+        })
+
+        it("should remove all shipping item tax lines for a cart", async () => {
+          const [createdCart] = await service.createCarts([
+            {
+              currency_code: "eur",
+            },
+          ])
+
+          const [itemOne] = await service.addShippingMethods(createdCart.id, [
+            {
+              name: "test",
+              amount: 100,
+            },
+          ])
+
+          const taxLines = await service.setShippingMethodTaxLines(
+            createdCart.id,
+            [
+              {
+                shipping_method_id: itemOne.id,
+                rate: 20,
+                code: "TX",
+              },
+            ]
+          )
+
+          expect(taxLines).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                shipping_method_id: itemOne.id,
+                rate: 20,
+                code: "TX",
+              }),
+            ])
+          )
+
+          await service.setShippingMethodTaxLines(createdCart.id, [])
+
+          const cart = await service.retrieveCart(createdCart.id, {
+            relations: ["shipping_methods.tax_lines"],
+          })
+
+          expect(cart.shipping_methods).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: itemOne.id,
+                tax_lines: [],
+              }),
+            ])
+          )
+
+          expect(cart.shipping_methods?.length).toBe(1)
+          expect(cart.shipping_methods?.[0].tax_lines?.length).toBe(0)
+        })
+
+        it("should update shipping item tax lines for a cart", async () => {
+          const [createdCart] = await service.createCarts([
+            {
+              currency_code: "eur",
+            },
+          ])
+
+          const [itemOne] = await service.addShippingMethods(createdCart.id, [
+            {
+              name: "test",
+              amount: 100,
+            },
+          ])
+
+          const taxLines = await service.setShippingMethodTaxLines(
+            createdCart.id,
+            [
+              {
+                shipping_method_id: itemOne.id,
+                rate: 20,
+                code: "TX",
+              },
+            ]
+          )
+
+          expect(taxLines).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                shipping_method_id: itemOne.id,
+                rate: 20,
+                code: "TX",
+              }),
+            ])
+          )
+
+          await service.setShippingMethodTaxLines(createdCart.id, [
+            {
+              id: taxLines[0].id,
+              shipping_method_id: itemOne.id,
+              rate: 25,
+              code: "TX",
+            },
+          ])
+
+          const cart = await service.retrieveCart(createdCart.id, {
+            relations: ["shipping_methods.tax_lines"],
+          })
+
+          expect(cart.shipping_methods).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: itemOne.id,
+                tax_lines: [
+                  expect.objectContaining({
+                    id: taxLines[0].id,
+                    shipping_method_id: itemOne.id,
+                    rate: 25,
+                    code: "TX",
+                  }),
+                ],
+              }),
+            ])
+          )
+
+          expect(cart.shipping_methods?.length).toBe(1)
+          expect(cart.shipping_methods?.[0].tax_lines?.length).toBe(1)
+        })
+
+        it("should remove, update, and create shipping item tax lines for a cart", async () => {
+          const [createdCart] = await service.createCarts([
+            {
+              currency_code: "eur",
+            },
+          ])
+
+          const [itemOne] = await service.addShippingMethods(createdCart.id, [
+            {
+              name: "test",
+              amount: 100,
+            },
+          ])
+
+          const taxLines = await service.setShippingMethodTaxLines(
+            createdCart.id,
+            [
+              {
+                shipping_method_id: itemOne.id,
+                rate: 20,
+                code: "TX",
+              },
+              {
+                shipping_method_id: itemOne.id,
+                rate: 25,
+                code: "TX",
+              },
+            ]
+          )
+
+          expect(taxLines).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                shipping_method_id: itemOne.id,
+                rate: 20,
+                code: "TX",
+              }),
+              expect.objectContaining({
+                shipping_method_id: itemOne.id,
+                rate: 25,
+                code: "TX",
+              }),
+            ])
+          )
+
+          const taxLine = taxLines.find(
+            (tx) => tx.shipping_method_id === itemOne.id
+          )
+
+          await service.setShippingMethodTaxLines(createdCart.id, [
+            // update
+            {
+              id: taxLine.id,
+              rate: 40,
+              code: "TX",
+            },
+            // create
+            {
+              shipping_method_id: itemOne.id,
+              rate: 25,
+              code: "TX-2",
+            },
+            // remove: should remove the initial tax line for itemOne
+          ])
+
+          const cart = await service.retrieveCart(createdCart.id, {
+            relations: ["shipping_methods.tax_lines"],
+          })
+
+          expect(cart.shipping_methods).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: itemOne.id,
+                tax_lines: [
+                  expect.objectContaining({
+                    id: taxLine!.id,
+                    shipping_method_id: itemOne.id,
+                    rate: 40,
+                    code: "TX",
+                  }),
+                  expect.objectContaining({
+                    shipping_method_id: itemOne.id,
+                    rate: 25,
+                    code: "TX-2",
+                  }),
+                ],
+              }),
+            ])
+          )
+
+          expect(cart.shipping_methods?.length).toBe(1)
+          expect(cart.shipping_methods?.[0].tax_lines?.length).toBe(2)
+        })
+      })
+
       describe("addLineItemAdjustments", () => {
         it("should add line item tax lines for items in a cart", async () => {
           const [createdCart] = await service.createCarts([
@@ -2511,6 +2886,7 @@ moduleIntegrationTestRunner<ICartModuleService>({
             variant_option_values: null,
             requires_shipping: true,
             is_discountable: true,
+            is_giftcard: false,
             is_tax_inclusive: false,
             is_custom_price: false,
             raw_compare_at_unit_price: null,
@@ -2617,6 +2993,7 @@ moduleIntegrationTestRunner<ICartModuleService>({
             variant_option_values: null,
             requires_shipping: true,
             is_discountable: true,
+            is_giftcard: false,
             is_tax_inclusive: false,
             is_custom_price: false,
             raw_compare_at_unit_price: null,
@@ -2764,6 +3141,22 @@ moduleIntegrationTestRunner<ICartModuleService>({
             },
           },
         ],
+        credit_lines: [],
+        credit_line_subtotal: 0,
+        credit_line_tax_total: 0,
+        credit_line_total: 0,
+        raw_credit_line_subtotal: {
+          precision: 20,
+          value: "0",
+        },
+        raw_credit_line_tax_total: {
+          precision: 20,
+          value: "0",
+        },
+        raw_credit_line_total: {
+          precision: 20,
+          value: "0",
+        },
         total: 210,
         subtotal: 510,
         tax_total: 0,

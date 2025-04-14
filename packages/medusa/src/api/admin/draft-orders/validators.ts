@@ -6,24 +6,35 @@ import {
 } from "../../utils/common-validators"
 import {
   createFindParams,
+  createOperatorMap,
   createSelectParams,
   WithAdditionalData,
 } from "../../utils/validators"
 
-export type AdminGetOrderParamsType = z.infer<typeof AdminGetOrderParams>
-export const AdminGetOrderParams = createSelectParams()
+export type AdminGetDraftOrderParamsType = z.infer<
+  typeof AdminGetDraftOrderParams
+>
+export const AdminGetDraftOrderParams = createSelectParams()
 
-export const AdminGetOrdersParamsFields = z.object({
+const AdminGetDraftOrdersParamsFields = z.object({
   id: z.union([z.string(), z.array(z.string())]).optional(),
+  created_at: createOperatorMap().optional(),
+  updated_at: createOperatorMap().optional(),
+  q: z.string().optional(),
+  region_id: z.union([z.string(), z.array(z.string())]).optional(),
+  sales_channel_id: z.array(z.string()).optional(),
+  customer_id: z.union([z.string(), z.array(z.string())]).optional(),
 })
 
-export type AdminGetOrdersParamsType = z.infer<typeof AdminGetOrdersParams>
-export const AdminGetOrdersParams = createFindParams({
+export type AdminGetDraftOrdersParamsType = z.infer<
+  typeof AdminGetDraftOrdersParams
+>
+export const AdminGetDraftOrdersParams = createFindParams({
   limit: 50,
   offset: 0,
 })
-  .merge(AdminGetOrdersParamsFields)
-  .merge(applyAndAndOrOperators(AdminGetOrdersParamsFields))
+  .merge(AdminGetDraftOrdersParamsFields)
+  .merge(applyAndAndOrOperators(AdminGetDraftOrdersParamsFields))
 
 enum Status {
   completed = "completed",
@@ -64,14 +75,14 @@ const CreateDraftOrder = z
     sales_channel_id: z.string().nullish(),
     email: z.string().nullish(),
     customer_id: z.string().nullish(),
-    billing_address: AddressPayload.optional(),
-    shipping_address: AddressPayload.optional(),
+    billing_address: z.union([AddressPayload, z.string()]).optional(),
+    shipping_address: z.union([AddressPayload, z.string()]).optional(),
     items: z.array(Item).optional(),
     region_id: z.string(),
     promo_codes: z.array(z.string()).optional(),
     currency_code: z.string().nullish(),
     no_notification_order: z.boolean().optional(),
-    shipping_methods: z.array(ShippingMethod),
+    shipping_methods: z.array(ShippingMethod).optional(),
     metadata: z.record(z.unknown()).nullish(),
   })
   .strict()
@@ -91,3 +102,105 @@ export const AdminCreateDraftOrder = WithAdditionalData(
     )
   }
 )
+
+export type AdminUpdateDraftOrderType = z.infer<typeof AdminUpdateDraftOrder>
+export const AdminUpdateDraftOrder = z.object({
+  email: z.string().optional(),
+  customer_id: z.string().optional(),
+  sales_channel_id: z.string().optional(),
+  shipping_address: AddressPayload.optional(),
+  billing_address: AddressPayload.optional(),
+  metadata: z.record(z.unknown()).nullish(),
+})
+
+export type AdminAddDraftOrderPromotionsType = z.infer<
+  typeof AdminAddDraftOrderPromotions
+>
+export const AdminAddDraftOrderPromotions = z.object({
+  promo_codes: z.array(z.string()),
+})
+
+export type AdminRemoveDraftOrderPromotionsType = z.infer<
+  typeof AdminRemoveDraftOrderPromotions
+>
+export const AdminRemoveDraftOrderPromotions = z.object({
+  promo_codes: z.array(z.string()),
+})
+
+export type AdminUpdateDraftOrderItemType = z.infer<
+  typeof AdminUpdateDraftOrderItem
+>
+export const AdminUpdateDraftOrderItem = z.object({
+  quantity: z.number(),
+  unit_price: z.number().nullish(),
+  compare_at_unit_price: z.number().nullish(),
+  internal_note: z.string().optional(),
+})
+
+export type AdminUpdateDraftOrderActionItemType = z.infer<
+  typeof AdminUpdateDraftOrderActionItem
+>
+export const AdminUpdateDraftOrderActionItem = z.object({
+  quantity: z.number(),
+  unit_price: z.number().nullish(),
+  compare_at_unit_price: z.number().nullish(),
+  internal_note: z.string().optional(),
+})
+
+export const AdminAddDraftOrderItems = z.object({
+  items: z
+    .array(
+      z.object({
+        variant_id: z.string().optional(),
+        title: z.string().optional(),
+        quantity: z.number(),
+        unit_price: z.number().nullish(),
+        compare_at_unit_price: z.number().nullish(),
+        internal_note: z.string().nullish(),
+        allow_backorder: z.boolean().optional(),
+        metadata: z.record(z.unknown()).optional(),
+      })
+    )
+    .refine(
+      (items) => {
+        return items.every((item) => item.variant_id || item.title)
+      },
+      {
+        message: "Items must have either a variant_id or a title",
+      }
+    ),
+})
+export type AdminAddDraftOrderItemsType = z.infer<
+  typeof AdminAddDraftOrderItems
+>
+
+export const AdminAddDraftOrderShippingMethod = z.object({
+  shipping_option_id: z.string(),
+  custom_amount: z.number().optional(),
+  description: z.string().optional(),
+  internal_note: z.string().optional(),
+  metadata: z.record(z.unknown()).optional(),
+})
+export type AdminAddDraftOrderShippingMethodType = z.infer<
+  typeof AdminAddDraftOrderShippingMethod
+>
+
+export const AdminUpdateDraftOrderActionShippingMethod = z.object({
+  shipping_option_id: z.string(),
+  custom_amount: z.number().nullish(),
+  description: z.string().nullish(),
+  internal_note: z.string().nullish(),
+  metadata: z.record(z.unknown()).nullish(),
+})
+export type AdminUpdateDraftOrderActionShippingMethodType = z.infer<
+  typeof AdminUpdateDraftOrderActionShippingMethod
+>
+
+export const AdminUpdateDraftOrderShippingMethod = z.object({
+  shipping_option_id: z.string().optional(),
+  custom_amount: z.number().optional(),
+  internal_note: z.string().nullish(),
+})
+export type AdminUpdateDraftOrderShippingMethodType = z.infer<
+  typeof AdminUpdateDraftOrderShippingMethod
+>

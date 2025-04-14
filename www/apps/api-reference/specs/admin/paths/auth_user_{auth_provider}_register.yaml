@@ -31,6 +31,10 @@ post:
             email: admin@medusa-test.com
             password: supersecret
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/auth_user_{auth_provider}_register/post.js
     - lang: Shell
       label: cURL
       source:

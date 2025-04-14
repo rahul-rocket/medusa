@@ -1,5 +1,62 @@
 # @medusajs/order
 
+## 2.7.0
+
+### Patch Changes
+
+- [#12072](https://github.com/medusajs/medusa/pull/12072) [`9bf1e52d25131d0a976b50992ad4cd230ac90d8e`](https://github.com/medusajs/medusa/commit/9bf1e52d25131d0a976b50992ad4cd230ac90d8e) Thanks [@fPolic](https://github.com/fPolic)! - fix(order): update add item unit price
+
+- [#11569](https://github.com/medusajs/medusa/pull/11569) [`cb6249320e7322e8eabfec8434f1278f8d63e96c`](https://github.com/medusajs/medusa/commit/cb6249320e7322e8eabfec8434f1278f8d63e96c) Thanks [@riqwan](https://github.com/riqwan)! - feat(order,types,medusa,core-flows): fix(types,order,medusa,core-flows): create order credit lines during order refund
+
+- [#11994](https://github.com/medusajs/medusa/pull/11994) [`1f8fab36361aa8e473ffe6c411c8598a916a6d3f`](https://github.com/medusajs/medusa/commit/1f8fab36361aa8e473ffe6c411c8598a916a6d3f) Thanks [@riqwan](https://github.com/riqwan)! - feat(core-flows,types,order,cart): assign tax lines only to regular products
+
+- Updated dependencies [[`ec56a8bc857a74788df6523af25914da95c4c1d8`](https://github.com/medusajs/medusa/commit/ec56a8bc857a74788df6523af25914da95c4c1d8), [`2a18a75353f872b0cb4c203afc08cfd82f778428`](https://github.com/medusajs/medusa/commit/2a18a75353f872b0cb4c203afc08cfd82f778428)]:
+  - @medusajs/framework@2.7.0
+
+## 2.6.1
+
+### Patch Changes
+
+- [#11738](https://github.com/medusajs/medusa/pull/11738) [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Remove ranges on Medusa packages
+
+- Updated dependencies [[`cc1309d3709b251683a0cda0ced448f8bf9f514e`](https://github.com/medusajs/medusa/commit/cc1309d3709b251683a0cda0ced448f8bf9f514e), [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861), [`20cd59e622463fbd46506275648ce681869adcdf`](https://github.com/medusajs/medusa/commit/20cd59e622463fbd46506275648ce681869adcdf)]:
+  - @medusajs/framework@2.6.1
+
+## 2.6.0
+
+### Patch Changes
+
+- [#11712](https://github.com/medusajs/medusa/pull/11712) [`7dbec10b3bdde8a9f869080d5ef2c3c97fca1077`](https://github.com/medusajs/medusa/commit/7dbec10b3bdde8a9f869080d5ef2c3c97fca1077) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(order): summary raw totals
+
+## 2.5.1
+
+### Patch Changes
+
+- [#11518](https://github.com/medusajs/medusa/pull/11518) [`0c957350a6688c78572361b51c1f16a452a31aed`](https://github.com/medusajs/medusa/commit/0c957350a6688c78572361b51c1f16a452a31aed) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(order): order edit flows with calculated taxes
+
+## 2.5.0
+
+### Patch Changes
+
+- [#11216](https://github.com/medusajs/medusa/pull/11216) [`016e332e9b98f316cded6eb999927fc942ce56c5`](https://github.com/medusajs/medusa/commit/016e332e9b98f316cded6eb999927fc942ce56c5) Thanks [@thetutlage](https://github.com/thetutlage)! - feat: make AbstractModuleService create method type-safe
+
+- [#11181](https://github.com/medusajs/medusa/pull/11181) [`16fe43f214ecd1fb7fe6622c0c6e825e998c1be9`](https://github.com/medusajs/medusa/commit/16fe43f214ecd1fb7fe6622c0c6e825e998c1be9) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(order): add data model name in define schema
+
+## 2.4.0
+
+### Minor Changes
+
+- [#10292](https://github.com/medusajs/medusa/pull/10292) [`cc73802ab3821d2c667942bd887efb7476205547`](https://github.com/medusajs/medusa/commit/cc73802ab3821d2c667942bd887efb7476205547) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore: upgrade to mikro-orm 6
+
+### Patch Changes
+
+- Updated dependencies [[`0deffe7b9b9a1055813249b17057b7bba01b78ac`](https://github.com/medusajs/medusa/commit/0deffe7b9b9a1055813249b17057b7bba01b78ac), [`cc73802ab3821d2c667942bd887efb7476205547`](https://github.com/medusajs/medusa/commit/cc73802ab3821d2c667942bd887efb7476205547), [`13fe2f6776b22c401d131f184fc3600ef4008383`](https://github.com/medusajs/medusa/commit/13fe2f6776b22c401d131f184fc3600ef4008383), [`e53b8b0a9708d2eb46258ca417b6ff6abbd5f3d9`](https://github.com/medusajs/medusa/commit/e53b8b0a9708d2eb46258ca417b6ff6abbd5f3d9)]:
+  - @medusajs/framework@2.4.0
+
+## 2.3.1
+
+## 2.3.0
+
 ## 2.2.0
 
 ### Patch Changes

@@ -1,5 +1,53 @@
 # Change Log
 
+## 2.7.0
+
+### Patch Changes
+
+- [#11720](https://github.com/medusajs/medusa/pull/11720) [`ec56a8bc857a74788df6523af25914da95c4c1d8`](https://github.com/medusajs/medusa/commit/ec56a8bc857a74788df6523af25914da95c4c1d8) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(medusa,utils,test-utils,types,framework,dashboard,admin-vite-plugin,admib-bundler): Fix broken plugin dependencies in development server
+
+- [#12137](https://github.com/medusajs/medusa/pull/12137) [`6ae1e7b708f6be5faabeb26c94f99054c3dcd144`](https://github.com/medusajs/medusa/commit/6ae1e7b708f6be5faabeb26c94f99054c3dcd144) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(medusa-test-utils): Prevent waiting for event indefinately
+
+- Updated dependencies [[`ec56a8bc857a74788df6523af25914da95c4c1d8`](https://github.com/medusajs/medusa/commit/ec56a8bc857a74788df6523af25914da95c4c1d8), [`2a18a75353f872b0cb4c203afc08cfd82f778428`](https://github.com/medusajs/medusa/commit/2a18a75353f872b0cb4c203afc08cfd82f778428), [`c3440e5e3812e3d1c6b82e9d4e41287398451611`](https://github.com/medusajs/medusa/commit/c3440e5e3812e3d1c6b82e9d4e41287398451611), [`3dba58785fb2d8e79f1ea89daa9e4ab8810821c8`](https://github.com/medusajs/medusa/commit/3dba58785fb2d8e79f1ea89daa9e4ab8810821c8), [`1895d8cc1141b28525acfc21715f6f523b8194a2`](https://github.com/medusajs/medusa/commit/1895d8cc1141b28525acfc21715f6f523b8194a2), [`5cf0bf4d93b5fd965680223dd448324c5135426e`](https://github.com/medusajs/medusa/commit/5cf0bf4d93b5fd965680223dd448324c5135426e), [`cb6249320e7322e8eabfec8434f1278f8d63e96c`](https://github.com/medusajs/medusa/commit/cb6249320e7322e8eabfec8434f1278f8d63e96c), [`2f7eb0ee030966844b45dd00b2259e68b9fb0e83`](https://github.com/medusajs/medusa/commit/2f7eb0ee030966844b45dd00b2259e68b9fb0e83)]:
+  - @medusajs/framework@2.7.0
+  - @medusajs/medusa@2.7.0
+
+## 2.6.1
+
+### Patch Changes
+
+- [#11738](https://github.com/medusajs/medusa/pull/11738) [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Remove ranges on Medusa packages
+
+- Updated dependencies [[`62e429178f3abe0a528f7a574eb6a09ac525bf9c`](https://github.com/medusajs/medusa/commit/62e429178f3abe0a528f7a574eb6a09ac525bf9c), [`90964a404edbb079d7de332a11ab97c4f5643d67`](https://github.com/medusajs/medusa/commit/90964a404edbb079d7de332a11ab97c4f5643d67), [`cc1309d3709b251683a0cda0ced448f8bf9f514e`](https://github.com/medusajs/medusa/commit/cc1309d3709b251683a0cda0ced448f8bf9f514e), [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861), [`20cd59e622463fbd46506275648ce681869adcdf`](https://github.com/medusajs/medusa/commit/20cd59e622463fbd46506275648ce681869adcdf), [`2a0bd86204c9dd51a012763016f2de822d3c45b6`](https://github.com/medusajs/medusa/commit/2a0bd86204c9dd51a012763016f2de822d3c45b6)]:
+  - @medusajs/medusa@2.6.1
+  - @medusajs/framework@2.6.1
+
+## 2.6.0
+
+## 2.5.1
+
+## 2.5.0
+
+## 2.4.0
+
+### Minor Changes
+
+- [#10292](https://github.com/medusajs/medusa/pull/10292) [`cc73802ab3821d2c667942bd887efb7476205547`](https://github.com/medusajs/medusa/commit/cc73802ab3821d2c667942bd887efb7476205547) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore: upgrade to mikro-orm 6
+
+### Patch Changes
+
+- Updated dependencies [[`0deffe7b9b9a1055813249b17057b7bba01b78ac`](https://github.com/medusajs/medusa/commit/0deffe7b9b9a1055813249b17057b7bba01b78ac), [`cc73802ab3821d2c667942bd887efb7476205547`](https://github.com/medusajs/medusa/commit/cc73802ab3821d2c667942bd887efb7476205547), [`13fe2f6776b22c401d131f184fc3600ef4008383`](https://github.com/medusajs/medusa/commit/13fe2f6776b22c401d131f184fc3600ef4008383), [`45b47bf8136d05b1b9939b81cd892d4426b569f2`](https://github.com/medusajs/medusa/commit/45b47bf8136d05b1b9939b81cd892d4426b569f2), [`e53b8b0a9708d2eb46258ca417b6ff6abbd5f3d9`](https://github.com/medusajs/medusa/commit/e53b8b0a9708d2eb46258ca417b6ff6abbd5f3d9)]:
+  - @medusajs/medusa@2.4.0
+  - @medusajs/framework@2.4.0
+
+## 2.3.1
+
+## 2.3.0
+
+### Patch Changes
+
+- [#10874](https://github.com/medusajs/medusa/pull/10874) [`28febfc6438351fddb5b214b86f96aff89db688e`](https://github.com/medusajs/medusa/commit/28febfc6438351fddb5b214b86f96aff89db688e) Thanks [@thetutlage](https://github.com/thetutlage)! - feat: remove dead code and refactor the logic of resolving plugins
+
 ## 2.2.0
 
 ## 2.1.3

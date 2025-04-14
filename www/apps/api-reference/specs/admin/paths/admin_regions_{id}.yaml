@@ -35,6 +35,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_regions_{id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -137,6 +141,10 @@ post:
               title: is_tax_inclusive
               description: Whether the prices in the region are tax inclusive.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_regions_{id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -180,6 +188,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_regions_{id}/delete.js
     - lang: Shell
       label: cURL
       source:

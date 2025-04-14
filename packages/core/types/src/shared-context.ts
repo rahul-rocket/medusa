@@ -73,4 +73,9 @@ export type Context<TManager = unknown> = {
    * A string indicating the idempotencyKey of the parent workflow execution.
    */
   parentStepIdempotencyKey?: string
+
+  /**
+   * preventReleaseEvents
+   */
+  preventReleaseEvents?: boolean
 }

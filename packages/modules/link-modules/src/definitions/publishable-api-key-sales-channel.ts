@@ -27,6 +27,7 @@ export const PublishableApiKeySalesChannel: ModuleJoinerConfig = {
       args: {
         methodSuffix: "ApiKeys",
       },
+      hasMany: true,
     },
     {
       serviceName: Modules.SALES_CHANNEL,
@@ -37,6 +38,7 @@ export const PublishableApiKeySalesChannel: ModuleJoinerConfig = {
       args: {
         methodSuffix: "SalesChannels",
       },
+      hasMany: true,
     },
   ],
   extends: [

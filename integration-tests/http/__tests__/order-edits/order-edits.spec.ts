@@ -8,7 +8,10 @@ import {
 import {
   adminHeaders,
   createAdminUser,
+  generatePublishableKey,
+  generateStoreHeaders,
 } from "../../../helpers/create-admin-user"
+import { medusaTshirtProduct } from "../../__fixtures__/product"
 
 jest.setTimeout(30000)
 
@@ -85,12 +88,24 @@ medusaIntegrationTestRunner({
         )
       ).data.sales_channel
 
+      shippingProfile = (
+        await api.post(
+          `/admin/shipping-profiles`,
+          {
+            name: "Test",
+            type: "default",
+          },
+          adminHeaders
+        )
+      ).data.shipping_profile
+
       const product = (
         await api.post(
           "/admin/products",
           {
             title: "Test product",
             options: [{ title: "size", values: ["large", "small"] }],
+            shipping_profile_id: shippingProfile.id,
             variants: [
               {
                 title: "Test variant",
@@ -115,6 +130,7 @@ medusaIntegrationTestRunner({
           {
             title: "Extra product",
             options: [{ title: "size", values: ["large", "small"] }],
+            shipping_profile_id: shippingProfile.id,
             variants: [
               {
                 title: "my variant",
@@ -173,17 +189,6 @@ medusaIntegrationTestRunner({
         currency_code: "usd",
         customer_id: customer.id,
       })
-
-      shippingProfile = (
-        await api.post(
-          `/admin/shipping-profiles`,
-          {
-            name: "Test",
-            type: "default",
-          },
-          adminHeaders
-        )
-      ).data.shipping_profile
 
       location = (
         await api.post(
@@ -366,7 +371,7 @@ medusaIntegrationTestRunner({
           )
         ).data.order_preview
 
-        expect(result.summary.current_order_total).toEqual(84)
+        expect(result.summary.current_order_total).toEqual(86.4)
         expect(result.summary.original_order_total).toEqual(60)
 
         // Update item quantity and unit_price with the same amount as we have originally should not change totals
@@ -381,7 +386,7 @@ medusaIntegrationTestRunner({
           )
         ).data.order_preview
 
-        expect(result.summary.current_order_total).toEqual(84)
+        expect(result.summary.current_order_total).toEqual(86.4)
         expect(result.summary.original_order_total).toEqual(60)
 
         // Update item quantity, but keep the price as it was originally, should add + 25 to previous amount
@@ -396,7 +401,7 @@ medusaIntegrationTestRunner({
           )
         ).data.order_preview
 
-        expect(result.summary.current_order_total).toEqual(109)
+        expect(result.summary.current_order_total).toEqual(111.4)
         expect(result.summary.original_order_total).toEqual(60)
 
         // Update item quantity, with a new price
@@ -415,7 +420,7 @@ medusaIntegrationTestRunner({
           )
         ).data.order_preview
 
-        expect(result.summary.current_order_total).toEqual(124)
+        expect(result.summary.current_order_total).toEqual(126.4)
         expect(result.summary.original_order_total).toEqual(60)
 
         const updatedItem = result.items.find((i) => i.id === item.id)
@@ -454,7 +459,7 @@ medusaIntegrationTestRunner({
           )
         ).data.order_preview
 
-        expect(result.summary.current_order_total).toEqual(34)
+        expect(result.summary.current_order_total).toEqual(36.4)
         expect(result.summary.original_order_total).toEqual(60)
         expect(result.items.length).toEqual(2)
 
@@ -467,7 +472,7 @@ medusaIntegrationTestRunner({
         ).data.order_preview
 
         expect(result.order_change.status).toEqual(OrderChangeStatus.REQUESTED)
-        expect(result.summary.current_order_total).toEqual(34)
+        expect(result.summary.current_order_total).toEqual(36.4)
         expect(result.summary.original_order_total).toEqual(60)
         expect(result.items.length).toEqual(2)
 
@@ -501,6 +506,208 @@ medusaIntegrationTestRunner({
         expect(result[0].actions).toHaveLength(5)
         expect(result[0].status).toEqual("confirmed")
         expect(result[0].confirmed_by).toEqual(expect.stringContaining("user_"))
+      })
+    })
+
+    describe("Order Edit Shipping Methods", () => {
+      it("should add a shipping method through an order edit", async () => {
+        await api.post(
+          "/admin/order-edits",
+          { order_id: order.id, description: "Test" },
+          adminHeaders
+        )
+
+        const orderId = order.id
+
+        const shippingMethodResponse = await api.post(
+          `/admin/order-edits/${orderId}/shipping-method`,
+          { shipping_option_id: shippingOption.id, custom_amount: 5 },
+          adminHeaders
+        )
+
+        expect(
+          shippingMethodResponse.data.order_preview.shipping_methods.length
+        ).toEqual(2)
+        expect(
+          shippingMethodResponse.data.order_preview.shipping_methods
+        ).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              amount: 10,
+            }),
+            expect.objectContaining({
+              amount: 5,
+            }),
+          ])
+        )
+
+        const requestResult = await api.post(
+          `/admin/order-edits/${orderId}/request`,
+          {},
+          adminHeaders
+        )
+
+        expect(requestResult.data.order_preview.order_change.status).toEqual(
+          OrderChangeStatus.REQUESTED
+        )
+
+        await api.post(
+          `/admin/order-edits/${orderId}/confirm`,
+          {},
+          adminHeaders
+        )
+
+        const orderResult = await api.get(
+          `/admin/orders/${orderId}`,
+          adminHeaders
+        )
+
+        expect(orderResult.data.order.shipping_methods.length).toEqual(2)
+        expect(orderResult.data.order.shipping_methods).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ amount: 10 }),
+            expect.objectContaining({ amount: 5 }),
+          ])
+        )
+
+        const orderChangesResult = await api.get(
+          `/admin/orders/${orderId}/changes?change_type=edit`,
+          adminHeaders
+        )
+
+        expect(orderChangesResult.data.order_changes.length).toEqual(1)
+        expect(orderChangesResult.data.order_changes[0].status).toEqual(
+          OrderChangeStatus.CONFIRMED
+        )
+      })
+    })
+
+    describe("Order Edit Payment Collection", () => {
+      let appContainer
+      let storeHeaders
+      let region, product, salesChannel
+
+      const shippingAddressData = {
+        address_1: "test address 1",
+        address_2: "test address 2",
+        city: "SF",
+        country_code: "US",
+        province: "CA",
+        postal_code: "94016",
+      }
+
+      beforeAll(async () => {
+        appContainer = getContainer()
+      })
+
+      beforeEach(async () => {
+        const publishableKey = await generatePublishableKey(appContainer)
+        storeHeaders = generateStoreHeaders({ publishableKey })
+
+        region = (
+          await api.post(
+            "/admin/regions",
+            { name: "US", currency_code: "usd", countries: ["us"] },
+            adminHeaders
+          )
+        ).data.region
+
+        product = (
+          await api.post(
+            "/admin/products",
+            { ...medusaTshirtProduct },
+            adminHeaders
+          )
+        ).data.product
+
+        salesChannel = (
+          await api.post(
+            "/admin/sales-channels",
+            { name: "Webshop", description: "channel" },
+            adminHeaders
+          )
+        ).data.sales_channel
+      })
+
+      it("should add a create a new payment collection if the order has authorized payment collection", async () => {
+        const cart = (
+          await api.post(
+            `/store/carts`,
+            {
+              currency_code: "usd",
+              sales_channel_id: salesChannel.id,
+              region_id: region.id,
+              shipping_address: shippingAddressData,
+              items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+            },
+            storeHeaders
+          )
+        ).data.cart
+
+        const paymentCollection = (
+          await api.post(
+            `/store/payment-collections`,
+            { cart_id: cart.id },
+            storeHeaders
+          )
+        ).data.payment_collection
+
+        await api.post(
+          `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+          { provider_id: "pp_system_default" },
+          storeHeaders
+        )
+
+        const order = (
+          await api.post(
+            `/store/carts/${cart.id}/complete`,
+            { cart_id: cart.id },
+            storeHeaders
+          )
+        ).data.order
+
+        await api.post(
+          `/admin/order-edits`,
+          { order_id: order.id, description: "Test" },
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/order-edits/${order.id}/items`,
+          {
+            items: [
+              {
+                variant_id: product.variants[0].id,
+                quantity: 1,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/order-edits/${order.id}/confirm`,
+          {},
+          adminHeaders
+        )
+
+        const orderResult = (
+          await api.get(`/admin/orders/${order.id}`, adminHeaders)
+        ).data.order
+
+        expect(orderResult.payment_collections).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: paymentCollection.id,
+              status: "canceled",
+            }),
+            expect.objectContaining({
+              id: expect.any(String),
+              status: "not_paid",
+              amount: orderResult.total,
+            }),
+          ])
+        )
       })
     })
   },

@@ -700,7 +700,7 @@ export class Claim {
    * @returns The details of the claim, with a preview of the order when the claim is applied.
    * 
    * @example
-   *    * sdk.admin.claim.addOutboundShipping(
+   * sdk.admin.claim.addOutboundShipping(
    *   "claim_123", 
    *   {
    *     shipping_option_id: "so_123",

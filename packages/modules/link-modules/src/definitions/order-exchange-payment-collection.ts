@@ -38,6 +38,7 @@ export const OrderExchangePaymentCollection: ModuleJoinerConfig = {
       args: {
         methodSuffix: "PaymentCollections",
       },
+      hasMany: true,
     },
   ],
   extends: [

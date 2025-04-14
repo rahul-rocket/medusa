@@ -35,6 +35,7 @@ export const OrderFulfillment: ModuleJoinerConfig = {
       args: {
         methodSuffix: "Fulfillments",
       },
+      hasMany: true,
     },
   ],
   extends: [

@@ -922,48 +922,6 @@
  *         type: string
  *         title: sales_channel_id
  *         description: A sales channel's ID.
- *   - name: fulfillment_status
- *     in: query
- *     description: Filter by the fulfillment status of the draft order.
- *     required: false
- *     schema:
- *       type: array
- *       description: Filter by the fulfillment status of the draft order.
- *       items:
- *         type: string
- *         title: fulfillment_status
- *         description: The fulfillment status's details.
- *         enum:
- *           - canceled
- *           - not_fulfilled
- *           - partially_fulfilled
- *           - fulfilled
- *           - partially_shipped
- *           - shipped
- *           - partially_delivered
- *           - delivered
- *   - name: payment_status
- *     in: query
- *     description: Filter by the payment status of the draft order.
- *     required: false
- *     schema:
- *       type: array
- *       description: Filter by the payment status of the draft order.
- *       items:
- *         type: string
- *         title: payment_status
- *         description: The payment status's details.
- *         enum:
- *           - canceled
- *           - not_paid
- *           - awaiting
- *           - authorized
- *           - partially_authorized
- *           - captured
- *           - partially_captured
- *           - partially_refunded
- *           - refunded
- *           - requires_action
  *   - name: region_id
  *     in: query
  *     description: Filter by region IDs to retrieve their associated draft orders.
@@ -1468,6 +1426,23 @@
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.draftOrder.list()
+ *       .then(({ draft_orders, count, limit, offset }) => {
+ *         console.log(draft_orders)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -1481,33 +1456,7 @@
  *     content:
  *       application/json:
  *         schema:
- *           allOf:
- *             - type: object
- *               description: The paginated list of draft orders.
- *               required:
- *                 - limit
- *                 - offset
- *                 - count
- *               properties:
- *                 limit:
- *                   type: number
- *                   title: limit
- *                   description: The maximum number of items returned.
- *                 offset:
- *                   type: number
- *                   title: offset
- *                   description: The number of items skipped before retrieving the returned items.
- *                 count:
- *                   type: number
- *                   title: count
- *                   description: The total number of items.
- *             - type: object
- *               description: The paginated list of draft orders.
- *               required:
- *                 - draft_orders
- *               properties:
- *                 draft_orders:
- *                   $ref: "#/components/schemas/AdminOrder"
+ *           $ref: "#/components/schemas/AdminDraftOrderListResponse"
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":
@@ -1520,6 +1469,7 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
+ * x-workflow: getOrdersListWorkflow
  * 
 */
 

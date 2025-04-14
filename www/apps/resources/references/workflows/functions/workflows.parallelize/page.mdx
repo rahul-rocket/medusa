@@ -21,7 +21,6 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import {
   createProductStep,
-  getProductStep,
   createPricesStep,
   attachProductToSalesChannelStep
 } from "./steps"
@@ -40,15 +39,17 @@ const myWorkflow = createWorkflow(
      attachProductToSalesChannelStep(product)
    )
 
-   const id = product.id
-   return new WorkflowResponse(getProductStep(product.id))
+   return new WorkflowResponse({
+    prices,
+    productSalesChannel
+   })
  }
 )
 ```
 
 ## Type Parameters
 
-<TypeList types={[{"name":"TResult","type":"[WorkflowData](../../types/workflows.WorkflowData/page.mdx)[]","description":"The type of the expected result.","optional":true,"defaultValue":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="parallelize"/>
+<TypeList types={[{"name":"TResult","type":"(`undefined` \\| [WorkflowData](../../types/workflows.WorkflowData/page.mdx))[]","description":"The type of the expected result.","optional":true,"defaultValue":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="parallelize"/>
 
 ## Parameters
 

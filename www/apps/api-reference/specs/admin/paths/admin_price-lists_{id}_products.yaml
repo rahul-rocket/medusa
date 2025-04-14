@@ -38,6 +38,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminLinkPriceListProducts.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_price-lists_{id}_products/post.js
     - lang: Shell
       label: cURL
       source:

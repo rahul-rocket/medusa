@@ -33,6 +33,28 @@
  *       schema:
  *         $ref: "#/components/schemas/AdminPostExchangesAddItemsReqSchema"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.exchange.addOutboundItems("exchange_123", {
+ *         items: [{
+ *           id: "variant_123",
+ *           quantity: 1
+ *         }]
+ *       })
+ *       .then(({ exchange }) => {
+ *         console.log(exchange)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

@@ -54,6 +54,10 @@ post:
               title: FileList
           description: The files to upload.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_uploads/post.js
     - lang: Shell
       label: cURL
       source:

@@ -3,7 +3,7 @@
  * operationId: GetUsersMe
  * summary: Get Logged-In User
  * description: Retrieve the logged-in user's details.
- * x-authenticated: false
+ * x-authenticated: true
  * parameters:
  *   - name: fields
  *     in: query
@@ -18,6 +18,23 @@
  *       externalDocs:
  *         url: "#select-fields-and-relations"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.user.me()
+ *       .then(({ user }) => {
+ *         console.log(user)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: curl '{backend_url}/admin/users/me'
@@ -42,6 +59,9 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
+ * security:
+ *   - cookie_auth: []
+ *   - jwt_token: []
  * 
 */
 

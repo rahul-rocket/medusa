@@ -11,16 +11,33 @@ import {
 } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
+/**
+ * The price lists to update.
+ */
+export type UpdatePriceListsStepInput = UpdatePriceListWorkflowInputDTO[]
+
 export const updatePriceListsStepId = "update-price-lists"
 /**
  * This step updates one or more price lists.
+ *
+ * @example
+ * const data = updatePriceListsStep([
+ *   {
+ *     id: "plist_123",
+ *     title: "Test Price List",
+ *   }
+ * ])
  */
 export const updatePriceListsStep = createStep(
   updatePriceListsStepId,
-  async (data: UpdatePriceListDTO[], { container }) => {
+  async (data: UpdatePriceListsStepInput, { container }) => {
     const pricingModule = container.resolve<IPricingModuleService>(
       Modules.PRICING
     )
+
+    if (!data.length) {
+      return new StepResponse(void 0)
+    }
 
     const { dataBeforeUpdate, selects, relations } = await getDataBeforeUpdate(
       pricingModule,

@@ -510,7 +510,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
 
             expect(updatedServiceZones).toHaveLength(2)
 
-            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(6) // Since the update only calls create and update which are already tested, only check the length
+            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(3) // Since the update only calls create and update which are already tested, only check the length
 
             for (const data_ of updateData) {
               const expectedServiceZone = updatedServiceZones.find(

@@ -2,7 +2,7 @@ post:
   operationId: PostInvitesIdResend
   summary: Refresh Invite Token
   description: Refresh the token of an invite.
-  x-authenticated: false
+  x-authenticated: true
   parameters:
     - name: id
       in: path
@@ -29,6 +29,10 @@ post:
         externalDocs:
           url: '#select-fields-and-relations'
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_invites_{id}_resend/post.js
     - lang: Shell
       label: cURL
       source:
@@ -55,3 +59,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: refreshInviteTokensWorkflow
+  security:
+    - api_token: []
+    - cookie_auth: []
+    - jwt_token: []

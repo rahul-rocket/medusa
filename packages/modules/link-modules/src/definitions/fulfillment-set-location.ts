@@ -36,6 +36,7 @@ export const LocationFulfillmentSet: ModuleJoinerConfig = {
         methodSuffix: "FulfillmentSets",
       },
       deleteCascade: true,
+      hasMany: true,
     },
   ],
   extends: [

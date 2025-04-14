@@ -25,6 +25,7 @@ export const OrderPromotion: ModuleJoinerConfig = {
       args: {
         methodSuffix: "Orders",
       },
+      hasMany: true,
     },
     {
       serviceName: Modules.PROMOTION,
@@ -35,6 +36,7 @@ export const OrderPromotion: ModuleJoinerConfig = {
       args: {
         methodSuffix: "Promotions",
       },
+      hasMany: true,
     },
   ],
   extends: [

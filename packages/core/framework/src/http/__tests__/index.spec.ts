@@ -6,7 +6,7 @@ import {
   storeGlobalMiddlewareMock,
 } from "../__fixtures__/mocks"
 import { createServer } from "../__fixtures__/server"
-import { MedusaNextFunction, RoutesLoader } from "../index"
+import { MedusaNextFunction, ApiLoader } from "../index"
 
 jest.setTimeout(30000)
 
@@ -34,6 +34,93 @@ describe("RoutesLoader", function () {
       const { request: request_ } = await createServer(rootDir)
 
       request = request_
+    })
+
+    it("should be handled by the error handler when a route handler fails", async function () {
+      const res = await request("GET", "/admin/fail", {
+        adminSession: {
+          jwt: {
+            userId: "admin_user",
+          },
+        },
+      })
+
+      expect(res.status).toBe(500)
+      expect(res.text).toBe(
+        '{"code":"unknown_error","type":"unknown_error","message":"An unknown error occurred."}'
+      )
+    })
+
+    it("should not succeed on cors preflight admin request failing", async function () {
+      const res = await request("OPTIONS", "/admin/orders", {
+        headers: {
+          origin: "http://localhost:3000",
+          "access-control-request-method": "GET",
+        },
+        adminSession: {
+          jwt: {
+            userId: "admin_user",
+          },
+        },
+      })
+
+      expect(res.status).toBe(204)
+      expect(res.headers["access-control-allow-origin"]).not.toBeTruthy()
+    })
+
+    it("should not succeed on cors preflight store request failing", async function () {
+      const res = await request("OPTIONS", "/store/custom", {
+        headers: {
+          origin: "http://localhost:3000",
+          "access-control-request-method": "GET",
+        },
+        adminSession: {
+          jwt: {
+            userId: "admin_user",
+          },
+        },
+      })
+
+      expect(res.status).toBe(204)
+      expect(res.headers["access-control-allow-origin"]).not.toBeTruthy()
+    })
+
+    it("should succeed on cors preflight admin request", async function () {
+      const res = await request("OPTIONS", "/admin/orders", {
+        headers: {
+          origin: "http://localhost:7001",
+          "access-control-request-method": "GET",
+        },
+        adminSession: {
+          jwt: {
+            userId: "admin_user",
+          },
+        },
+      })
+
+      expect(res.status).toBe(204)
+      expect(res.headers["access-control-allow-origin"]).toBe(
+        "http://localhost:7001"
+      )
+    })
+
+    it("should succeed on cors preflight store request", async function () {
+      const res = await request("OPTIONS", "/store/custom", {
+        headers: {
+          origin: "http://localhost:8000",
+          "access-control-request-method": "GET",
+        },
+        adminSession: {
+          jwt: {
+            userId: "admin_user",
+          },
+        },
+      })
+
+      expect(res.status).toBe(204)
+      expect(res.headers["access-control-allow-origin"]).toBe(
+        "http://localhost:8000"
+      )
     })
 
     it("should return a status 200 on GET admin/order/:id", async function () {
@@ -237,7 +324,7 @@ describe("RoutesLoader", function () {
         __dirname,
         "../__fixtures__/routers-duplicate-parameter"
       )
-      const err = await new RoutesLoader({
+      const err = await new ApiLoader({
         app,
         sourceDir: rootDir,
       })
@@ -246,7 +333,7 @@ describe("RoutesLoader", function () {
 
       expect(err).toBeDefined()
       expect(err.message).toBe(
-        "Duplicate parameters found in route /admin/customers/[id]/orders/[id] (id). Make sure that all parameters are unique."
+        "Duplicate parameters found in route /admin/customers/[id]/orders/[id]/route.ts (id). Make sure that all parameters are unique."
       )
     })
   })

@@ -1,7 +1,10 @@
 import { logger } from "@medusajs/framework/logger"
-import { AdminOptions, ConfigModule } from "@medusajs/framework/types"
+import {
+  AdminOptions,
+  ConfigModule,
+  PluginDetails,
+} from "@medusajs/framework/types"
 import { Express } from "express"
-import fs from "fs"
 import path from "path"
 import { ADMIN_RELATIVE_OUTPUT_DIR } from "../utils"
 
@@ -9,12 +12,14 @@ type Options = {
   app: Express
   configModule: ConfigModule
   rootDirectory: string
+  plugins: PluginDetails[]
 }
 
 type IntializedOptions = Required<Pick<AdminOptions, "path" | "disable">> &
   AdminOptions & {
     outDir: string
     sources?: string[]
+    plugins?: string[]
   }
 
 const NOT_ALLOWED_PATHS = ["/auth", "/store", "/admin"]
@@ -23,21 +28,28 @@ export default async function adminLoader({
   app,
   configModule,
   rootDirectory,
+  plugins,
 }: Options) {
   const { admin } = configModule
 
   const sources: string[] = []
+  const pluginAdminPaths: string[] = []
+  for (const plugin of plugins) {
+    if (!plugin.admin) {
+      continue
+    }
 
-  const projectSource = path.join(rootDirectory, "src", "admin")
-
-  // check if the projectSource exists
-  if (fs.existsSync(projectSource)) {
-    sources.push(projectSource)
+    if (plugin.admin.type === "local") {
+      sources.push(plugin.admin.resolve)
+    } else {
+      pluginAdminPaths.push(plugin.admin.resolve)
+    }
   }
 
   const adminOptions: IntializedOptions = {
     disable: false,
     sources,
+    plugins: pluginAdminPaths,
     ...admin,
     outDir: path.join(rootDirectory, ADMIN_RELATIVE_OUTPUT_DIR),
   }

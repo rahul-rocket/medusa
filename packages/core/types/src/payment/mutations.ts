@@ -1,16 +1,15 @@
 import { BigNumberInput } from "../totals"
 import { PaymentCollectionStatus } from "./common"
-import { PaymentProviderContext } from "./provider"
+import {
+  PaymentAccountHolderDTO,
+  PaymentCustomerDTO,
+  PaymentProviderContext,
+} from "./provider"
 
 /**
  * The payment collection to be created.
  */
 export interface CreatePaymentCollectionDTO {
-  /**
-   * The associated region's ID.
-   */
-  region_id: string
-
   /**
    * The ISO 3 character currency code of the payment collection.
    */
@@ -48,11 +47,6 @@ export interface UpsertPaymentCollectionDTO {
   id?: string
 
   /**
-   * The associated region's ID.
-   */
-  region_id?: string
-
-  /**
    * The ISO 3 character currency code of the payment collection.
    */
   currency_code?: string
@@ -72,11 +66,6 @@ export interface UpsertPaymentCollectionDTO {
  * The attributes to update in the payment collection.
  */
 export interface PaymentCollectionUpdatableFields {
-  /**
-   * The associated region's ID.
-   */
-  region_id?: string
-
   /**
    * The ISO 3 character currency code of the payment collection.
    */
@@ -131,26 +120,6 @@ export interface CreatePaymentDTO {
    * The associated payment collection's ID.
    */
   payment_collection_id: string
-
-  /**
-   * The associated cart's ID.
-   */
-  cart_id?: string
-
-  /**
-   * The associated order's ID.
-   */
-  order_id?: string
-
-  /**
-   * The associated order edit's ID.
-   */
-  order_edit_id?: string
-
-  /**
-   * The associated customer's ID.
-   */
-  customer_id?: string
 }
 
 /**
@@ -161,26 +130,6 @@ export interface UpdatePaymentDTO {
    * The ID of the payment.
    */
   id: string
-
-  /**
-   * The associated cart's ID.
-   */
-  cart_id?: string
-
-  /**
-   * The associated order's ID.
-   */
-  order_id?: string
-
-  /**
-   * The associated order edit's ID.
-   */
-  order_edit_id?: string
-
-  /**
-   * The associated customer's ID.
-   */
-  customer_id?: string
 }
 
 /**
@@ -311,6 +260,53 @@ export interface CreatePaymentProviderDTO {
 }
 
 /**
+ * The payment session to be created.
+ */
+export interface CreateAccountHolderDTO {
+  /**
+   * The provider's ID.
+   */
+  provider_id: string
+
+  /**
+   * Necessary context data for the associated payment provider.
+   */
+  context: PaymentProviderContext & {
+    /**
+     * The customer information from Medusa.
+     */
+    customer: PaymentCustomerDTO
+  }
+}
+
+export interface UpdateAccountHolderDTO {
+  /**
+   * The ID of the account holder.
+   */
+  id: string
+
+  /**
+   * The provider's ID.
+   */
+  provider_id: string
+
+  /**
+   * Necessary context data for the associated payment provider.
+   */
+  context: PaymentProviderContext & {
+    /**
+     * The account holder information from Medusa.
+     */
+    account_holder: PaymentAccountHolderDTO
+  }
+
+  /**
+   * Holds custom data in key-value pairs.
+   */
+  metadata?: Record<string, unknown>
+}
+
+/**
  * The details of the webhook event payload.
  */
 export interface ProviderWebhookPayload {
@@ -372,4 +368,24 @@ export interface UpdateRefundReasonDTO {
    * The metadata of the refund reason
    */
   metadata?: Record<string, unknown> | null
+}
+
+/**
+ * The payment method to be created.
+ */
+export interface CreatePaymentMethodDTO {
+  /**
+   * The provider's ID.
+   */
+  provider_id: string
+
+  /**
+   * Necessary data for the associated payment provider to process the payment.
+   */
+  data: Record<string, unknown>
+
+  /**
+   * Necessary context data for the associated payment provider.
+   */
+  context: PaymentProviderContext
 }

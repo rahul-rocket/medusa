@@ -3,11 +3,11 @@
  * operationId: PostActor_typeAuth_providerUpdate
  * summary: Reset an Admin User's Password
  * x-sidebar-summary: Reset Password
- * description: Reset a user's password. Generate the reset password token first using the Get Reset Password Token API route.
+ * description: Reset an admin user's password using a reset-password token generated with the [Generate Reset Password Token API route](https://docs.medusajs.com/api/admin#auth_postactor_typeauth_providerresetpassword). You pass the token as a bearer token in the request's Authorization header.
  * externalDocs:
  *   url: https://docs.medusajs.com/v2/resources/commerce-modules/auth/authentication-route#reset-password-route
  *   description: Learn more about this API route.
- * x-authenticated: false
+ * x-authenticated: true
  * parameters:
  *   - name: auth_provider
  *     in: path
@@ -16,12 +16,6 @@
  *     schema:
  *       type: string
  *       example: "emailpass"
- *   - name: token
- *     in: query
- *     description: The reset password token received using the Get Reset Password API route.
- *     required: true
- *     schema:
- *       type: string
  * requestBody:
  *   content:
  *     application/json:
@@ -33,15 +27,42 @@
  *           email: "admin@medusa-test.com"
  *           password: "supersecret"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.auth.updateProvider(
+ *         "user",
+ *         "emailpass",
+ *         {
+ *           password: "supersecret"
+ *         },
+ *         token
+ *       )
+ *       .then(() => {
+ *         // password updated
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source:  |-
- *       curl -X POST '{backend_url}/auth/user/emailpass/update?token=123' \
+ *       curl -X POST '{backend_url}/auth/user/emailpass/update' \
  *       -H 'Content-Type: application/json' \
+ *       -H 'Authorization: Bearer {token}' \
  *       --data-raw '{
  *         "email": "admin@medusa-test.com",
  *         "password": "supersecret"
  *       }'
+ * security:
+ *   - reset_password: []
  * tags:
  *   - Auth
  * responses:

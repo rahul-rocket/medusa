@@ -1,5 +1,41 @@
 # @medusajs/icons
 
+## 2.7.0
+
+### Patch Changes
+
+- [#11734](https://github.com/medusajs/medusa/pull/11734) [`cc4c5c86e227a6693d53ea6b5b9e62d0a7c57fa2`](https://github.com/medusajs/medusa/commit/cc4c5c86e227a6693d53ea6b5b9e62d0a7c57fa2) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - chore(ui-preset,icons,dashboard): Sync with Figma, and update ArrowRight import
+
+## 2.6.1
+
+### Patch Changes
+
+- [#11738](https://github.com/medusajs/medusa/pull/11738) [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Remove ranges on Medusa packages
+
+## 2.6.0
+
+## 2.5.1
+
+### Patch Changes
+
+- [#11414](https://github.com/medusajs/medusa/pull/11414) [`47edd01deec79b394552cea349f1e41b7b88723b`](https://github.com/medusajs/medusa/commit/47edd01deec79b394552cea349f1e41b7b88723b) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(admin-vite-plugin,admin-bundler,ui,icons,dashboard,framework,types): Update Vite dependencies
+
+## 2.5.0
+
+### Patch Changes
+
+- [#11361](https://github.com/medusajs/medusa/pull/11361) [`3dbef519d95cf694d06843cb694c0d2abdac2146`](https://github.com/medusajs/medusa/commit/3dbef519d95cf694d06843cb694c0d2abdac2146) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(admin-vite-plugin,icons,ui,dashboard): Upgrade vitest in all packages and align Vite version
+
+## 2.4.0
+
+## 2.3.1
+
+## 2.3.0
+
+### Patch Changes
+
+- [#10961](https://github.com/medusajs/medusa/pull/10961) [`2a25b4d95f2b7a4d53138718c94124f47f041b36`](https://github.com/medusajs/medusa/commit/2a25b4d95f2b7a4d53138718c94124f47f041b36) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - chore(icons,dashboard): Pull latest icons and update branch icon in category tree
+
 ## 2.2.0
 
 ### Patch Changes

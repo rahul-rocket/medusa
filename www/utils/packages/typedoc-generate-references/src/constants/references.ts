@@ -38,6 +38,11 @@ const allReferences = [
   "types",
   "utils",
   "workflows",
+  "locking",
+  "cache",
+  "event",
+  "file-service",
+  "notification-service",
 ]
 
 export default allReferences

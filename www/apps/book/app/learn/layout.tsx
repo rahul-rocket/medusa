@@ -1,7 +1,6 @@
 import { TightLayout } from "docs-ui"
-import Feedback from "@/components/Feedback"
-import EditButton from "@/components/EditButton"
 import Providers from "../../providers"
+import Footer from "../../components/Footer"
 
 export default function RootLayout({
   children,
@@ -9,15 +8,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <TightLayout
-      sidebarProps={{
-        expandItems: true,
-      }}
-      showPagination={true}
-      feedbackComponent={<Feedback className="my-2" />}
-      editComponent={<EditButton />}
-      ProvidersComponent={Providers}
-    >
+    <TightLayout ProvidersComponent={Providers} footerComponent={<Footer />}>
       {children}
     </TightLayout>
   )

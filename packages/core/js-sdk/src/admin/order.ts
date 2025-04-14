@@ -1,10 +1,11 @@
 import {
+  AdminOrderChangesResponse,
+  CreateOrderCreditLineDTO,
   FindParams,
   HttpTypes,
   PaginatedResponse,
   SelectParams,
 } from "@medusajs/types"
-import { AdminOrderChangesResponse } from "@medusajs/types"
 
 import { Client } from "../client"
 import { ClientHeaders } from "../types"
@@ -411,7 +412,6 @@ export class Order {
    *
    * @param id - The order's ID.
    * @param fulfillmentId - The fulfillment's ID.
-   * @param body - The delivery details.
    * @param query - Configure the fields to retrieve in the order.
    * @param headers - Headers to pass in the request
    * @returns The order's details.
@@ -420,7 +420,6 @@ export class Order {
    * sdk.admin.order.markAsDelivered(
    *   "order_123",
    *   "ful_123",
-   *   {}
    * )
    * .then(({ order }) => {
    *   console.log(order)
@@ -429,7 +428,6 @@ export class Order {
   async markAsDelivered(
     id: string,
     fulfillmentId: string,
-    body: HttpTypes.AdminMarkOrderFulfillmentAsDelivered,
     query?: SelectParams,
     headers?: ClientHeaders
   ) {
@@ -438,7 +436,6 @@ export class Order {
       {
         method: "POST",
         headers,
-        body,
         query,
       }
     )
@@ -500,6 +497,46 @@ export class Order {
       {
         query: queryParams,
         headers,
+      }
+    )
+  }
+
+  /**
+   * This method creates a credit line for an order. It sends a request to the
+   * [Create Credit Line](https://docs.medusajs.com/api/admin#orders_postordersidcredit-lines) API route.
+   * 
+   * @param orderId - The order's ID.
+   * @param body - The credit line's details.
+   * @param query - Configure the fields to retrieve in the order.
+   * @param headers - Headers to pass in the request
+   * @returns The order's details.
+   * 
+   * @example
+   * sdk.admin.order.createCreditLine(
+   *   "order_123",
+   *   {
+   *     amount: 100,
+   *     reference: "order",
+   *     reference_id: "order_123",
+   *   }
+   * )
+   * .then(({ order }) => {
+   *   console.log(order)
+   * })
+   */
+  async createCreditLine(
+    orderId: string,
+    body: Omit<CreateOrderCreditLineDTO, "order_id">,
+    query?: SelectParams,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminOrderResponse>(
+      `/admin/orders/${orderId}/credit-lines`,
+      {
+        method: "POST",
+        headers,
+        body,
+        query,
       }
     )
   }

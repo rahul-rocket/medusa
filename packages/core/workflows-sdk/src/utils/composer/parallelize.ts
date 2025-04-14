@@ -16,7 +16,6 @@ import { OrchestrationUtils } from "@medusajs/utils"
  * } from "@medusajs/framework/workflows-sdk"
  * import {
  *   createProductStep,
- *   getProductStep,
  *   createPricesStep,
  *   attachProductToSalesChannelStep
  * } from "./steps"
@@ -35,12 +34,14 @@ import { OrchestrationUtils } from "@medusajs/utils"
  *      attachProductToSalesChannelStep(product)
  *    )
  *
- *    const id = product.id
- *    return new WorkflowResponse(getProductStep(product.id))
+ *    return new WorkflowResponse({
+ *     prices,
+ *     productSalesChannel
+ *    })
  *  }
  * )
  */
-export function parallelize<TResult extends WorkflowData[]>(
+export function parallelize<TResult extends (WorkflowData | undefined)[]>(
   ...steps: TResult
 ): TResult {
   if (!global[OrchestrationUtils.SymbolMedusaWorkflowComposerContext]) {
@@ -63,7 +64,7 @@ export function parallelize<TResult extends WorkflowData[]>(
     const stepOntoMerge = steps.shift()!
     this.flow.mergeActions(
       stepOntoMerge.__step__,
-      ...steps.map((step) => step.__step__)
+      ...steps.map((step) => step!.__step__)
     )
 
     return resultSteps as unknown as TResult

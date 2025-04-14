@@ -5,12 +5,31 @@
  * description: Delete Session
  * x-authenticated: false
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       await sdk.auth.logout()
+ * 
+ *       // user is now logged out
+ *       // you can't send any requests that require authentication
  *   - lang: Shell
  *     label: cURL
  *     source: curl -X DELETE '{backend_url}/auth/session'
  * tags:
  *   - Session
  * responses:
+ *   "200":
+ *     description: OK
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":

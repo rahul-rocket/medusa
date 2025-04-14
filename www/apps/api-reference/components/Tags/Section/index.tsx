@@ -1,6 +1,5 @@
 "use client"
 
-import getSectionId from "@/utils/get-section-id"
 import { InView } from "react-intersection-observer"
 import { useEffect, useMemo, useState } from "react"
 import {
@@ -22,24 +21,22 @@ import SectionDivider from "../../Section/Divider"
 import clsx from "clsx"
 import { Feedback, Loading, Link } from "docs-ui"
 import { usePathname, useRouter } from "next/navigation"
-import { PathsObject, SchemaObject, TagObject } from "@/types/openapi"
-import { TagSectionSchemaProps } from "./Schema"
+import { OpenAPI } from "types"
+import TagSectionSchema from "./Schema"
 import checkElementInViewport from "../../../utils/check-element-in-viewport"
 import TagPaths from "../Paths"
 import useSWR from "swr"
 import basePathUrl from "../../../utils/base-path-url"
+import { getSectionId } from "docs-utils"
+import { RoutesSummary } from "./RoutesSummary"
 
 export type TagSectionProps = {
-  tag: TagObject
+  tag: OpenAPI.TagObject
 } & React.HTMLAttributes<HTMLDivElement>
 
 const Section = dynamic<SectionProps>(
   async () => import("../../Section")
 ) as React.FC<SectionProps>
-
-const TagSectionSchema = dynamic<TagSectionSchemaProps>(
-  async () => import("./Schema")
-) as React.FC<TagSectionSchemaProps>
 
 const MDXContentClient = dynamic<MDXContentClientProps>(
   async () => import("../../MDXContent/Client"),
@@ -66,7 +63,7 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
     return isElmWindow(scrollableElement) ? document.body : scrollableElement
   }, [scrollableElement, isBrowser])
   const { data: schemaData } = useSWR<{
-    schema: SchemaObject
+    schema: OpenAPI.SchemaObject
   }>(
     loadData && tag["x-associatedSchema"]
       ? basePathUrl(
@@ -79,7 +76,7 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
     }
   )
   const { data: pathsData } = useSWR<{
-    paths: PathsObject
+    paths: OpenAPI.PathsObject
   }>(
     loadData ? basePathUrl(`/tag?tagName=${slugTagName}&area=${area}`) : null,
     swrFetcher,
@@ -89,23 +86,24 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
   )
 
   useEffect(() => {
-    if (!isBrowser) {
+    if (!isBrowser || !activePath || !activePath.includes(slugTagName)) {
       return
     }
 
-    if (activePath && activePath.includes(slugTagName)) {
-      const tagName = activePath.split("_")
-      if (tagName.length === 1 && tagName[0] === slugTagName) {
-        const elm = document.getElementById(tagName[0])
-        if (elm && !checkElementInViewport(elm, 0)) {
-          scrollToTop(
-            elm.offsetTop + (elm.offsetParent as HTMLElement)?.offsetTop,
-            0
-          )
-        }
-      } else if (tagName.length > 1 && tagName[0] === slugTagName) {
-        setLoadData(true)
+    const tagName = activePath.split("_")
+    if (tagName[0] !== slugTagName) {
+      return
+    }
+    if (tagName.length === 1) {
+      const elm = document.getElementById(tagName[0])
+      if (elm && !checkElementInViewport(elm, 0)) {
+        scrollToTop(
+          elm.offsetTop + (elm.offsetParent as HTMLElement)?.offsetTop,
+          0
+        )
       }
+    } else if (tagName.length > 1) {
+      setLoadData(true)
     }
   }, [slugTagName, activePath, isBrowser])
 
@@ -117,21 +115,22 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
       rootMargin={`112px 0px 112px 0px`}
       root={root}
       onChange={(inView) => {
-        if (inView) {
-          if (!loadData) {
-            setLoadData(true)
+        if (!inView) {
+          return
+        }
+        if (!loadData) {
+          setLoadData(true)
+        }
+        // ensure that the hash link doesn't change if it links to an inner path
+        const currentHashArr = location.hash.replace("#", "").split("_")
+        if (currentHashArr.length < 2 || currentHashArr[0] !== slugTagName) {
+          if (location.hash !== slugTagName) {
+            router.push(`#${slugTagName}`, {
+              scroll: false,
+            })
           }
-          // ensure that the hash link doesn't change if it links to an inner path
-          const currentHashArr = location.hash.replace("#", "").split("_")
-          if (currentHashArr.length < 2 || currentHashArr[0] !== slugTagName) {
-            if (location.hash !== slugTagName) {
-              router.push(`#${slugTagName}`, {
-                scroll: false,
-              })
-            }
-            if (activePath !== slugTagName) {
-              setActivePath(slugTagName)
-            }
+          if (activePath !== slugTagName) {
+            setActivePath(slugTagName)
           }
         }
       }}
@@ -171,7 +170,9 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
               />
             </div>
           }
-          codeContent={<></>}
+          codeContent={
+            <RoutesSummary tagName={tag.name} paths={pathsData?.paths || {}} />
+          }
         />
       </SectionContainer>
       {schemaData && (

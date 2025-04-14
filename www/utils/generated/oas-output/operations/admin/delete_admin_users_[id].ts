@@ -3,7 +3,7 @@
  * operationId: DeleteUsersId
  * summary: Delete a User
  * description: Delete a user.
- * x-authenticated: false
+ * x-authenticated: true
  * parameters:
  *   - name: id
  *     in: path
@@ -12,6 +12,23 @@
  *     schema:
  *       type: string
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.user.delete("user_123")
+ *       .then(({ deleted }) => {
+ *         console.log(deleted)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: curl -X DELETE '{backend_url}/admin/users/{id}'
@@ -37,6 +54,9 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: removeUserAccountWorkflow
+ * security:
+ *   - cookie_auth: []
+ *   - jwt_token: []
  * 
 */
 

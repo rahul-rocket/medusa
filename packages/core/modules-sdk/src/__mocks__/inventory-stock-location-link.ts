@@ -65,5 +65,6 @@ export const InventoryStockLocationLink = {
       foreignKeyData?: string
     ) => {}
   ),
+  list: jest.fn(async () => []),
   softDelete: jest.fn(() => {}),
 }

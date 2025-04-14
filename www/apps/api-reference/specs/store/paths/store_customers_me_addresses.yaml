@@ -128,6 +128,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_customers_me_addresses/get.js
     - lang: Shell
       label: cURL
       source:
@@ -260,6 +264,10 @@ post:
               type: object
               description: Holds custom key-value pairs.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_customers_me_addresses/post.js
     - lang: Shell
       label: cURL
       source:

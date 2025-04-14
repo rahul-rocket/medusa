@@ -11,14 +11,30 @@ import {
 } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
+/**
+ * The data to authorize the payment session.
+ */
 export type AuthorizePaymentSessionStepInput = {
+  /**
+   * The ID of the payment session to authorize.
+   */
   id: string
-  context: Record<string, unknown>
+  /**
+   * The context to authorize the payment session with.
+   * This context is passed to the payment provider associated with the payment session.
+   */
+  context?: Record<string, unknown>
 }
 
 export const authorizePaymentSessionStepId = "authorize-payment-session-step"
 /**
  * This step authorizes a payment session.
+ *
+ * @example
+ * const data = authorizePaymentSessionStep({
+ *   id: "payses_123",
+ *   context: {}
+ * })
  */
 export const authorizePaymentSessionStep = createStep(
   authorizePaymentSessionStepId,
@@ -28,6 +44,10 @@ export const authorizePaymentSessionStep = createStep(
     const paymentModule = container.resolve<IPaymentModuleService>(
       Modules.PAYMENT
     )
+
+    if (!input.id) {
+      return new StepResponse(null)
+    }
 
     try {
       payment = await paymentModule.authorizePaymentSession(
@@ -65,7 +85,7 @@ export const authorizePaymentSessionStep = createStep(
       )
     }
 
-    return new StepResponse(payment)
+    return new StepResponse(paymentSession.payment)
   },
   // If payment or any other part of complete cart fails post payment step, we cancel any payments made
   async (payment, { container }) => {

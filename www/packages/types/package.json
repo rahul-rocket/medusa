@@ -32,7 +32,7 @@
     "watch": "tsc --watch"
   },
   "devDependencies": {
-    "@medusajs/icons": "^2.0.0",
+    "@medusajs/icons": "2.6.0",
     "@types/node": "^20.11.20",
     "rimraf": "^5.0.5",
     "tsconfig": "*",
@@ -40,5 +40,8 @@
   },
   "engines": {
     "node": ">=18.17.0"
+  },
+  "dependencies": {
+    "openapi-types": "^12.1.3"
   }
 }

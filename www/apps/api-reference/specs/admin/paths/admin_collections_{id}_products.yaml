@@ -57,6 +57,10 @@ post:
                 title: remove
                 description: A product's ID.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_collections_{id}_products/post.js
     - lang: Shell
       label: cURL
       source:

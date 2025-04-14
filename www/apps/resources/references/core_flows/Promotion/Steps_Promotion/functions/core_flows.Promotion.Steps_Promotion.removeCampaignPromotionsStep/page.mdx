@@ -14,6 +14,13 @@ This documentation provides a reference to the `removeCampaignPromotionsStep`. I
 
 This step removes promotions from a campaigns.
 
-## Input
+## Example
 
-<TypeList types={[{"name":"","type":"","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"","type":"","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="removeCampaignPromotionsStep"/>
+```ts
+const data = removeCampaignPromotionsStep([
+  {
+    id: "camp_123",
+    remove: ["promo_321"]
+  }
+])
+```

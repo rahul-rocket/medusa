@@ -255,19 +255,11 @@ moduleIntegrationTestRunner<IUserModuleService>({
           expect(eventBusSpy).toHaveBeenCalledWith(
             [
               expect.objectContaining({
-                data: { id: "1" },
+                data: { id: ["1", "2"] },
                 name: UserEvents.INVITE_CREATED,
               }),
               expect.objectContaining({
-                data: { id: "2" },
-                name: UserEvents.INVITE_CREATED,
-              }),
-              expect.objectContaining({
-                data: { id: "1" },
-                name: UserEvents.INVITE_TOKEN_GENERATED,
-              }),
-              expect.objectContaining({
-                data: { id: "2" },
+                data: { id: ["1", "2"] },
                 name: UserEvents.INVITE_TOKEN_GENERATED,
               }),
             ],

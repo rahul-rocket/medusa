@@ -40,6 +40,11 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_products_{id}_variants_{variant_id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -123,6 +128,11 @@ post:
                     `additional_data` parameter.
           description: The properties to update in the variant.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_products_{id}_variants_{variant_id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -192,6 +202,11 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_products_{id}_variants_{variant_id}/delete.js
     - lang: Shell
       label: cURL
       source:

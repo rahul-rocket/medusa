@@ -1,17 +1,16 @@
-import { ShoppingBag, TriangleRightMini } from "@medusajs/icons"
-import { Container, Heading, Text } from "@medusajs/ui"
+import { ShoppingBag } from "@medusajs/icons"
+import { Container, Heading } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
-import { Link, useLoaderData } from "react-router-dom"
+import { useLoaderData } from "react-router-dom"
 
 import { useStockLocations } from "../../../hooks/api/stock-locations"
 import LocationListItem from "./components/location-list-item/location-list-item"
 import { LOCATION_LIST_FIELDS } from "./constants"
 import { shippingListLoader } from "./loader"
 
-import { ReactNode } from "react"
-import { IconAvatar } from "../../../components/common/icon-avatar"
+import { SidebarLink } from "../../../components/common/sidebar-link/sidebar-link"
 import { TwoColumnPage } from "../../../components/layout/pages"
-import { useDashboardExtension } from "../../../extensions"
+import { useExtension } from "../../../providers/extension-provider"
 import { LocationListHeader } from "./components/location-list-header"
 
 export function LocationList() {
@@ -30,7 +29,7 @@ export function LocationList() {
     { initialData }
   )
 
-  const { getWidgets } = useDashboardExtension()
+  const { getWidgets } = useExtension()
 
   if (isError) {
     throw error
@@ -39,10 +38,10 @@ export function LocationList() {
   return (
     <TwoColumnPage
       widgets={{
-        after: getWidgets("location.details.after"),
-        before: getWidgets("location.details.before"),
-        sideAfter: getWidgets("location.details.side.after"),
-        sideBefore: getWidgets("location.details.side.before"),
+        after: getWidgets("location.list.after"),
+        before: getWidgets("location.list.before"),
+        sideAfter: getWidgets("location.list.side.after"),
+        sideBefore: getWidgets("location.list.side.before"),
       }}
       showJSON
     >
@@ -58,47 +57,6 @@ export function LocationList() {
         <LinksSection />
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>
-  )
-}
-
-interface SidebarLinkProps {
-  to: string
-  labelKey: string
-  descriptionKey: string
-  icon: ReactNode
-}
-
-const SidebarLink = ({
-  to,
-  labelKey,
-  descriptionKey,
-  icon,
-}: SidebarLinkProps) => {
-  return (
-    <Link to={to} className="group outline-none">
-      <div className="flex flex-col gap-2 px-2 pb-2">
-        <div className="shadow-elevation-card-rest bg-ui-bg-component transition-fg hover:bg-ui-bg-component-hover active:bg-ui-bg-component-pressed group-focus-visible:shadow-borders-interactive-with-active rounded-md px-4 py-2">
-          <div className="flex items-center gap-4">
-            <IconAvatar>{icon}</IconAvatar>
-            <div className="flex flex-1 flex-col">
-              <Text size="small" leading="compact" weight="plus">
-                {labelKey}
-              </Text>
-              <Text
-                size="small"
-                leading="compact"
-                className="text-ui-fg-subtle"
-              >
-                {descriptionKey}
-              </Text>
-            </div>
-            <div className="flex size-7 items-center justify-center">
-              <TriangleRightMini className="text-ui-fg-muted" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
   )
 }
 

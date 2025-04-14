@@ -34,6 +34,7 @@ export const ProductVariantInventoryItem: ModuleJoinerConfig = {
       args: {
         methodSuffix: "ProductVariants",
       },
+      hasMany: true,
     },
     {
       serviceName: Modules.INVENTORY,
@@ -44,6 +45,7 @@ export const ProductVariantInventoryItem: ModuleJoinerConfig = {
       args: {
         methodSuffix: "InventoryItems",
       },
+      hasMany: true,
     },
   ],
   extends: [

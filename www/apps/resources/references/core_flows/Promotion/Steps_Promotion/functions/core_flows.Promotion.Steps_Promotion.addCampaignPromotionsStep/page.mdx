@@ -14,6 +14,12 @@ This documentation provides a reference to the `addCampaignPromotionsStep`. It b
 
 This step adds promotions to a campaign.
 
-## Input
+## Example
 
-<TypeList types={[{"name":"","type":"","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"","type":"","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="addCampaignPromotionsStep"/>
+```ts
+const data = addCampaignPromotionsStep({
+  id: "camp_123",
+  add: ["promo_123"],
+  remove: ["promo_321"],
+})
+```

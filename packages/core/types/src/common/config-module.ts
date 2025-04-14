@@ -4,6 +4,7 @@ import {
 } from "../modules-sdk"
 
 import type { RedisOptions } from "ioredis"
+import { ConnectionOptions } from "node:tls"
 // @ts-ignore
 import type { InlineConfig } from "vite"
 
@@ -280,12 +281,7 @@ export type ProjectConfigOptions = {
       /**
        * Configure support for TLS/SSL connection
        */
-      ssl?: {
-        /**
-         * Whether to fail connection if the server certificate is verified against the list of supplied CAs and the hostname and no match is found.
-         */
-        rejectUnauthorized?: false
-      }
+      ssl?: boolean | ConnectionOptions
     }
   }
 
@@ -966,11 +962,17 @@ export type InputConfig = Partial<
   }
 >
 
+type PluginAdminDetails = {
+  type: "local" | "package"
+  resolve: string
+}
+
 export type PluginDetails = {
   resolve: string
   name: string
   id: string
   options: Record<string, unknown>
   version: string
+  admin?: PluginAdminDetails
   modules?: InputConfigModules
 }

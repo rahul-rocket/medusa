@@ -20,6 +20,8 @@ Long-running workflows are useful if:
 
 - A task takes too long. For example, you're importing data from a CSV file.
 - The workflow's steps wait for an external action to finish before resuming execution. For example, before you import the data from the CSV file, you wait until the import is confirmed by the user.
+- You want to retry workflow steps after a long period of time. For example, you want to retry a step that processes a payment every day until the payment is successful.
+    - Refer to the [Retry Failed Steps chapter](../retry-failed-steps/page.mdx) for more information.
 
 ---
 
@@ -74,11 +76,12 @@ The second step has in its configuration object `async` set to `true` and it doe
 
 So, when you execute the `hello-world` workflow, it continues its execution in the background once it reaches the second step.
 
-<Note>
+### When is a Workflow Considered Long-Running?
 
-A workflow is also considered long-running if one of its steps has their `retryInterval` option set as explained in [this chapter](../retry-failed-steps/page.mdx).
+A workflow is also considered long-running if:
 
-</Note>
+- One of its steps has its `async` configuration set to `true` and doesn't return a step response.
+- One of its steps has its `retryInterval` option set as explained in the [Retry Failed Steps chapter](../retry-failed-steps/page.mdx).
 
 ---
 
@@ -228,7 +231,7 @@ For example:
 export const failureStatusHighlights = [
   ["17", "transactionId", "Receive the workflow execution's transaction ID as an input to the step."],
   ["20", "resolve", "Resolve the workflow engine's main service."],
-  ["24", "setStepSuccess", "Change the step's status to successful."],
+  ["24", "setStepFailure", "Change the step's status to failed."],
   ["28", "stepId", "The ID of the step as passed to `createStep`'s first parameter when it was created."],
   ["29", "workflowId", "The ID of the workflow as passed to `createWorkflow`'s first parameter when it was created."],
   ["31", "stepResponse", "The response returned by the step, since an `async` step can't return a response in its definition."]
@@ -282,11 +285,18 @@ You use this step in another workflow that changes the status of an async step i
 
 To access the status and result of a long-running workflow execution, use the `subscribe` and `unsubscribe` methods of the Workflow Engine Module's main service.
 
+<Note title="Tip">
+
+To retrieve the workflow execution's details at a later point, you must enable [storing the workflow's executions](../store-executions/page.mdx).
+
+</Note>
+
 For example:
 
 export const highlights = [
-  ["18", "resolve", "Resolve the workflow engine from the Medusa container."],
-  ["30", "subscribe", "Subscribe to status changes of the workflow execution."],
+  ["11", "resolve", "Resolve the workflow engine from the Medusa container."],
+  ["23", "subscribe", "Subscribe to status changes of the workflow execution."],
+  ["29", "unsubscribe", "Unsubscribe once you have the result"]
 ]
 
 ```ts title="src/api/workflows/route.ts" highlights={highlights} collapsibleLines="1-11" expandButtonLabel="Show Imports"

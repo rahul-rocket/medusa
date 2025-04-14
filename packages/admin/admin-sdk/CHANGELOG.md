@@ -1,5 +1,67 @@
 # @medusajs/admin-sdk
 
+## 2.7.0
+
+### Patch Changes
+
+- Updated dependencies [[`5ab15a29889870411b719ebad3fb94786baee45e`](https://github.com/medusajs/medusa/commit/5ab15a29889870411b719ebad3fb94786baee45e), [`5ab15a29889870411b719ebad3fb94786baee45e`](https://github.com/medusajs/medusa/commit/5ab15a29889870411b719ebad3fb94786baee45e)]:
+  - @medusajs/admin-shared@2.7.0
+
+## 2.6.1
+
+### Patch Changes
+
+- [#11738](https://github.com/medusajs/medusa/pull/11738) [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Remove ranges on Medusa packages
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.6.1
+
+## 2.6.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.6.0
+
+## 2.5.1
+
+### Patch Changes
+
+- [#11413](https://github.com/medusajs/medusa/pull/11413) [`a039dd6932c3c5581b3ee0ebba1eb8413912ec43`](https://github.com/medusajs/medusa/commit/a039dd6932c3c5581b3ee0ebba1eb8413912ec43) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - chore(admin-sdk): Pin zod in admin-sdk
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- [#11272](https://github.com/medusajs/medusa/pull/11272) [`f4c2cd112ed54757ed35a55297b46b36152829cb`](https://github.com/medusajs/medusa/commit/f4c2cd112ed54757ed35a55297b46b36152829cb) Thanks [@thetutlage](https://github.com/thetutlage)! - fix: issues with peer dependencies
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.5.0
+
+## 2.4.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.4.0
+
+## 2.3.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.3.1
+
+## 2.3.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.3.0
+
 ## 2.2.0
 
 ### Patch Changes

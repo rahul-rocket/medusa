@@ -133,6 +133,10 @@ get:
         externalDocs:
           url: '#pagination'
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_products_{id}/get.js
     - lang: Shell
       label: cURL
       source:

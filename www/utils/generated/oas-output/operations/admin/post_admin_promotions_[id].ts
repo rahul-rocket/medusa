@@ -123,6 +123,25 @@
  *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  *         description: The properties to update in a promotion.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.promotion.update("promo_123", {
+ *         code: "PROMO123",
+ *       })
+ *       .then(({ promotion }) => {
+ *         console.log(promotion)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

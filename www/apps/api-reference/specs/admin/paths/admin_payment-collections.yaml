@@ -45,6 +45,10 @@ post:
               title: amount
               description: The amount to be paid.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_payment-collections/post.js
     - lang: Shell
       label: cURL
       source:

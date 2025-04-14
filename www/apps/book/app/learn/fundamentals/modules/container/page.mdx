@@ -12,7 +12,7 @@ So, resources in the module, such as services or loaders, can only resolve other
 
 ### List of Registered Resources
 
-Find a list of resources or dependencies registered in a module's container in [this Development Resources reference](!resources!/medusa-container-resources).
+Find a list of resources or dependencies registered in a module's container in [the Container Resources reference](!resources!/medusa-container-resources).
 
 ---
 
@@ -31,13 +31,13 @@ type InjectedDependencies = {
   logger: Logger
 }
 
-export default class HelloModuleService {
+export default class BlogModuleService {
   protected logger_: Logger
 
   constructor({ logger }: InjectedDependencies) {
     this.logger_ = logger
 
-    this.logger_.info("[HelloModuleService]: Hello World!")
+    this.logger_.info("[BlogModuleService]: Hello World!")
   }
 
   // ...

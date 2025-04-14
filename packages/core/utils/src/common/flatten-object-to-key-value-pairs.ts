@@ -27,116 +27,284 @@ type NestedObject = {
     "product.categories.id": ["test-category"],
     "product.categories.name": ["Test Category"]
   }
+
+  Null and undefined values are excluded from the result.
 */
 export function flattenObjectToKeyValuePairs(obj: NestedObject): NestedObject {
   const result: NestedObject = {}
 
-  // Find all paths that contain arrays of objects
-  function findArrayPaths(
-    obj: unknown,
-    currentPath: string[] = []
-  ): string[][] {
-    const paths: string[][] = []
-
-    if (!obj || typeof obj !== "object") {
-      return paths
+  function shouldPreserveArray(value: any[], path: string[]): boolean {
+    if (!Array.isArray(value) || value.length === 0) {
+      return false
     }
 
-    // If it's an array of objects, add this path
-    if (Array.isArray(obj) && obj.length > 0 && isObject(obj[0])) {
-      paths.push(currentPath)
+    if (value.some((item) => isObject(item) && !Array.isArray(item))) {
+      return true
     }
 
-    // Check all properties
-    if (isObject(obj)) {
-      Object.entries(obj as Record<string, unknown>).forEach(([key, value]) => {
-        const newPath = [...currentPath, key]
-        paths.push(...findArrayPaths(value, newPath))
-      })
+    if (value.some((item) => Array.isArray(item))) {
+      return true
     }
 
-    return paths
-  }
+    if (path.length > 1) {
+      return true
+    }
 
-  // Extract array values at a specific path
-  function getArrayValues(obj: unknown, path: string[]): unknown[] {
-    const arrayObj = path.reduce((acc: unknown, key: string) => {
-      if (acc && isObject(acc)) {
-        return (acc as Record<string, unknown>)[key]
+    if (value.length > 1) {
+      const firstType = typeof value[0]
+      const allSameType = value.every(
+        (item) =>
+          typeof item === firstType && !isObject(item) && !Array.isArray(item)
+      )
+      if (allSameType) {
+        return true
       }
-      return undefined
-    }, obj)
+    }
 
-    if (!Array.isArray(arrayObj)) return []
-
-    return arrayObj
+    return false
   }
 
-  // Process non-array paths
-  function processRegularPaths(obj: unknown, prefix = ""): void {
-    if (!obj || typeof obj !== "object") {
-      result[prefix] = obj
+  /**
+   * Normalize array values - unwrap single-item arrays and handle empty arrays
+   */
+  function normalizeArrayValue(value: any, path: string[]): any {
+    if (!Array.isArray(value)) {
+      return value
+    }
+
+    if (
+      value.length === 1 &&
+      Array.isArray(value[0]) &&
+      value[0].length === 0
+    ) {
+      return []
+    }
+
+    if (shouldPreserveArray(value, path)) {
+      return value
+    }
+
+    if (value.length === 1 && !isObject(value[0]) && !Array.isArray(value[0])) {
+      return value[0]
+    }
+
+    return value
+  }
+
+  /**
+   * Recursively process an object/array and flatten it
+   */
+  function processPath(value: any, currentPath: string[] = []): void {
+    // Handle null, undefined, or primitive values
+    if (!value || typeof value !== "object") {
+      if (value !== null && value !== undefined && currentPath.length > 0) {
+        result[currentPath.join(".")] = value
+      }
       return
     }
 
-    if (Array.isArray(obj)) return
+    if (Array.isArray(value)) {
+      if (value.length === 0) {
+        if (currentPath.length > 0) {
+          result[currentPath.join(".")] = []
+        }
+        return
+      }
 
-    Object.entries(obj as Record<string, unknown>).forEach(([key, value]) => {
-      const newPrefix = prefix ? `${prefix}.${key}` : key
-      if (value && isObject(value) && !Array.isArray(value)) {
-        processRegularPaths(value, newPrefix)
-      } else if (!Array.isArray(value)) {
-        result[newPrefix] = value
+      if (value.some((item) => isObject(item) && !Array.isArray(item))) {
+        extractPropertiesFromArray(value, currentPath)
+      } else if (value.some((item) => Array.isArray(item))) {
+        const allValues: any[] = []
+        const flattenedObjects: Record<string, any>[] = []
+
+        const flattenArray = (arr: any[], collector: any[] = []): void => {
+          arr.forEach((item) => {
+            if (Array.isArray(item)) {
+              flattenArray(item, collector)
+            } else if (isObject(item)) {
+              collector.push(item)
+            } else if (item !== null && item !== undefined) {
+              allValues.push(item)
+            }
+          })
+        }
+
+        flattenArray(value, flattenedObjects)
+
+        if (flattenedObjects.length > 0) {
+          extractPropertiesFromArray(flattenedObjects, currentPath)
+        } else if (allValues.length > 0) {
+          result[currentPath.join(".")] = normalizeArrayValue(
+            allValues,
+            currentPath
+          )
+        }
+      } else {
+        const cleanedValues = value.filter((v) => v !== null && v !== undefined)
+        if (cleanedValues.length > 0) {
+          result[currentPath.join(".")] = normalizeArrayValue(
+            cleanedValues,
+            currentPath
+          )
+        }
+      }
+      return
+    }
+
+    Object.entries(value).forEach(([key, propValue]) => {
+      const newPath = [...currentPath, key]
+
+      if (propValue === null || propValue === undefined) {
+        return
+      } else if (Array.isArray(propValue)) {
+        if (propValue.length === 0) {
+          result[newPath.join(".")] = []
+        } else {
+          processPath(propValue, newPath)
+        }
+      } else if (isObject(propValue)) {
+        processPath(propValue, newPath)
+      } else {
+        result[newPath.join(".")] = propValue
       }
     })
   }
 
-  // Process the object
-  processRegularPaths(obj)
+  /**
+   * Extract all properties from an array of objects and store them
+   */
+  function extractPropertiesFromArray(
+    array: any[],
+    basePath: string[] = []
+  ): void {
+    if (!array.length) return
 
-  // Find and process array paths
-  const arrayPaths = findArrayPaths(obj)
-  arrayPaths.forEach((path) => {
-    const pathStr = path.join(".")
-    const arrayObjects = getArrayValues(obj, path)
+    // Collect all unique keys from all objects in the array
+    const allKeys = new Set<string>()
+    array.forEach((item) => {
+      if (isObject(item) && !Array.isArray(item)) {
+        Object.keys(item).forEach((key) => allKeys.add(key))
+      }
+    })
 
-    if (Array.isArray(arrayObjects) && arrayObjects.length > 0) {
-      // Get all possible keys from the array objects
-      const keys = new Set<string>()
-      arrayObjects.forEach((item) => {
-        if (item && isObject(item)) {
-          Object.keys(item as object).forEach((k) => keys.add(k))
-        }
-      })
+    allKeys.forEach((key) => {
+      const valuePath = [...basePath, key]
+      const values: any[] = []
 
-      // Process each key
-      keys.forEach((key) => {
-        const values = arrayObjects
-          .map((item) => {
-            if (item && isObject(item)) {
-              return (item as Record<string, unknown>)[key]
-            }
-            return undefined
-          })
-          .filter((v) => v !== undefined)
-
-        if (values.length > 0) {
-          const newPath = `${pathStr}.${key}`
-          if (values.every((v) => isObject(v) && !Array.isArray(v))) {
-            // If these are all objects, recursively process them
-            const subObj = { [key]: values }
-            const subResult = flattenObjectToKeyValuePairs(subObj)
-            Object.entries(subResult).forEach(([k, v]) => {
-              const finalPath = `${pathStr}.${k}`
-              result[finalPath] = v
-            })
-          } else {
-            result[newPath] = values
+      array.forEach((item) => {
+        if (isObject(item) && !Array.isArray(item) && key in item) {
+          const itemValue = item[key]
+          if (itemValue !== null && itemValue !== undefined) {
+            values.push(itemValue)
           }
         }
       })
-    }
-  })
+
+      if (values.length === 0) return
+
+      if (values.every((v) => isObject(v) && !Array.isArray(v))) {
+        extractNestedObjectProperties(values, valuePath)
+      } else if (values.some((v) => Array.isArray(v))) {
+        if (values.every((v) => Array.isArray(v) && v.length === 0)) {
+          result[valuePath.join(".")] = []
+        } else {
+          const flattenedArray: any[] = []
+          for (const arrayValue of values) {
+            if (Array.isArray(arrayValue)) {
+              if (arrayValue.some((v) => isObject(v) && !Array.isArray(v))) {
+                extractPropertiesFromArray(arrayValue, valuePath)
+              } else {
+                flattenedArray.push(...arrayValue)
+              }
+            } else {
+              flattenedArray.push(arrayValue)
+            }
+          }
+
+          if (
+            flattenedArray.length > 0 &&
+            !flattenedArray.some((v) => isObject(v) && !Array.isArray(v))
+          ) {
+            result[valuePath.join(".")] = normalizeArrayValue(
+              flattenedArray,
+              valuePath
+            )
+          }
+        }
+      } else {
+        result[valuePath.join(".")] = normalizeArrayValue(values, valuePath)
+      }
+    })
+  }
+
+  /**
+   * Extract properties from nested objects and add them to the result
+   */
+  function extractNestedObjectProperties(
+    objects: any[],
+    basePath: string[] = []
+  ): void {
+    if (!objects.length) return
+
+    // Collect all unique keys from all objects
+    const allNestedKeys = new Set<string>()
+    objects.forEach((obj) => {
+      if (isObject(obj) && !Array.isArray(obj)) {
+        Object.keys(obj).forEach((key) => allNestedKeys.add(key))
+      }
+    })
+
+    allNestedKeys.forEach((nestedKey) => {
+      const nestedPath = [...basePath, nestedKey]
+      const nestedValues: any[] = []
+
+      objects.forEach((obj) => {
+        if (isObject(obj) && !Array.isArray(obj) && nestedKey in obj) {
+          const nestedValue = obj[nestedKey]
+          if (nestedValue !== null && nestedValue !== undefined) {
+            nestedValues.push(nestedValue)
+          }
+        }
+      })
+
+      if (nestedValues.length === 0) return
+
+      if (nestedValues.every((v) => isObject(v) && !Array.isArray(v))) {
+        extractNestedObjectProperties(nestedValues, nestedPath)
+      } else if (nestedValues.some((v) => Array.isArray(v))) {
+        if (nestedValues.every((v) => Array.isArray(v) && v.length === 0)) {
+          result[nestedPath.join(".")] = []
+        } else {
+          const allArrayItems: any[] = []
+          for (const arrayValue of nestedValues) {
+            if (Array.isArray(arrayValue)) {
+              allArrayItems.push(...arrayValue)
+            } else {
+              allArrayItems.push(arrayValue)
+            }
+          }
+
+          if (
+            allArrayItems.some((item) => isObject(item) && !Array.isArray(item))
+          ) {
+            extractPropertiesFromArray(allArrayItems, nestedPath)
+          } else {
+            result[nestedPath.join(".")] = normalizeArrayValue(
+              allArrayItems,
+              nestedPath
+            )
+          }
+        }
+      } else {
+        result[nestedPath.join(".")] = normalizeArrayValue(
+          nestedValues,
+          nestedPath
+        )
+      }
+    })
+  }
+
+  processPath(obj)
 
   return result
 }

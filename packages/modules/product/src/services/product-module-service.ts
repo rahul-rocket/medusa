@@ -1,6 +1,7 @@
 import {
   Context,
   DAL,
+  FilterableProductOptionValueProps,
   FindConfig,
   IEventBusModuleService,
   InferEntityType,
@@ -25,6 +26,7 @@ import { ProductCategoryService } from "@services"
 import {
   arrayDifference,
   EmitEvents,
+  generateEntityId,
   InjectManager,
   InjectTransactionManager,
   isDefined,
@@ -242,11 +244,12 @@ export default class ProductModuleService
     }
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   createProductVariants(
     data: ProductTypes.CreateProductVariantDTO[],
     sharedContext?: Context
   ): Promise<ProductTypes.ProductVariantDTO[]>
+  // @ts-expect-error
   createProductVariants(
     data: ProductTypes.CreateProductVariantDTO,
     sharedContext?: Context
@@ -254,6 +257,7 @@ export default class ProductModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async createProductVariants(
     data:
       | ProductTypes.CreateProductVariantDTO[]
@@ -371,12 +375,13 @@ export default class ProductModuleService
     return Array.isArray(data) ? allVariants : allVariants[0]
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   updateProductVariants(
     id: string,
     data: ProductTypes.UpdateProductVariantDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductVariantDTO>
+  // @ts-expect-error
   updateProductVariants(
     selector: ProductTypes.FilterableProductVariantProps,
     data: ProductTypes.UpdateProductVariantDTO,
@@ -385,6 +390,7 @@ export default class ProductModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async updateProductVariants(
     idOrSelector: string | ProductTypes.FilterableProductVariantProps,
     data: ProductTypes.UpdateProductVariantDTO,
@@ -503,11 +509,12 @@ export default class ProductModuleService
     return productVariants
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   createProductTags(
     data: ProductTypes.CreateProductTagDTO[],
     sharedContext?: Context
   ): Promise<ProductTypes.ProductTagDTO[]>
+  // @ts-expect-error
   createProductTags(
     data: ProductTypes.CreateProductTagDTO,
     sharedContext?: Context
@@ -515,6 +522,7 @@ export default class ProductModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async createProductTags(
     data: ProductTypes.CreateProductTagDTO[] | ProductTypes.CreateProductTagDTO,
     @MedusaContext() sharedContext: Context = {}
@@ -582,12 +590,13 @@ export default class ProductModuleService
     return Array.isArray(data) ? allTags : allTags[0]
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   updateProductTags(
     id: string,
     data: ProductTypes.UpdateProductTagDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductTagDTO>
+  // @ts-expect-error
   updateProductTags(
     selector: ProductTypes.FilterableProductTagProps,
     data: ProductTypes.UpdateProductTagDTO,
@@ -596,6 +605,7 @@ export default class ProductModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async updateProductTags(
     idOrSelector: string | ProductTypes.FilterableProductTagProps,
     data: ProductTypes.UpdateProductTagDTO,
@@ -636,17 +646,19 @@ export default class ProductModuleService
     return isString(idOrSelector) ? updatedTags[0] : updatedTags
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   createProductTypes(
     data: ProductTypes.CreateProductTypeDTO[],
     sharedContext?: Context
   ): Promise<ProductTypes.ProductTypeDTO[]>
+  // @ts-expect-error
   createProductTypes(
     data: ProductTypes.CreateProductTypeDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductTypeDTO>
 
   @InjectManager()
+  // @ts-expect-error
   async createProductTypes(
     data:
       | ProductTypes.CreateProductTypeDTO[]
@@ -704,12 +716,13 @@ export default class ProductModuleService
     return Array.isArray(data) ? allTypes : allTypes[0]
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   updateProductTypes(
     id: string,
     data: ProductTypes.UpdateProductTypeDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductTypeDTO>
+  // @ts-expect-error
   updateProductTypes(
     selector: ProductTypes.FilterableProductTypeProps,
     data: ProductTypes.UpdateProductTypeDTO,
@@ -717,6 +730,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductTypeDTO[]>
 
   @InjectManager()
+  // @ts-expect-error
   async updateProductTypes(
     idOrSelector: string | ProductTypes.FilterableProductTypeProps,
     data: ProductTypes.UpdateProductTypeDTO,
@@ -752,17 +766,19 @@ export default class ProductModuleService
     return isString(idOrSelector) ? updatedTypes[0] : updatedTypes
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   createProductOptions(
     data: ProductTypes.CreateProductOptionDTO[],
     sharedContext?: Context
   ): Promise<ProductTypes.ProductOptionDTO[]>
+  // @ts-expect-error
   createProductOptions(
     data: ProductTypes.CreateProductOptionDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductOptionDTO>
 
   @InjectManager()
+  // @ts-expect-error
   async createProductOptions(
     data:
       | ProductTypes.CreateProductOptionDTO[]
@@ -849,12 +865,13 @@ export default class ProductModuleService
     return Array.isArray(data) ? allOptions : allOptions[0]
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   updateProductOptions(
     id: string,
     data: ProductTypes.UpdateProductOptionDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductOptionDTO>
+  // @ts-expect-error
   updateProductOptions(
     selector: ProductTypes.FilterableProductOptionProps,
     data: ProductTypes.UpdateProductOptionDTO,
@@ -862,6 +879,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO[]>
 
   @InjectManager()
+  // @ts-expect-error
   async updateProductOptions(
     idOrSelector: string | ProductTypes.FilterableProductOptionProps,
     data: ProductTypes.UpdateProductOptionDTO,
@@ -966,11 +984,12 @@ export default class ProductModuleService
     return productOptions
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   createProductCollections(
     data: ProductTypes.CreateProductCollectionDTO[],
     sharedContext?: Context
   ): Promise<ProductTypes.ProductCollectionDTO[]>
+  // @ts-expect-error
   createProductCollections(
     data: ProductTypes.CreateProductCollectionDTO,
     sharedContext?: Context
@@ -978,6 +997,7 @@ export default class ProductModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async createProductCollections(
     data:
       | ProductTypes.CreateProductCollectionDTO[]
@@ -1084,12 +1104,13 @@ export default class ProductModuleService
     return Array.isArray(data) ? allCollections : allCollections[0]
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   updateProductCollections(
     id: string,
     data: ProductTypes.UpdateProductCollectionDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductCollectionDTO>
+  // @ts-expect-error
   updateProductCollections(
     selector: ProductTypes.FilterableProductCollectionProps,
     data: ProductTypes.UpdateProductCollectionDTO,
@@ -1098,6 +1119,7 @@ export default class ProductModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async updateProductCollections(
     idOrSelector: string | ProductTypes.FilterableProductCollectionProps,
     data: ProductTypes.UpdateProductCollectionDTO,
@@ -1216,11 +1238,12 @@ export default class ProductModuleService
     return collections
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   createProductCategories(
     data: ProductTypes.CreateProductCategoryDTO[],
     sharedContext?: Context
   ): Promise<ProductTypes.ProductCategoryDTO[]>
+  // @ts-expect-error
   createProductCategories(
     data: ProductTypes.CreateProductCategoryDTO,
     sharedContext?: Context
@@ -1228,6 +1251,7 @@ export default class ProductModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async createProductCategories(
     data:
       | ProductTypes.CreateProductCategoryDTO[]
@@ -1325,12 +1349,13 @@ export default class ProductModuleService
     return Array.isArray(data) ? result : result[0]
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   updateProductCategories(
     id: string,
     data: ProductTypes.UpdateProductCategoryDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductCategoryDTO>
+  // @ts-expect-error
   updateProductCategories(
     selector: ProductTypes.FilterableProductTypeProps,
     data: ProductTypes.UpdateProductCategoryDTO,
@@ -1339,6 +1364,7 @@ export default class ProductModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async updateProductCategories(
     idOrSelector: string | ProductTypes.FilterableProductTypeProps,
     data: ProductTypes.UpdateProductCategoryDTO,
@@ -1390,6 +1416,7 @@ export default class ProductModuleService
     data: ProductTypes.CreateProductDTO[],
     sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO[]>
+  // @ts-expect-error
   createProducts(
     data: ProductTypes.CreateProductDTO,
     sharedContext?: Context
@@ -1397,6 +1424,7 @@ export default class ProductModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async createProducts(
     data: ProductTypes.CreateProductDTO[] | ProductTypes.CreateProductDTO,
     @MedusaContext() sharedContext: Context = {}
@@ -1477,6 +1505,7 @@ export default class ProductModuleService
     data: ProductTypes.UpdateProductDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO>
+  // @ts-expect-error
   updateProducts(
     selector: ProductTypes.FilterableProductProps,
     data: ProductTypes.UpdateProductDTO,
@@ -1485,6 +1514,7 @@ export default class ProductModuleService
 
   @InjectManager()
   @EmitEvents()
+  // @ts-expect-error
   async updateProducts(
     idOrSelector: string | ProductTypes.FilterableProductProps,
     data: ProductTypes.UpdateProductDTO,
@@ -1528,86 +1558,91 @@ export default class ProductModuleService
     data: ProductTypes.CreateProductDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
-    const normalizedInput = await promiseAll(
-      data.map(async (d) => {
-        const normalized = await this.normalizeCreateProductInput(
-          d,
-          sharedContext
-        )
-        this.validateProductCreatePayload(normalized)
-        return normalized
-      })
+    const normalizedProducts = await this.normalizeCreateProductInput(
+      data,
+      sharedContext
     )
 
-    const { entities: productData } =
-      await this.productService_.upsertWithReplace(
-        normalizedInput,
+    for (const product of normalizedProducts) {
+      this.validateProductCreatePayload(product)
+    }
+
+    const tagIds = normalizedProducts
+      .flatMap((d) => (d as any).tags ?? [])
+      .map((t) => t.id)
+    let existingTags: InferEntityType<typeof ProductTag>[] = []
+
+    if (tagIds.length) {
+      existingTags = await this.productTagService_.list(
         {
-          relations: ["tags", "categories"],
+          id: tagIds,
         },
+        {},
         sharedContext
       )
+    }
 
-    await promiseAll(
-      // Note: It's safe to rely on the order here as `upsertWithReplace` preserves the order of the input
-      normalizedInput.map(async (product, i) => {
-        const upsertedProduct: any = productData[i]
-        upsertedProduct.options = []
-        upsertedProduct.variants = []
+    const existingTagsMap = new Map(existingTags.map((tag) => [tag.id, tag]))
 
-        if (product.options?.length) {
-          const { entities: productOptions } =
-            await this.productOptionService_.upsertWithReplace(
-              product.options?.map((option) => ({
-                ...option,
-                product_id: upsertedProduct.id,
-              })) ?? [],
-              { relations: ["values"] },
-              sharedContext
-            )
-          upsertedProduct.options = productOptions
-        }
+    const productsToCreate = normalizedProducts.map((product) => {
+      const productId = generateEntityId(product.id, "prod")
+      product.id = productId
 
-        if (product.variants?.length) {
-          const { entities: productVariants } =
-            await this.productVariantService_.upsertWithReplace(
-              ProductModuleService.assignOptionsToVariants(
-                product.variants?.map((v) => ({
-                  ...v,
-                  product_id: upsertedProduct.id,
-                })) ?? [],
-                upsertedProduct.options
-              ),
-              { relations: ["options"] },
-              sharedContext
-            )
-          upsertedProduct.variants = productVariants
-        }
+      if ((product as any).categories?.length) {
+        ;(product as any).categories = (product as any).categories.map(
+          (category: { id: string }) => category.id
+        )
+      }
 
-        if (Array.isArray(product.images)) {
-          if (product.images.length) {
-            const { entities: productImages } =
-              await this.productImageService_.upsertWithReplace(
-                product.images.map((image, rank) => ({
-                  ...image,
-                  product_id: upsertedProduct.id,
-                  rank,
-                })),
-                {},
-                sharedContext
-              )
-            upsertedProduct.images = productImages
-          } else {
-            await this.productImageService_.delete(
-              { product_id: upsertedProduct.id },
-              sharedContext
+      if (product.variants?.length) {
+        const normalizedVariants = product.variants.map((variant) => {
+          const variantId = generateEntityId((variant as any).id, "variant")
+          ;(variant as any).id = variantId
+
+          Object.entries(variant.options ?? {}).forEach(([key, value]) => {
+            const productOption = product.options?.find(
+              (option) => option.title === key
+            )!
+            const productOptionValue = productOption.values?.find(
+              (optionValue) => (optionValue as any).value === value
+            )!
+            ;(productOptionValue as any).variants ??= []
+            ;(productOptionValue as any).variants.push(variant)
+          })
+
+          delete variant.options
+
+          return variant
+        })
+
+        product.variants = normalizedVariants
+      }
+
+      if ((product as any).tags?.length) {
+        ;(product as any).tags = (product as any).tags.map(
+          (tag: { id: string }) => {
+            const existingTag = existingTagsMap.get(tag.id)
+            if (existingTag) {
+              return existingTag
+            }
+
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Tag with id ${tag.id} not found. Please create the tag before associating it with the product.`
             )
           }
-        }
-      })
+        )
+      }
+
+      return product
+    })
+
+    const createdProducts = await this.productService_.create(
+      productsToCreate,
+      sharedContext
     )
 
-    return productData
+    return createdProducts
   }
 
   @InjectTransactionManager()
@@ -1615,20 +1650,18 @@ export default class ProductModuleService
     data: UpdateProductInput[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
-    const normalizedInput = await promiseAll(
-      data.map(async (d) => {
-        const normalized = await this.normalizeUpdateProductInput(
-          d,
-          sharedContext
-        )
-        this.validateProductUpdatePayload(normalized)
-        return normalized
-      })
+    const normalizedProducts = await this.normalizeUpdateProductInput(
+      data,
+      sharedContext
     )
+
+    for (const product of normalizedProducts) {
+      this.validateProductUpdatePayload(product)
+    }
 
     const { entities: productData } =
       await this.productService_.upsertWithReplace(
-        normalizedInput,
+        normalizedProducts,
         {
           relations: ["tags", "categories"],
         },
@@ -1638,7 +1671,7 @@ export default class ProductModuleService
     // There is more than 1-level depth of relations here, so we need to handle the options and variants manually
     await promiseAll(
       // Note: It's safe to rely on the order here as `upsertWithReplace` preserves the order of the input
-      normalizedInput.map(async (product, i) => {
+      normalizedProducts.map(async (product, i) => {
         const upsertedProduct: any = productData[i]
         let allOptions: any[] = []
 
@@ -1746,6 +1779,70 @@ export default class ProductModuleService
     return productData
   }
 
+  // @ts-expect-error
+  updateProductOptionValues(
+    idOrSelector: string,
+    data: ProductTypes.UpdateProductOptionValueDTO,
+    sharedContext?: Context
+  ): Promise<ProductTypes.ProductOptionValueDTO>
+  // @ts-expect-error
+  updateProductOptionValues(
+    selector: FilterableProductOptionValueProps,
+    data: ProductTypes.UpdateProductOptionValueDTO,
+    sharedContext?: Context
+  ): Promise<ProductTypes.ProductOptionValueDTO[]>
+  // @ts-expect-error
+  async updateProductOptionValues(
+    idOrSelector: string | FilterableProductOptionValueProps,
+    data: ProductTypes.UpdateProductOptionValueDTO,
+    sharedContext: Context = {}
+  ): Promise<
+    ProductTypes.ProductOptionValueDTO | ProductTypes.ProductOptionValueDTO[]
+  > {
+    let normalizedInput: ({
+      id: string
+    } & ProductTypes.UpdateProductOptionValueDTO)[] = []
+    if (isString(idOrSelector)) {
+      // This will throw if the product option value does not exist
+      await this.productOptionValueService_.retrieve(
+        idOrSelector,
+        {},
+        sharedContext
+      )
+
+      normalizedInput = [{ id: idOrSelector, ...data }]
+    } else {
+      const productOptionValues = await this.productOptionValueService_.list(
+        idOrSelector,
+        {},
+        sharedContext
+      )
+
+      normalizedInput = productOptionValues.map((product) => ({
+        id: product.id,
+        ...data,
+      }))
+    }
+
+    const productOptionValues = await super.updateProductOptionValues(
+      normalizedInput,
+      sharedContext
+    )
+
+    const updatedProductOptionValues = await this.baseRepository_.serialize<
+      ProductTypes.ProductOptionValueDTO[]
+    >(productOptionValues)
+
+    eventBuilders.updatedProductOptionValue({
+      data: updatedProductOptionValues,
+      sharedContext: sharedContext,
+    })
+
+    return isString(idOrSelector)
+      ? updatedProductOptionValues[0]
+      : updatedProductOptionValues
+  }
+
   /**
    * Validates the manually provided handle value of the product
    * to be URL-safe
@@ -1802,79 +1899,125 @@ export default class ProductModuleService
     this.validateProductPayload(productData)
   }
 
-  protected async normalizeCreateProductInput(
-    product: ProductTypes.CreateProductDTO,
+  protected async normalizeCreateProductInput<
+    T extends ProductTypes.CreateProductDTO | ProductTypes.CreateProductDTO[],
+    TOutput = T extends ProductTypes.CreateProductDTO[]
+      ? ProductTypes.CreateProductDTO[]
+      : ProductTypes.CreateProductDTO
+  >(
+    products: T,
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<ProductTypes.CreateProductDTO> {
-    const productData = (await this.normalizeUpdateProductInput(
-      product as UpdateProductInput,
+  ): Promise<TOutput> {
+    const products_ = Array.isArray(products) ? products : [products]
+
+    const normalizedProducts = (await this.normalizeUpdateProductInput(
+      products_ as UpdateProductInput[],
       sharedContext
-    )) as ProductTypes.CreateProductDTO
+    )) as ProductTypes.CreateProductDTO[]
 
-    if (!productData.handle && productData.title) {
-      productData.handle = toHandle(productData.title)
+    for (const productData of normalizedProducts) {
+      if (!productData.handle && productData.title) {
+        productData.handle = toHandle(productData.title)
+      }
+
+      if (!productData.status) {
+        productData.status = ProductStatus.DRAFT
+      }
+
+      if (!productData.thumbnail && productData.images?.length) {
+        productData.thumbnail = productData.images[0].url
+      }
+
+      if (productData.images?.length) {
+        productData.images = productData.images.map((image, index) =>
+          (image as { rank?: number }).rank != null
+            ? image
+            : {
+                ...image,
+                rank: index,
+              }
+        )
+      }
     }
 
-    if (!productData.status) {
-      productData.status = ProductStatus.DRAFT
-    }
-
-    if (!productData.thumbnail && productData.images?.length) {
-      productData.thumbnail = productData.images[0].url
-    }
-
-    return productData
+    return (
+      Array.isArray(products) ? normalizedProducts : normalizedProducts[0]
+    ) as TOutput
   }
 
-  protected async normalizeUpdateProductInput(
-    product: UpdateProductInput,
+  protected async normalizeUpdateProductInput<
+    T extends UpdateProductInput | UpdateProductInput[],
+    TOutput = T extends UpdateProductInput[]
+      ? UpdateProductInput[]
+      : UpdateProductInput
+  >(
+    products: T,
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<UpdateProductInput> {
-    const productData = { ...product }
-    if (productData.is_giftcard) {
-      productData.discountable = false
-    }
+  ): Promise<TOutput> {
+    const products_ = Array.isArray(products) ? products : [products]
+    const productsIds = products_.map((p) => p.id).filter(Boolean)
 
-    if (productData.options?.length) {
-      const dbOptions = await this.productOptionService_.list(
-        { product_id: productData.id },
+    let dbOptions: InferEntityType<typeof ProductOption>[] = []
+
+    if (productsIds.length) {
+      dbOptions = await this.productOptionService_.list(
+        { product_id: productsIds },
         { relations: ["values"] },
         sharedContext
       )
-
-      ;(productData as any).options = productData.options?.map((option) => {
-        const dbOption = dbOptions.find((o) => o.title === option.title)
-        return {
-          title: option.title,
-          values: option.values?.map((value) => {
-            const dbValue = dbOption?.values?.find((val) => val.value === value)
-            return {
-              value: value,
-              ...(dbValue ? { id: dbValue.id } : {}),
-            }
-          }),
-          ...(dbOption ? { id: dbOption.id } : {}),
-        }
-      })
     }
 
-    if (productData.tag_ids) {
-      ;(productData as any).tags = productData.tag_ids.map((cid) => ({
-        id: cid,
-      }))
-      delete productData.tag_ids
-    }
+    const normalizedProducts: UpdateProductInput[] = []
 
-    if (productData.category_ids) {
-      ;(productData as any).categories = productData.category_ids.map(
-        (cid) => ({
-          id: cid,
+    for (const product of products_) {
+      const productData = { ...product }
+      if (productData.is_giftcard) {
+        productData.discountable = false
+      }
+
+      if (productData.options?.length) {
+        ;(productData as any).options = productData.options?.map((option) => {
+          const dbOption = dbOptions.find(
+            (o) => o.title === option.title && o.product_id === productData.id
+          )
+          return {
+            title: option.title,
+            values: option.values?.map((value) => {
+              const dbValue = dbOption?.values?.find(
+                (val) => val.value === value
+              )
+              return {
+                value: value,
+                ...(dbValue ? { id: dbValue.id } : {}),
+              }
+            }),
+            ...(dbOption ? { id: dbOption.id } : {}),
+          }
         })
-      )
-      delete productData.category_ids
+      }
+
+      if (productData.tag_ids) {
+        ;(productData as any).tags = productData.tag_ids.map((cid) => ({
+          id: cid,
+        }))
+        delete productData.tag_ids
+      }
+
+      if (productData.category_ids) {
+        ;(productData as any).categories = productData.category_ids.map(
+          (cid) => ({
+            id: cid,
+          })
+        )
+        delete productData.category_ids
+      }
+
+      normalizedProducts.push(productData)
     }
 
-    return productData
+    return (
+      Array.isArray(products) ? normalizedProducts : normalizedProducts[0]
+    ) as TOutput
   }
 
   protected static normalizeCreateProductCollectionInput(

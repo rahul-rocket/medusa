@@ -39,6 +39,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminBatchProductVariantRequest.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products_{id}_variants_batch/post.js
     - lang: Shell
       label: cURL
       source:

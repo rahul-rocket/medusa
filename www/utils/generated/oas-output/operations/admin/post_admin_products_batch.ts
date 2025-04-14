@@ -27,11 +27,57 @@
  *       schema:
  *         $ref: "#/components/schemas/AdminBatchProductRequest"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.product.batch({
+ *         create: [
+ *           {
+ *             title: "Shirt",
+ *             options: [{
+ *               title: "Default",
+ *               values: ["Default Option"]
+ *             }],
+ *             variants: [
+ *               {
+ *                 title: "Default",
+ *                 options: {
+ *                   Default: "Default Option"
+ *                 },
+ *                 prices: []
+ *               }
+ *             ]
+ *           }
+ *         ],
+ *         update: [{
+ *           id: "prod_123",
+ *           title: "Pants"
+ *         }],
+ *         delete: ["prod_321"]
+ *       })
+ *       .then(({ created, updated, deleted }) => {
+ *         console.log(created, updated, deleted)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/products/batch' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {access_token}' \
+ *       --data-raw '{
+ *         "delete": [
+ *           "prod_123"
+ *         ]
+ *       }'
  * tags:
  *   - Products
  * responses:

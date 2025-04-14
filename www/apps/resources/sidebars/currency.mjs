@@ -1,9 +1,9 @@
-/** @type {import('types').RawSidebarItem[]} */
+/** @type {import('types').Sidebar.SidebarItem[]} */
 export const currencySidebar = [
   {
-    type: "category",
+    type: "sidebar",
+    sidebar_id: "currency",
     title: "Currency Module",
-    isChildSidebar: true,
     children: [
       {
         type: "link",
@@ -16,7 +16,6 @@ export const currencySidebar = [
       {
         type: "sub-category",
         title: "Concepts",
-        initialOpen: false,
         children: [
           {
             type: "link",
@@ -29,8 +28,8 @@ export const currencySidebar = [
         type: "category",
         title: "Server Guides",
         autogenerate_tags: "server+currency",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to use the Currency Module in your customizations on the Medusa application server.",
       },
@@ -38,8 +37,8 @@ export const currencySidebar = [
         type: "category",
         title: "Storefront Guides",
         autogenerate_tags: "storefront+currency,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to integrate the Currency Module's features into your storefront.",
       },
@@ -47,24 +46,23 @@ export const currencySidebar = [
         type: "category",
         title: "Admin Guides",
         autogenerate_tags: "admin+currency,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize administative features of the Currency Module.",
       },
       {
         type: "category",
-        title: "User Guides",
-        autogenerate_tags: "userGuides+currency",
-        initialOpen: false,
+        title: "Admin User Guides",
+        autogenerate_tags: "userGuide+currency",
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize and manage Currency features in the Medusa Admin dashboard.",
       },
       {
         type: "sub-category",
         title: "References",
-        initialOpen: false,
         description:
           "Find references for tools and resources related to the Currency Module, such as data models, methods, and more. These are useful for your customizations.",
         children: [
@@ -81,6 +79,7 @@ export const currencySidebar = [
                 description:
                   "The following methods or properties are used to send requests to Store API Routes related to the Currency Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "sub-category",
@@ -89,16 +88,24 @@ export const currencySidebar = [
                 description:
                   "The following methods or properties are used to send requests to Admin API Routes related to the Currency Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
           {
-            type: "link",
-            path: "/references/currency",
+            type: "sidebar",
+            sidebar_id: "currency-service-reference",
             title: "Main Service Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Currency Module's Main Service Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/currency",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Methods",
@@ -108,12 +115,19 @@ export const currencySidebar = [
             ],
           },
           {
-            type: "link",
-            path: "/references/currency/models",
+            type: "sidebar",
+            sidebar_id: "currency-models-reference",
             title: "Data Models Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Currency Module Data Models Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/currency/models",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Data Models",

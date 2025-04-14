@@ -461,7 +461,7 @@ moduleIntegrationTestRunner<IPricingModuleService>({
           )
 
           const events = eventBusEmitSpy.mock.calls[0][0]
-          expect(events).toHaveLength(4)
+          expect(events).toHaveLength(3)
           expect(events[0]).toEqual(
             composeMessage(PricingEvents.PRICE_LIST_CREATED, {
               source: Modules.PRICING,
@@ -475,18 +475,15 @@ moduleIntegrationTestRunner<IPricingModuleService>({
               source: Modules.PRICING,
               action: CommonEvents.CREATED,
               object: "price_list_rule",
-              data: { id: priceList.price_list_rules?.[0].id },
+              data: {
+                id: [
+                  priceList.price_list_rules?.[0].id,
+                  priceList.price_list_rules?.[1].id,
+                ],
+              },
             })
           )
           expect(events[2]).toEqual(
-            composeMessage(PricingEvents.PRICE_LIST_RULE_CREATED, {
-              source: Modules.PRICING,
-              action: CommonEvents.CREATED,
-              object: "price_list_rule",
-              data: { id: priceList.price_list_rules?.[1].id },
-            })
-          )
-          expect(events[3]).toEqual(
             composeMessage(PricingEvents.PRICE_CREATED, {
               source: Modules.PRICING,
               action: CommonEvents.CREATED,
@@ -824,6 +821,32 @@ moduleIntegrationTestRunner<IPricingModuleService>({
               ],
             },
           ])
+
+          const events = eventBusEmitSpy.mock.calls[2][0]
+          expect(events).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                name: "pricing.price-rule.created",
+              }),
+              expect.objectContaining({
+                name: "pricing.price-rule.created",
+              }),
+              expect.objectContaining({
+                name: "pricing.price.updated",
+                metadata: {
+                  source: "pricing",
+                  object: "price",
+                  action: "updated",
+                },
+                data: {
+                  id: "test-price-id",
+                },
+              }),
+              expect.objectContaining({
+                name: "pricing.price-rule.deleted",
+              }),
+            ])
+          )
 
           const [priceList] = await service.listPriceLists(
             { id: ["price-list-1"] },

@@ -6,6 +6,7 @@ import {
   Heading,
   Hint,
   IconButton,
+  InlineTip,
   Input,
   Label,
   Text,
@@ -21,7 +22,6 @@ import {
 import { useTranslation } from "react-i18next"
 
 import { Form } from "../../../../../../../components/common/form"
-import { InlineTip } from "../../../../../../../components/common/inline-tip"
 import { SortableList } from "../../../../../../../components/common/sortable-list"
 import { SwitchBox } from "../../../../../../../components/common/switch-box"
 import { ChipInput } from "../../../../../../../components/inputs/chip-input"
@@ -453,6 +453,7 @@ export const ProductCreateVariantsSection = ({
                   >
                     <div>
                       <Checkbox
+                        className="relative"
                         checked={getCheckboxState(watchedVariants)}
                         onCheckedChange={onCheckboxChange}
                       />
@@ -493,6 +494,7 @@ export const ProductCreateVariantsSection = ({
                                   <Form.Item>
                                     <Form.Control>
                                       <Checkbox
+                                        className="relative"
                                         {...field}
                                         checked={value}
                                         onCheckedChange={onChange}
@@ -520,7 +522,7 @@ export const ProductCreateVariantsSection = ({
                 </Alert>
               )}
               {variants.fields.length > 0 && (
-                <InlineTip variant="tip">
+                <InlineTip label={t("general.tip")}>
                   {t("products.create.variants.productVariants.tip")}
                 </InlineTip>
               )}

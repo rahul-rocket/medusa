@@ -24,4 +24,16 @@ export enum PaymentCollectionStatus {
    * The payment collection is canceled.
    */
   CANCELED = "canceled",
+  /**
+   * The payment collection is failed.
+   */
+  FAILED = "failed",
+  /**
+   * The payment collection is partially captured.
+   */
+  PARTIALLY_CAPTURED = "partially_captured",
+  /**
+   * The payment collection is completed.
+   */
+  COMPLETED = "completed",
 }

@@ -92,6 +92,10 @@ post:
                     `additional_data` parameter.
           description: The fulfillment's details.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_orders_{id}_fulfillments/post.js
     - lang: Shell
       label: cURL
       source:

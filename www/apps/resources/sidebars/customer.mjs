@@ -1,9 +1,9 @@
-/** @type {import('types').RawSidebarItem[]} */
+/** @type {import('types').Sidebar.SidebarItem[]} */
 export const customerSidebar = [
   {
-    type: "category",
+    type: "sidebar",
+    sidebar_id: "customer",
     title: "Customer Module",
-    isChildSidebar: true,
     children: [
       {
         type: "link",
@@ -16,7 +16,6 @@ export const customerSidebar = [
       {
         type: "category",
         title: "Concepts",
-        initialOpen: false,
         children: [
           {
             type: "link",
@@ -34,8 +33,8 @@ export const customerSidebar = [
         type: "category",
         title: "Server Guides",
         autogenerate_tags: "server+customer",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to use the Customer Module in your customizations on the Medusa application server.",
         children: [
@@ -50,8 +49,8 @@ export const customerSidebar = [
         type: "category",
         title: "Storefront Guides",
         autogenerate_tags: "storefront+customer,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to integrate the Customer Module's features into your storefront.",
       },
@@ -59,24 +58,23 @@ export const customerSidebar = [
         type: "category",
         title: "Admin Guides",
         autogenerate_tags: "admin+customer,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize administative features of the Customer Module.",
       },
       {
         type: "category",
-        title: "User Guides",
-        autogenerate_tags: "userGuides+customer",
-        initialOpen: false,
+        title: "Admin User Guides",
+        autogenerate_tags: "userGuide+customer",
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize and manage Customer features in the Medusa Admin dashboard.",
       },
       {
         type: "category",
         title: "References",
-        initialOpen: false,
         description:
           "Find references for tools and resources related to the Customer Module, such as data models, methods, and more. These are useful for your customizations.",
         children: [
@@ -91,12 +89,14 @@ export const customerSidebar = [
                 title: "Workflows",
                 autogenerate_tags: "workflow+customer",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "category",
                 title: "Steps",
                 autogenerate_tags: "step+customer",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -113,6 +113,7 @@ export const customerSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Store API Routes related to the Customer Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "sub-category",
@@ -121,6 +122,7 @@ export const customerSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Admin API Routes related to the Customer Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -135,12 +137,19 @@ export const customerSidebar = [
             title: "Admin Widget Zones",
           },
           {
-            type: "link",
-            path: "/references/customer",
+            type: "sidebar",
+            sidebar_id: "customer-service-reference",
             title: "Main Service Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Customer Module's Main Service Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/customer",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Methods",
@@ -150,12 +159,19 @@ export const customerSidebar = [
             ],
           },
           {
-            type: "link",
-            path: "/references/customer/models",
+            type: "sidebar",
+            sidebar_id: "customer-models-reference",
             title: "Data Models Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Customer Module Data Models Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/customer/models",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Data Models",

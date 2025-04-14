@@ -1,7 +1,8 @@
 import { MarkdownTheme } from "../../theme.js"
 import Handlebars from "handlebars"
-import { SignatureReflection } from "typedoc"
-import { cleanUpHookInput, getProjectChild } from "utils"
+import { DeclarationReflection, SignatureReflection } from "typedoc"
+import { cleanUpHookInput, getHookChildren, getProjectChild } from "utils"
+import beautifyCode from "../../utils/beautify-code.js"
 
 export default function (theme: MarkdownTheme) {
   Handlebars.registerHelper(
@@ -19,25 +20,55 @@ export default function (theme: MarkdownTheme) {
         return ""
       }
 
-      let str = `${Handlebars.helpers.titleLevel()} Hooks`
+      let str = `${Handlebars.helpers.titleLevel()} Hooks\n\nHooks allow you to inject custom functionalities into the workflow. You'll receive data from the workflow, as well as additional data sent through an HTTP request.\n\nLearn more about [Hooks](https://docs.medusajs.com/learn/fundamentals/workflows/workflow-hooks) and [Additional Data](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data).\n\n`
 
       Handlebars.helpers.incrementCurrentTitleLevel()
 
       const hooksTitleLevel = Handlebars.helpers.titleLevel()
+      const hookChildren = getHookChildren(this.parent)
 
       hooks.forEach((hook) => {
-        // show the hook's input
-        const hookReflection = getProjectChild(theme.project!, hook.name)
+        const hookReflection =
+          hookChildren.find((child) => {
+            if (child.name !== hook.name) {
+              return false
+            }
+
+            if (child.signatures?.length) {
+              return true
+            }
+
+            return (
+              child.type?.type === "reflection" &&
+              child.type.declaration.signatures?.length
+            )
+          }) ||
+          ((this.parent.getChildByName(hook.name) ||
+            getProjectChild(theme.project!, hook.name)) as
+            | DeclarationReflection
+            | undefined)
+
+        const signatures =
+          hookReflection?.signatures ||
+          (hookReflection?.type?.type === "reflection"
+            ? hookReflection.type.declaration.signatures
+            : [])
 
         if (
           !hookReflection ||
-          !hookReflection.signatures?.length ||
-          !hookReflection.signatures[0].parameters?.length
+          !signatures?.length ||
+          !signatures[0].parameters?.length
         ) {
           return
         }
 
         str += `\n\n${hooksTitleLevel} ${hook.name}\n\n`
+
+        if (hookReflection.comment?.summary) {
+          str += `${Handlebars.helpers.comment(
+            hookReflection.comment.summary
+          )}\n\n`
+        }
 
         const hookExample = hookReflection.comment?.getTag(`@example`)
 
@@ -45,8 +76,8 @@ export default function (theme: MarkdownTheme) {
           Handlebars.helpers.incrementCurrentTitleLevel()
           const innerTitleLevel = Handlebars.helpers.titleLevel()
 
-          str += `${innerTitleLevel} Example\n\n\`\`\`ts\n${Handlebars.helpers.comment(
-            hookExample.content
+          str += `${innerTitleLevel} Example\n\n\`\`\`ts\n${beautifyCode(
+            Handlebars.helpers.comment(hookExample.content)
           )}\n\`\`\`\n\n${innerTitleLevel} Input\n\n`
 
           Handlebars.helpers.decrementCurrentTitleLevel()
@@ -55,7 +86,7 @@ export default function (theme: MarkdownTheme) {
         str += `Handlers consuming this hook accept the following input.\n\n`
 
         str += Handlebars.helpers.parameterComponent.call(
-          cleanUpHookInput(hookReflection.signatures[0].parameters),
+          cleanUpHookInput(signatures[0].parameters),
           {
             hash: {
               sectionTitle: hook.name,

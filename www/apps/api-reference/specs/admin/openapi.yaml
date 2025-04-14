@@ -9,9 +9,6 @@ servers:
   - url: http://localhost:9000
   - url: https://api.medusajs.com
 tags:
-  - name: Auth
-    description: |
-      Auth API routes allow you to manage an admin user's authentication.
   - name: Api Keys
     description: >
       API keys can be used for authentication or resource-scoping.
@@ -26,9 +23,12 @@ tags:
       API keys.
     externalDocs:
       description: Learn more about the API Key Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/api-key
+      url: https://docs.medusajs.com/resources/commerce-modules/api-key
     x-associatedSchema:
       $ref: ./components/schemas/AdminApiKey.yaml
+  - name: Auth
+    description: |
+      Auth API routes allow you to manage an admin user's authentication.
   - name: Campaigns
     description: >
       A campaign is a group of promotions that have the same conditions, such as
@@ -39,8 +39,7 @@ tags:
       and promotions that belong to them.
     externalDocs:
       description: Learn more about campaigns.
-      url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/promotion/campaign
+      url: https://docs.medusajs.com/resources/commerce-modules/promotion/campaign
     x-associatedSchema:
       $ref: ./components/schemas/AdminCampaign.yaml
   - name: Claims
@@ -55,7 +54,7 @@ tags:
       $ref: ./components/schemas/AdminClaim.yaml
     externalDocs:
       description: Learn more about order claims.
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/order/claim
+      url: https://docs.medusajs.com/resources/commerce-modules/order/claim
   - name: Collections
     description: >
       A product collection organizes products into a collection for marketing
@@ -76,7 +75,7 @@ tags:
       admins to list and update currencies.
     externalDocs:
       description: Learn more about the Currency Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/currency
+      url: https://docs.medusajs.com/resources/commerce-modules/currency
     x-associatedSchema:
       $ref: ./components/schemas/AdminCurrency.yaml
   - name: Customer Groups
@@ -93,7 +92,7 @@ tags:
       them.
     externalDocs:
       description: Learn more about the Customer Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/customer
+      url: https://docs.medusajs.com/resources/commerce-modules/customer
     x-associatedSchema:
       $ref: ./components/schemas/AdminCustomerGroup.yaml
   - name: Customers
@@ -105,7 +104,7 @@ tags:
       These API routes allow admin users to manage customers in their store.
     externalDocs:
       description: Learn more about the Customer Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/customer
+      url: https://docs.medusajs.com/resources/commerce-modules/customer
     x-associatedSchema:
       $ref: ./components/schemas/AdminCustomer.yaml
   - name: Draft Orders
@@ -118,7 +117,9 @@ tags:
       These API routes allow admin users to create and manage draft orders.
     externalDocs:
       description: Learn more about the Order Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/order
+      url: https://docs.medusajs.com/resources/commerce-modules/order
+    x-associatedSchema:
+      $ref: ./components/schemas/AdminDraftOrder.yaml
   - name: Exchanges
     description: >
       An exchange is the replacement of an item that the customer ordered with
@@ -128,7 +129,7 @@ tags:
       These API routes allow admin users t create and manage exchanges.
     externalDocs:
       description: Learn more about the order exchanges.
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/order/exchange
+      url: https://docs.medusajs.com/resources/commerce-modules/order/exchange
     x-associatedSchema:
       $ref: ./components/schemas/AdminExchange.yaml
   - name: Fulfillment Providers
@@ -141,7 +142,7 @@ tags:
     externalDocs:
       description: Learn more about the fulfillment providers and how to create them.
       url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/fulfillment-provider
+        https://docs.medusajs.com/resources/commerce-modules/fulfillment/fulfillment-provider
     x-associatedSchema:
       $ref: ./components/schemas/AdminFulfillmentProvider.yaml
   - name: Fulfillment Sets
@@ -158,7 +159,7 @@ tags:
     externalDocs:
       description: Learn more about fulfillment sets.
       url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/concepts
+        https://docs.medusajs.com/resources/commerce-modules/fulfillment/concepts
     x-associatedSchema:
       $ref: ./components/schemas/AdminFulfillmentSet.yaml
   - name: Fulfillments
@@ -171,7 +172,7 @@ tags:
     externalDocs:
       description: Learn more about fulfillments.
       url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/item-fulfillment
+        https://docs.medusajs.com/resources/commerce-modules/fulfillment/item-fulfillment
     x-associatedSchema:
       $ref: ./components/schemas/AdminFulfillment.yaml
   - name: Inventory Items
@@ -181,8 +182,7 @@ tags:
       These API routes allow admin users to manage inventory items.
     externalDocs:
       description: Learn more about inventory items.
-      url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/inventory/concepts
+      url: https://docs.medusajs.com/resources/commerce-modules/inventory/concepts
     x-associatedSchema:
       $ref: ./components/schemas/AdminInventoryItem.yaml
   - name: Invites
@@ -194,7 +194,7 @@ tags:
       These API routes allow admin users to manage invites.
     externalDocs:
       description: Learn more about the User Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/user
+      url: https://docs.medusajs.com/resources/commerce-modules/user
     x-associatedSchema:
       $ref: ./components/schemas/AdminInvite.yaml
   - name: Notifications
@@ -223,7 +223,7 @@ tags:
       those edits.
     externalDocs:
       description: Learn more about the Order Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/order
+      url: https://docs.medusajs.com/resources/commerce-modules/order
   - name: Orders
     description: |
       An order is a purchase made by a customer through a storefront.
@@ -233,7 +233,7 @@ tags:
       These API routes allow admin users to view and manage orders.
     externalDocs:
       description: Learn more about the orders
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/order/concepts
+      url: https://docs.medusajs.com/resources/commerce-modules/order/concepts
     x-associatedSchema:
       $ref: ./components/schemas/AdminOrder.yaml
   - name: Payment Collections
@@ -253,7 +253,7 @@ tags:
     externalDocs:
       description: Learn more about payment collections.
       url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment-collection
+        https://docs.medusajs.com/resources/commerce-modules/payment/payment-collection
     x-associatedSchema:
       $ref: ./components/schemas/AdminPaymentCollection.yaml
   - name: Payments
@@ -269,9 +269,24 @@ tags:
       These API routes allow admin users to manage payments.
     externalDocs:
       description: Learn more about payments.
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment
+      url: https://docs.medusajs.com/resources/commerce-modules/payment/payment
     x-associatedSchema:
       $ref: ./components/schemas/AdminPayment.yaml
+  - name: Plugins
+    description: >
+      A plugin is a package of reusable Medusa customizations that you can
+      install in any Medusa application.
+
+      Plugins can be used to add new functionality, such as wishlists, or
+      integrate third-party services, such as payment providers.
+
+      These API routes allow admin users to retrieve plugins installed in their
+      Medusa application.
+    externalDocs:
+      description: Learn more about plugins.
+      url: https://docs.medusajs.com/learn/fundamentals/plugins
+    x-associatedSchema:
+      $ref: ./components/schemas/AdminPlugin.yaml
   - name: Price Lists
     description: >
       A price list is a group of prices applied if the specified conditions and
@@ -286,7 +301,7 @@ tags:
     externalDocs:
       description: Learn more about price lists.
       url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/pricing/concepts#price-list
+        https://docs.medusajs.com/resources/commerce-modules/pricing/concepts#price-list
     x-associatedSchema:
       $ref: ./components/schemas/AdminPriceList.yaml
   - name: Price Preferences
@@ -300,7 +315,7 @@ tags:
     externalDocs:
       description: Learn more about tax-inclusiveness and the role of a price preference.
       url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/pricing/tax-inclusive-pricing
+        https://docs.medusajs.com/resources/commerce-modules/pricing/tax-inclusive-pricing
     x-associatedSchema:
       $ref: ./components/schemas/AdminPricePreference.yaml
   - name: Product Categories
@@ -316,7 +331,7 @@ tags:
       in them.
     externalDocs:
       description: Learn more about the Product Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/product
+      url: https://docs.medusajs.com/resources/commerce-modules/product
     x-associatedSchema:
       $ref: ./components/schemas/AdminProductCategory.yaml
   - name: Product Tags
@@ -331,7 +346,7 @@ tags:
       These API routes allow admin users to manage product tags.
     externalDocs:
       description: Learn more about the Product Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/product
+      url: https://docs.medusajs.com/resources/commerce-modules/product
     x-associatedSchema:
       $ref: ./components/schemas/AdminProductTag.yaml
   - name: Product Types
@@ -343,7 +358,7 @@ tags:
       These API routes allow admin users to manage product types.
     externalDocs:
       description: Learn more about the Product Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/product
+      url: https://docs.medusajs.com/resources/commerce-modules/product
     x-associatedSchema:
       $ref: ./components/schemas/AdminProductType.yaml
   - name: Product Variants
@@ -359,7 +374,7 @@ tags:
       These API routes allow admin users to manage product variants.
     externalDocs:
       description: Learn more about the Product Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/product
+      url: https://docs.medusajs.com/resources/commerce-modules/product
     x-associatedSchema:
       $ref: ./components/schemas/AdminProductVariant.yaml
   - name: Products
@@ -378,7 +393,7 @@ tags:
       These API routes allow admin users to manage products.
     externalDocs:
       description: Learn more about the Product Module
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/product
+      url: https://docs.medusajs.com/resources/commerce-modules/product
     x-associatedSchema:
       $ref: ./components/schemas/AdminProduct.yaml
   - name: Promotions
@@ -402,8 +417,7 @@ tags:
       These API routes allow admin users to manage promotions.
     externalDocs:
       description: Learn more about promotions.
-      url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/promotion/concepts
+      url: https://docs.medusajs.com/resources/commerce-modules/promotion/concepts
     x-associatedSchema:
       $ref: ./components/schemas/AdminPromotion.yaml
   - name: Refund Reasons
@@ -425,7 +439,7 @@ tags:
       more.
     externalDocs:
       description: Learn more about the Region Module.
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/region
+      url: https://docs.medusajs.com/resources/commerce-modules/region
     x-associatedSchema:
       $ref: ./components/schemas/AdminRegion.yaml
   - name: Reservations
@@ -441,8 +455,7 @@ tags:
       These API routes allow admin users to manage reservations.
     externalDocs:
       description: Learn more about reservations and other inventory concepts.
-      url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/inventory/concepts
+      url: https://docs.medusajs.com/resources/commerce-modules/inventory/concepts
     x-associatedSchema:
       $ref: ./components/schemas/AdminReservation.yaml
   - name: Return Reasons
@@ -467,7 +480,7 @@ tags:
       These API routes allow admin users to manage returns.
     externalDocs:
       description: Learn more about order returns.
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/order/return
+      url: https://docs.medusajs.com/resources/commerce-modules/order/return
     x-associatedSchema:
       $ref: ./components/schemas/AdminReturn.yaml
   - name: Sales Channels
@@ -480,7 +493,7 @@ tags:
       available in them.
     externalDocs:
       description: Learn more about the Sales Channel Module.
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/sales-channel
+      url: https://docs.medusajs.com/resources/commerce-modules/sales-channel
     x-associatedSchema:
       $ref: ./components/schemas/AdminSalesChannel.yaml
   - name: Shipping Options
@@ -500,7 +513,7 @@ tags:
     externalDocs:
       description: Learn more about shipping options.
       url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option
+        https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option
     x-associatedSchema:
       $ref: ./components/schemas/AdminShippingOption.yaml
   - name: Shipping Profiles
@@ -514,7 +527,7 @@ tags:
     externalDocs:
       description: Learn more about shipping profiles and other fulfillment concepts.
       url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/concepts#shipping-profile
+        https://docs.medusajs.com/resources/commerce-modules/fulfillment/concepts#shipping-profile
     x-associatedSchema:
       $ref: ./components/schemas/AdminShippingProfile.yaml
   - name: Stock Locations
@@ -535,7 +548,7 @@ tags:
     externalDocs:
       description: Learn more about stock locations.
       url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/stock-location/concepts
+        https://docs.medusajs.com/resources/commerce-modules/stock-location/concepts
     x-associatedSchema:
       $ref: ./components/schemas/AdminStockLocation.yaml
   - name: Stores
@@ -552,7 +565,7 @@ tags:
       These API routes allow admin users to manage their store.
     externalDocs:
       description: Learn more about the Store Module.
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/store
+      url: https://docs.medusajs.com/resources/commerce-modules/store
     x-associatedSchema:
       $ref: ./components/schemas/AdminStore.yaml
   - name: Tax Rates
@@ -569,7 +582,7 @@ tags:
     externalDocs:
       description: Learn more about tax rates and rules.
       url: >-
-        https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-rates-and-rules
+        https://docs.medusajs.com/resources/commerce-modules/tax/tax-rates-and-rules
     x-associatedSchema:
       $ref: ./components/schemas/AdminTaxRate.yaml
   - name: Tax Regions
@@ -584,7 +597,7 @@ tags:
       These API routes allow admin users to manage tax regions. 
     externalDocs:
       description: Learn more about tax regions.
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-region
+      url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-region
     x-associatedSchema:
       $ref: ./components/schemas/AdminTaxRegion.yaml
   - name: Uploads
@@ -597,7 +610,7 @@ tags:
       such as CSV files used to import products.
     externalDocs:
       description: Check out available file module providers.
-      url: https://docs.medusajs.com/v2/resources/architectural-modules/file
+      url: https://docs.medusajs.com/resources/architectural-modules/file
   - name: Users
     description: >
       A user is an admin user that can authenticate and perform functionalities
@@ -611,7 +624,7 @@ tags:
       These API routes allow admin users to manage their team.
     externalDocs:
       description: Learn more about the User Module.
-      url: https://docs.medusajs.com/v2/resources/commerce-modules/user
+      url: https://docs.medusajs.com/resources/commerce-modules/user
     x-associatedSchema:
       $ref: ./components/schemas/AdminUser.yaml
   - name: Workflows Executions
@@ -625,7 +638,7 @@ tags:
     externalDocs:
       description: Check out available Workflow Engine Modules
       url: >-
-        https://docs.medusajs.com/v2/resources/architectural-modules/workflow-engine
+        https://docs.medusajs.com/resources/architectural-modules/workflow-engine
 paths:
   /admin/api-keys:
     $ref: paths/admin_api-keys.yaml
@@ -699,6 +712,29 @@ paths:
     $ref: paths/admin_draft-orders.yaml
   /admin/draft-orders/{id}:
     $ref: paths/admin_draft-orders_{id}.yaml
+  /admin/draft-orders/{id}/convert-to-order:
+    $ref: paths/admin_draft-orders_{id}_convert-to-order.yaml
+  /admin/draft-orders/{id}/edit:
+    $ref: paths/admin_draft-orders_{id}_edit.yaml
+  /admin/draft-orders/{id}/edit/confirm:
+    $ref: paths/admin_draft-orders_{id}_edit_confirm.yaml
+  /admin/draft-orders/{id}/edit/items:
+    $ref: paths/admin_draft-orders_{id}_edit_items.yaml
+  /admin/draft-orders/{id}/edit/items/item/{item_id}:
+    $ref: paths/admin_draft-orders_{id}_edit_items_item_{item_id}.yaml
+  /admin/draft-orders/{id}/edit/items/{action_id}:
+    $ref: paths/admin_draft-orders_{id}_edit_items_{action_id}.yaml
+  /admin/draft-orders/{id}/edit/promotions:
+    $ref: paths/admin_draft-orders_{id}_edit_promotions.yaml
+  /admin/draft-orders/{id}/edit/request:
+    $ref: paths/admin_draft-orders_{id}_edit_request.yaml
+  /admin/draft-orders/{id}/edit/shipping-methods:
+    $ref: paths/admin_draft-orders_{id}_edit_shipping-methods.yaml
+  /admin/draft-orders/{id}/edit/shipping-methods/method/{method_id}:
+    $ref: >-
+      paths/admin_draft-orders_{id}_edit_shipping-methods_method_{method_id}.yaml
+  /admin/draft-orders/{id}/edit/shipping-methods/{action_id}:
+    $ref: paths/admin_draft-orders_{id}_edit_shipping-methods_{action_id}.yaml
   /admin/exchanges:
     $ref: paths/admin_exchanges.yaml
   /admin/exchanges/{id}:
@@ -741,6 +777,8 @@ paths:
     $ref: paths/admin_fulfillments_{id}_shipment.yaml
   /admin/inventory-items:
     $ref: paths/admin_inventory-items.yaml
+  /admin/inventory-items/location-levels/batch:
+    $ref: paths/admin_inventory-items_location-levels_batch.yaml
   /admin/inventory-items/{id}:
     $ref: paths/admin_inventory-items_{id}.yaml
   /admin/inventory-items/{id}/location-levels:
@@ -791,6 +829,8 @@ paths:
     $ref: paths/admin_orders_{id}_changes.yaml
   /admin/orders/{id}/complete:
     $ref: paths/admin_orders_{id}_complete.yaml
+  /admin/orders/{id}/credit-lines:
+    $ref: paths/admin_orders_{id}_credit-lines.yaml
   /admin/orders/{id}/fulfillments:
     $ref: paths/admin_orders_{id}_fulfillments.yaml
   /admin/orders/{id}/fulfillments/{fulfillment_id}/cancel:
@@ -824,6 +864,8 @@ paths:
     $ref: paths/admin_payments_{id}_capture.yaml
   /admin/payments/{id}/refund:
     $ref: paths/admin_payments_{id}_refund.yaml
+  /admin/plugins:
+    $ref: paths/admin_plugins.yaml
   /admin/price-lists:
     $ref: paths/admin_price-lists.yaml
   /admin/price-lists/{id}:
@@ -1040,3 +1082,8 @@ components:
       in: cookie
       name: connect.sid
       x-displayName: Cookie Session ID
+    reset_password:
+      type: http
+      x-displayName: Reset Password Token
+      scheme: bearer
+      x-is-auth: false

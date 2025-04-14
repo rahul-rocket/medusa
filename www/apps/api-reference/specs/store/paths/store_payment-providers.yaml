@@ -80,6 +80,10 @@ get:
         title: region_id
         description: Filter by a region ID.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_payment-providers/get.js
     - lang: Shell
       label: cURL
       source:

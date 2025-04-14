@@ -13,7 +13,8 @@ import { ProductVariantSection } from "./components/product-variant-section"
 import { PRODUCT_DETAIL_FIELDS } from "./constants"
 import { productLoader } from "./loader"
 
-import { useDashboardExtension } from "../../../extensions"
+import { useExtension } from "../../../providers/extension-provider"
+import { ProductShippingProfileSection } from "./components/product-shipping-profile-section"
 
 export const ProductDetail = () => {
   const initialData = useLoaderData() as Awaited<
@@ -29,7 +30,7 @@ export const ProductDetail = () => {
     }
   )
 
-  const { getWidgets } = useDashboardExtension()
+  const { getWidgets } = useExtension()
 
   const after = getWidgets("product.details.after")
   const before = getWidgets("product.details.before")
@@ -71,6 +72,7 @@ export const ProductDetail = () => {
       </TwoColumnPage.Main>
       <TwoColumnPage.Sidebar>
         <ProductSalesChannelSection product={product} />
+        <ProductShippingProfileSection product={product} />
         <ProductOrganizationSection product={product} />
         <ProductAttributeSection product={product} />
       </TwoColumnPage.Sidebar>

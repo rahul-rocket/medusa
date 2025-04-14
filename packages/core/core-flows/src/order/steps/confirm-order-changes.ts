@@ -2,9 +2,21 @@ import { OrderChangeDTO } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
+/**
+ * The input for the confirm order changes step.
+ */
 export type ConfirmOrderChangesInput = {
+  /**
+   * The ID of the order to confirm changes for.
+   */
   orderId: string
+  /**
+   * The changes to confirm.
+   */
   changes: OrderChangeDTO[]
+  /**
+   * The ID of the user confirming the changes.
+   */
   confirmed_by?: string
 }
 
@@ -17,7 +29,7 @@ export const confirmOrderChanges = createStep(
     const orderModuleService = container.resolve(Modules.ORDER)
 
     const currentChanges: Partial<OrderChangeDTO>[] = []
-    await orderModuleService.confirmOrderChange(
+    const orderChanges = await orderModuleService.confirmOrderChange(
       input.changes.map((action) => {
         const update = {
           id: action.id,
@@ -34,7 +46,7 @@ export const confirmOrderChanges = createStep(
       })
     )
 
-    return new StepResponse(null, currentChanges)
+    return new StepResponse(orderChanges, currentChanges)
   },
   async (currentChanges, { container }) => {
     if (!currentChanges?.length) {

@@ -127,6 +127,14 @@ jobs:
       - name: Build Packages
         run: yarn build
 
+      - name: Install Docs dependencies
+        working-directory: www
+        run: yarn install
+
+      - name: Build Docs packages
+        working-directory: www
+        run: yarn build:packages
+
       - name: Install www/utils Dependencies
         run: yarn
         working-directory: www/utils
@@ -146,6 +154,10 @@ jobs:
       - name: Generate API Reference
         run: yarn openapi:generate
 
+      - name: Run prep script
+        run: yarn prep
+        working-directory: www/apps/api-reference
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
@@ -155,7 +167,9 @@ jobs:
           labels: "type: chore"
           add-paths: |
             www/apps/api-reference/specs
+            www/apps/api-reference/generated
             www/utils/generated/oas-output
+            www/utils/generated/route-examples-output
           branch: "docs/generate-api-ref"
           branch-suffix: "timestamp"
   dml:

@@ -76,6 +76,70 @@ The value of each module’s property is an object, whose keys are of the format
 
 So, in the example above, you link a record of the `MyCustom` data model in a `hello` module to a `Product` record in the Product Module.
 
+### Enforced Integrity Constraints on Link Creation
+
+Medusa enforces integrity constraints on links based on the link's relation type. So, an error is thrown in the following scenarios:
+
+- If the link is one-to-one and one of the linked records already has a link to another record of the same data model. For example:
+
+```ts
+// no error
+await link.create({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+  "helloModuleService": {
+    my_custom_id: "mc_123",
+  },
+})
+
+// throws an error because `prod_123` already has a link to `mc_123`
+await link.create({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+  "helloModuleService": {
+    my_custom_id: "mc_456",
+  },
+})
+```
+
+- If the link is one-to-many and the "one" side already has a link to another record of the same data model. For example, if a product can have many `MyCustom` records, but a `MyCustom` record can only have one product:
+
+```ts
+// no error
+await link.create({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+  "helloModuleService": {
+    my_custom_id: "mc_123",
+  },
+})
+
+// also no error
+await link.create({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+  "helloModuleService": {
+    my_custom_id: "mc_456",
+  },
+})
+
+// throws an error because `mc_123` already has a link to `prod_123`
+await link.create({
+  [Modules.PRODUCT]: {
+    product_id: "prod_456",
+  },
+  "helloModuleService": {
+    my_custom_id: "mc_123",
+  },
+})
+```
+
+There are no integrity constraints in a many-to-many link, so you can create multiple links between the same records.
+
 ---
 
 ## Dismiss Link

@@ -5,6 +5,39 @@ import {
   Reflection,
 } from "typedoc"
 
+export function getHookChildren(
+  reflection?: DeclarationReflection
+): DeclarationReflection[] {
+  const hookChildren: DeclarationReflection[] = []
+  if (!reflection) {
+    return hookChildren
+  }
+
+  const hookChildrenProperty = reflection.getChildByName("hooks")
+  if (!(hookChildrenProperty instanceof DeclarationReflection)) {
+    return hookChildren
+  }
+
+  switch (hookChildrenProperty.type?.type) {
+    case "reflection":
+      hookChildren.push(
+        ...(hookChildrenProperty.type.declaration.children || [])
+      )
+      break
+    case "intersection":
+      hookChildrenProperty.type.types.forEach((type) => {
+        if (type.type !== "reflection") {
+          return
+        }
+
+        hookChildren.push(...(type.declaration.children || []))
+      })
+      break
+  }
+
+  return hookChildren
+}
+
 export function cleanUpHookInput(
   parameters: ParameterReflection[]
 ): ParameterReflection[] {

@@ -1256,6 +1256,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_tax-regions/get.js
     - lang: Shell
       label: cURL
       source:
@@ -1346,6 +1350,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminCreateTaxRegion.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_tax-regions/post.js
     - lang: Shell
       label: cURL
       source:

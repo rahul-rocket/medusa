@@ -98,12 +98,19 @@ function getStep({
     (theme.project ? getProjectChild(theme.project, document.name) : undefined)
   const depth = getDocumentTagValue(document, `@workflowDepth`) || `${index}`
 
+  const summary =
+    associatedReflection?.comment?.blockTags.find(
+      (tag) => tag.tag === `@summary`
+    )?.content || associatedReflection?.comment?.summary
+
   return {
     type,
     name: document.name,
-    description: associatedReflection?.comment
-      ? Handlebars.helpers.comments(associatedReflection.comment, true)
-      : "",
+    description: summary
+      ? Handlebars.helpers.comment(summary)
+      : associatedReflection?.comment
+        ? Handlebars.helpers.comments(associatedReflection.comment, true)
+        : "",
     link:
       type === "hook" || !associatedReflection?.url
         ? `#${document.name}`

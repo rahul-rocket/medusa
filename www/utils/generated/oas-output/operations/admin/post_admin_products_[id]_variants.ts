@@ -42,6 +42,34 @@
  *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  *         description: The product variant's details.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.product.createVariant("prod_123", {
+ *         title: "Blue Shirt",
+ *         options: {
+ *           Color: "Blue"
+ *         },
+ *         prices: [
+ *           {
+ *             amount: 10,
+ *             currency_code: "usd"
+ *           }
+ *         ]
+ *       })
+ *       .then(({ product }) => {
+ *         console.log(product)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

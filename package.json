@@ -82,6 +82,7 @@
   "resolutions": {
     "@redocly/cli/react": "^17.0.1",
     "@redocly/cli/react-dom": "^17.0.1",
-    "pg": "8.11.3"
+    "pg": "8.11.3",
+    "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm:^6.0.0#.yarn/patches/changesets.patch"
   }
 }

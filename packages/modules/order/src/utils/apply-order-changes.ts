@@ -1,8 +1,14 @@
-import { OrderChangeActionDTO } from "@medusajs/framework/types"
+import {
+  CreateOrderCreditLineDTO,
+  InferEntityType,
+  OrderChangeActionDTO,
+  OrderDTO,
+} from "@medusajs/framework/types"
 import {
   ChangeActionType,
   MathBN,
   createRawPropertiesFromBigNumber,
+  decorateCartTotals,
   isDefined,
 } from "@medusajs/framework/utils"
 import { OrderItem, OrderShippingMethod } from "@models"
@@ -15,15 +21,18 @@ export interface ApplyOrderChangeDTO extends OrderChangeActionDTO {
   applied: boolean
 }
 
-export function applyChangesToOrder(
+export async function applyChangesToOrder(
   orders: any[],
   actionsMap: Record<string, any[]>,
   options?: {
     addActionReferenceToObject?: boolean
+    includeTaxLinesAndAdjustementsToPreview?: (...args) => void
   }
 ) {
-  const itemsToUpsert: OrderItem[] = []
-  const shippingMethodsToUpsert: OrderShippingMethod[] = []
+  const itemsToUpsert: InferEntityType<typeof OrderItem>[] = []
+  const creditLinesToCreate: CreateOrderCreditLineDTO[] = []
+  const shippingMethodsToUpsert: InferEntityType<typeof OrderShippingMethod>[] =
+    []
   const summariesToUpsert: any[] = []
   const orderToUpdate: any[] = []
 
@@ -44,8 +53,6 @@ export function applyChangesToOrder(
     })
 
     createRawPropertiesFromBigNumber(calculated)
-
-    calculatedOrders[order.id] = calculated
 
     const version = actionsMap[order.id]?.[0]?.version ?? order.version
     const orderAttributes: {
@@ -69,7 +76,7 @@ export function applyChangesToOrder(
       const orderItem = isExistingItem ? (item.detail as any) : item
       const itemId = isExistingItem ? orderItem.item_id : item.id
 
-      itemsToUpsert.push({
+      const itemToUpsert = {
         id: orderItem.version === version ? orderItem.id : undefined,
         item_id: itemId,
         order_id: order.id,
@@ -86,16 +93,26 @@ export function applyChangesToOrder(
         return_dismissed_quantity: orderItem.return_dismissed_quantity ?? 0,
         written_off_quantity: orderItem.written_off_quantity ?? 0,
         metadata: orderItem.metadata,
-      } as OrderItem)
+      } as any
+
+      itemsToUpsert.push(itemToUpsert)
     }
 
-    const orderSummary = order.summary as any
-    summariesToUpsert.push({
-      id: orderSummary?.version === version ? orderSummary.id : undefined,
-      order_id: order.id,
-      version,
-      totals: calculated.summary,
-    })
+    const creditLines = (calculated.order.credit_lines ?? []).filter(
+      (creditLine) => !("id" in creditLine)
+    )
+
+    for (const creditLine of creditLines) {
+      const creditLineToCreate = {
+        order_id: order.id,
+        amount: creditLine.amount,
+        reference: creditLine.reference,
+        reference_id: creditLine.reference_id,
+        metadata: creditLine.metadata,
+      }
+
+      creditLinesToCreate.push(creditLineToCreate)
+    }
 
     if (version > order.version) {
       for (const shippingMethod of calculated.order.shipping_methods ?? []) {
@@ -134,6 +151,29 @@ export function applyChangesToOrder(
       orderAttributes.version = version
     }
 
+    // Including tax lines and adjustments for added items and shipping methods
+    if (options?.includeTaxLinesAndAdjustementsToPreview) {
+      await options?.includeTaxLinesAndAdjustementsToPreview(
+        calculated.order,
+        itemsToUpsert,
+        shippingMethodsToUpsert
+      )
+      decorateCartTotals(calculated.order)
+    }
+
+    const orderSummary = order.summary
+    const upsertSummary = {
+      id: orderSummary?.version === version ? orderSummary.id : undefined,
+      order_id: order.id,
+      version,
+      totals: calculated.getSummaryFromOrder(
+        calculated.order as unknown as OrderDTO
+      ),
+    }
+
+    createRawPropertiesFromBigNumber(upsertSummary)
+    summariesToUpsert.push(upsertSummary)
+
     if (Object.keys(orderAttributes).length > 0) {
       orderToUpdate.push({
         selector: {
@@ -144,10 +184,13 @@ export function applyChangesToOrder(
         },
       })
     }
+
+    calculatedOrders[order.id] = calculated
   }
 
   return {
     itemsToUpsert,
+    creditLinesToCreate,
     shippingMethodsToUpsert,
     summariesToUpsert,
     orderToUpdate,

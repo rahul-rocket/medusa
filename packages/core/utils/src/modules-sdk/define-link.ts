@@ -85,6 +85,7 @@ type ModuleLinkableKeyConfig = {
   deleteCascade?: boolean
   primaryKey: string
   alias: string
+  hasMany?: boolean
   shortcut?: Shortcut | Shortcut[]
 }
 
@@ -138,6 +139,7 @@ function prepareServiceConfig(
       field: input.field ?? source.field,
       primaryKey: source.primaryKey,
       isList: false,
+      hasMany: false,
       deleteCascade: false,
       module: source.serviceName,
       entity: source.entity,
@@ -147,12 +149,15 @@ function prepareServiceConfig(
       ? input.linkable.toJSON()
       : input.linkable
 
+    const hasMany = !!input.isList
+
     serviceConfig = {
       key: source.linkable,
       alias: source.alias ?? camelToSnakeCase(source.field ?? ""),
       field: input.field ?? source.field,
       primaryKey: source.primaryKey,
       isList: input.isList ?? false,
+      hasMany,
       deleteCascade: input.deleteCascade ?? false,
       module: source.serviceName,
       entity: source.entity,
@@ -373,6 +378,7 @@ ${serviceBObj.module}: {
             methodSuffix: serviceAMethodSuffix,
           },
           deleteCascade: serviceAObj.deleteCascade,
+          hasMany: serviceAObj.hasMany,
         },
         {
           serviceName: serviceBObj.module,
@@ -384,6 +390,7 @@ ${serviceBObj.module}: {
             methodSuffix: serviceBMethodSuffix,
           },
           deleteCascade: serviceBObj.deleteCascade,
+          hasMany: serviceBObj.hasMany,
         },
       ],
       extends: [

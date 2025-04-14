@@ -36,15 +36,15 @@ For example:
   <CodeTab label="Using Workflow" value="workflow">
 
 ```ts
-import { createPaymentCollectionForCartWorkflow } from "@medusajs/medusa/core-flows";
+import { createPaymentCollectionForCartWorkflow } from "@medusajs/medusa/core-flows"
 
 // ...
 
 await createPaymentCollectionForCartWorkflow(req.scope)
   .run({
     input: {
-      cart_id: "cart_123"
-    }
+      cart_id: "cart_123",
+    },
   })
 ```
 
@@ -54,7 +54,6 @@ await createPaymentCollectionForCartWorkflow(req.scope)
 ```ts
 const paymentCollection =
   await paymentModuleService.createPaymentCollections({
-    region_id: "reg_123",
     currency_code: "usd",
     amount: 5000,
   })
@@ -77,7 +76,7 @@ For example:
   <CodeTab label="Using Workflow" value="workflow">
 
 ```ts
-import { createPaymentSessionsWorkflow } from "@medusajs/medusa/core-flows";
+import { createPaymentSessionsWorkflow } from "@medusajs/medusa/core-flows"
 
 // ...
 
@@ -86,7 +85,7 @@ const { result: paymentSesion } = await createPaymentSessionsWorkflow(req.scope)
     input: {
       payment_collection_id: "paycol_123",
       provider_id: "stripe",
-    }
+    },
   })
 ```
 
@@ -124,13 +123,13 @@ For example:
   <CodeTab label="Using Step" value="workflow">
 
 ```ts
-import { authorizePaymentSessionStep } from "@medusajs/medusa/core-flows";
+import { authorizePaymentSessionStep } from "@medusajs/medusa/core-flows"
 
 // ...
 
 authorizePaymentSessionStep({
   id: "payses_123",
-  context: {}
+  context: {},
 })
 ```
 
@@ -140,7 +139,7 @@ authorizePaymentSessionStep({
 ```ts
 const payment = authorizePaymentSessionStep({
   id: "payses_123",
-  context: {}
+  context: {},
 })
 ```
 

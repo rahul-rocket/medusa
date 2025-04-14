@@ -40,6 +40,11 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_fulfillment-sets_{id}_service-zones_{zone_id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -245,6 +250,11 @@ post:
                         title: id
                         description: The ID of an existing geo zone.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_fulfillment-sets_{id}_service-zones_{zone_id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -296,6 +306,11 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_fulfillment-sets_{id}_service-zones_{zone_id}/delete.js
     - lang: Shell
       label: cURL
       source:

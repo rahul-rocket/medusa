@@ -7,17 +7,18 @@ import {
   TaxCalculationContext,
 } from "@medusajs/framework/types"
 import { calculateAmountsWithTax, Modules } from "@medusajs/framework/utils"
-import { TaxModuleService } from "@medusajs/tax/dist/services"
 
-export type RequestWithContext<Body, QueryFields = Record<string, unknown>> = 
-  MedusaStoreRequest<Body, QueryFields> & {
-    taxContext: {
-      taxLineContext?: TaxCalculationContext
-      taxInclusivityContext?: {
-        automaticTaxes: boolean
-      }
+export type RequestWithContext<
+  Body,
+  QueryFields = Record<string, unknown>
+> = MedusaStoreRequest<Body, QueryFields> & {
+  taxContext: {
+    taxLineContext?: TaxCalculationContext
+    taxInclusivityContext?: {
+      automaticTaxes: boolean
     }
   }
+}
 
 export const refetchProduct = async (
   idOrFilter: string | object,
@@ -44,7 +45,7 @@ export const wrapProductsWithTaxPrices = async <T>(
     return
   }
 
-  const taxService = req.scope.resolve<TaxModuleService>(Modules.TAX)
+  const taxService = req.scope.resolve(Modules.TAX)
 
   const taxRates = (await taxService.getTaxLines(
     products.map(asTaxItem).flat(),
@@ -76,6 +77,19 @@ export const wrapProductsWithTaxPrices = async <T>(
 
       variant.calculated_price.calculated_amount_with_tax = priceWithTax
       variant.calculated_price.calculated_amount_without_tax = priceWithoutTax
+
+      const {
+        priceWithTax: originalPriceWithTax,
+        priceWithoutTax: originalPriceWithoutTax,
+      } = calculateAmountsWithTax({
+        taxLines: taxRatesForVariant,
+        amount: variant.calculated_price!.original_amount!,
+        includesTax: variant.calculated_price!.is_original_price_tax_inclusive!,
+      })
+
+      variant.calculated_price.original_amount_with_tax = originalPriceWithTax
+      variant.calculated_price.original_amount_without_tax =
+        originalPriceWithoutTax
     })
   })
 }

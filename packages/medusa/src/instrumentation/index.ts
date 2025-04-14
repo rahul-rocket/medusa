@@ -5,10 +5,10 @@ import {
   MedusaResponse,
   Query,
 } from "@medusajs/framework"
-import { ApiRoutesLoader } from "@medusajs/framework/http"
+import { ApiLoader } from "@medusajs/framework/http"
 import { Tracer } from "@medusajs/framework/telemetry"
 import type { SpanExporter } from "@opentelemetry/sdk-trace-node"
-import type { Instrumentation } from "@opentelemetry/instrumentation"
+import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node"
 import { TransactionOrchestrator } from "@medusajs/framework/orchestration"
 
 const EXCLUDED_RESOURCES = [".vite", "virtual:"]
@@ -66,7 +66,7 @@ export function instrumentHttpLayer() {
    * Instrumenting the route handler to report traces to
    * OpenTelemetry
    */
-  ApiRoutesLoader.traceRoute = (handler) => {
+  ApiLoader.traceRoute = (handler) => {
     return async (req, res) => {
       if (shouldExcludeResource(req.originalUrl)) {
         return await handler(req, res)
@@ -95,7 +95,7 @@ export function instrumentHttpLayer() {
    * Instrumenting the middleware handler to report traces to
    * OpenTelemetry
    */
-  ApiRoutesLoader.traceMiddleware = (handler) => {
+  ApiLoader.traceMiddleware = (handler) => {
     return async (
       req: MedusaRequest<any>,
       res: MedusaResponse,
@@ -110,26 +110,18 @@ export function instrumentHttpLayer() {
       }`
 
       await HTTPTracer.trace(traceName, async (span) => {
-        return new Promise<void>((resolve, reject) => {
-          const _next = (error?: any) => {
-            if (error) {
-              span.setStatus({
-                code: SpanStatusCode.ERROR,
-                message: error.message || "Failed",
-              })
-              span.end()
-              reject(error)
-            } else {
-              span.end()
-              resolve()
-            }
-          }
-
-          handler(req, res, _next)
-        })
+        try {
+          await handler(req, res, next)
+        } catch (error) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: error.message || "Failed",
+          })
+          throw error
+        } finally {
+          span.end()
+        }
       })
-        .catch(next)
-        .then(next)
     }
   }
 }
@@ -148,14 +140,17 @@ export function instrumentRemoteQuery() {
         span.setAttributes({
           "query.fields": queryOptions.fields,
         })
-        return await queryFn()
-          .catch((error) => {
-            span.setStatus({
-              code: SpanStatusCode.ERROR,
-              message: error.message,
-            })
+        try {
+          return await queryFn()
+        } catch (err) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: err.message,
           })
-          .finally(() => span.end())
+          throw err
+        } finally {
+          span.end()
+        }
       }
     )
   })
@@ -176,14 +171,18 @@ export function instrumentRemoteQuery() {
         span.setAttributes({
           "query.fields": "fields" in queryOptions ? queryOptions.fields : [],
         })
-        return await queryFn()
-          .catch((error) => {
-            span.setStatus({
-              code: SpanStatusCode.ERROR,
-              message: error.message,
-            })
+
+        try {
+          return await queryFn()
+        } catch (error) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: error.message,
           })
-          .finally(() => span.end())
+          throw error
+        } finally {
+          span.end()
+        }
       }
     )
   })
@@ -201,14 +200,18 @@ export function instrumentRemoteQuery() {
           "fetch.select": options.select,
           "fetch.relations": options.relations,
         })
-        return await fetchFn()
-          .catch((error) => {
-            span.setStatus({
-              code: SpanStatusCode.ERROR,
-              message: error.message,
-            })
+
+        try {
+          return await fetchFn()
+        } catch (error) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: error.message,
           })
-          .finally(() => span.end())
+          throw error
+        } finally {
+          span.end()
+        }
       }
     )
   })
@@ -251,6 +254,7 @@ export function instrumentWorkflows() {
           span.setAttribute(`workflow.step.${key}`, value)
         })
 
+        // TODO: should we report error and re throw it?
         return await stepHandler().finally(() => span.end())
       }
     )
@@ -270,23 +274,33 @@ export function instrumentWorkflows() {
  * - @opentelemetry/instrumentation-pg
  * - @opentelemetry/instrumentation
  */
-export function registerOtel(options: {
-  serviceName: string
-  exporter: SpanExporter
-  instrument?: Partial<{
-    http: boolean
-    query: boolean
-    workflows: boolean
-    db: boolean
-  }>
-  instrumentations?: Instrumentation[]
-}) {
+export function registerOtel(
+  options: Partial<NodeSDKConfiguration> & {
+    serviceName: string
+    exporter?: SpanExporter
+    instrument?: Partial<{
+      http: boolean
+      query: boolean
+      workflows: boolean
+      db: boolean
+    }>
+  }
+) {
+  const {
+    exporter,
+    serviceName,
+    instrument,
+    instrumentations,
+    ...nodeSdkOptions
+  } = {
+    instrument: {},
+    instrumentations: [],
+    ...options,
+  }
+
   const { Resource } = require("@opentelemetry/resources")
   const { NodeSDK } = require("@opentelemetry/sdk-node")
   const { SimpleSpanProcessor } = require("@opentelemetry/sdk-trace-node")
-
-  const instrument = options.instrument || {}
-  const instrumentations = options.instrumentations || []
 
   if (instrument.db) {
     const { PgInstrumentation } = require("@opentelemetry/instrumentation-pg")
@@ -303,13 +317,12 @@ export function registerOtel(options: {
   }
 
   const sdk = new NodeSDK({
-    serviceName: options.serviceName,
-    resource: new Resource({
-      "service.name": options.serviceName,
-    }),
-    spanProcessor: new SimpleSpanProcessor(options.exporter),
+    serviceName,
+    resource: new Resource({ "service.name": serviceName }),
+    spanProcessor: new SimpleSpanProcessor(exporter),
+    ...nodeSdkOptions,
     instrumentations: instrumentations,
-  })
+  } satisfies Partial<NodeSDKConfiguration>)
 
   sdk.start()
   return sdk

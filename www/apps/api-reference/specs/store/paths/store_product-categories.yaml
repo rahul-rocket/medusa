@@ -753,6 +753,10 @@ get:
               title: name
               description: A product category name.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_product-categories/get.js
     - lang: Shell
       label: cURL
       source:

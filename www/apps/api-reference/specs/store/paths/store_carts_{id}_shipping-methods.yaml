@@ -66,6 +66,10 @@ post:
                   https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping#data-request-body-parameter
                 description: Learn more about the data parameter.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_carts_{id}_shipping-methods/post.js
     - lang: Shell
       label: cURL
       source:

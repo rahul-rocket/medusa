@@ -117,6 +117,10 @@ get:
         title: is_return
         description: Whether the shipping option can be used for returns.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_shipping-options/get.js
     - lang: Shell
       label: cURL
       source:

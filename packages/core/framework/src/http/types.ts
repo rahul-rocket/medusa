@@ -34,20 +34,6 @@ export type AsyncRouteHandler = (
 
 export type RouteHandler = SyncRouteHandler | AsyncRouteHandler
 
-export type RouteImplementation = {
-  method?: RouteVerb
-  handler: RouteHandler
-}
-
-export type RouteConfig = {
-  optedOutOfAuth?: boolean
-  routeType?: "admin" | "store" | "auth"
-  shouldAppendAdminCors?: boolean
-  shouldAppendStoreCors?: boolean
-  shouldAppendAuthCors?: boolean
-  routes?: RouteImplementation[]
-}
-
 export type MiddlewareFunction =
   | MedusaRequestHandler
   | ((...args: any[]) => any)
@@ -67,7 +53,11 @@ export type ParserConfigArgs = {
 export type ParserConfig = false | ParserConfigArgs
 
 export type MiddlewareRoute = {
+  /**
+   * @deprecated. Instead use {@link MiddlewareRoute.methods}
+   */
   method?: MiddlewareVerb | MiddlewareVerb[]
+  methods?: MiddlewareVerb[]
   matcher: string | RegExp
   bodyParser?: ParserConfig
   middlewares?: MiddlewareFunction[]
@@ -78,12 +68,38 @@ export type MiddlewaresConfig = {
   routes?: MiddlewareRoute[]
 }
 
+/**
+ * Route descriptor refers represents a route either scanned
+ * from the filesystem or registered manually. It does not
+ * represent a middleware
+ */
 export type RouteDescriptor = {
-  absolutePath: string
-  relativePath: string
-  route: string
-  priority: number
-  config?: RouteConfig
+  matcher: string
+  method: RouteVerb
+  handler: RouteHandler
+  optedOutOfAuth: boolean
+  isRoute: true
+  routeType?: "admin" | "store" | "auth"
+  absolutePath?: string
+  relativePath?: string
+  shouldAppendAdminCors: boolean
+  shouldAppendStoreCors: boolean
+  shouldAppendAuthCors: boolean
+}
+
+/**
+ * Represents a middleware
+ */
+export type MiddlewareDescriptor = {
+  matcher: string
+  methods?: MiddlewareVerb | MiddlewareVerb[]
+  handler: MiddlewareFunction
+}
+
+export type BodyParserConfigRoute = {
+  matcher: string
+  methods: MiddlewareVerb | MiddlewareVerb[]
+  config: ParserConfig
 }
 
 export type GlobalMiddlewareDescriptor = {
@@ -111,7 +127,7 @@ export interface MedusaRequest<
 
   /**
    * An object containing fields and variables to be used with the remoteQuery
-   * 
+   *
    * @version 2.2.0
    */
   queryConfig: {

@@ -1,8 +1,17 @@
-/** @type {import('types').RawSidebarItem[]} */
+/** @type {import('types').Sidebar.SidebarItem[]} */
 export const architecturalModulesSidebar = [
   {
+    type: "link",
+    path: "/architectural-modules",
+    title: "Overview",
+  },
+  {
+    type: "separator",
+  },
+  {
     type: "category",
-    title: "Cache Modules",
+    title: "Cache Module",
+    initialOpen: true,
     children: [
       {
         type: "link",
@@ -10,14 +19,20 @@ export const architecturalModulesSidebar = [
         title: "Overview",
       },
       {
-        type: "link",
-        path: "/architectural-modules/cache/in-memory",
-        title: "In-Memory",
-      },
-      {
-        type: "link",
-        path: "/architectural-modules/cache/redis",
-        title: "Redis",
+        type: "sub-category",
+        title: "Modules",
+        children: [
+          {
+            type: "link",
+            path: "/architectural-modules/cache/in-memory",
+            title: "In-Memory",
+          },
+          {
+            type: "link",
+            path: "/architectural-modules/cache/redis",
+            title: "Redis",
+          },
+        ],
       },
       {
         type: "sub-category",
@@ -28,13 +43,19 @@ export const architecturalModulesSidebar = [
             path: "/architectural-modules/cache/create",
             title: "Create Cache Module",
           },
+          {
+            type: "link",
+            path: "/references/cache-service",
+            title: "Use Cache Module",
+          },
         ],
       },
     ],
   },
   {
     type: "category",
-    title: "Event Modules",
+    title: "Event Module",
+    initialOpen: true,
     children: [
       {
         type: "link",
@@ -42,14 +63,20 @@ export const architecturalModulesSidebar = [
         title: "Overview",
       },
       {
-        type: "link",
-        path: "/architectural-modules/event/local",
-        title: "Local",
-      },
-      {
-        type: "link",
-        path: "/architectural-modules/event/redis",
-        title: "Redis",
+        type: "sub-category",
+        title: "Modules",
+        children: [
+          {
+            type: "link",
+            path: "/architectural-modules/event/local",
+            title: "Local",
+          },
+          {
+            type: "link",
+            path: "/architectural-modules/event/redis",
+            title: "Redis",
+          },
+        ],
       },
       {
         type: "sub-category",
@@ -60,13 +87,19 @@ export const architecturalModulesSidebar = [
             path: "/architectural-modules/event/create",
             title: "Create Event Module",
           },
+          {
+            type: "link",
+            path: "/references/event-service",
+            title: "Use Event Module",
+          },
         ],
       },
     ],
   },
   {
     type: "category",
-    title: "File Module Providers",
+    title: "File Module",
+    initialOpen: true,
     children: [
       {
         type: "link",
@@ -74,14 +107,20 @@ export const architecturalModulesSidebar = [
         title: "Overview",
       },
       {
-        type: "link",
-        path: "/architectural-modules/file/local",
-        title: "Local",
-      },
-      {
-        type: "link",
-        path: "/architectural-modules/file/s3",
-        title: "AWS S3 (and Compatible APIs)",
+        type: "sub-category",
+        title: "Providers",
+        children: [
+          {
+            type: "link",
+            path: "/architectural-modules/file/local",
+            title: "Local",
+          },
+          {
+            type: "link",
+            path: "/architectural-modules/file/s3",
+            title: "AWS S3 (and Compatible APIs)",
+          },
+        ],
       },
       {
         type: "sub-category",
@@ -92,28 +131,40 @@ export const architecturalModulesSidebar = [
             path: "/references/file-provider-module",
             title: "Create File Provider",
           },
+          {
+            type: "link",
+            path: "/references/file-service",
+            title: "Use File Module",
+          },
         ],
       },
     ],
   },
   {
     type: "category",
-    title: "Notification Module Providers",
+    title: "Locking Module",
+    initialOpen: true,
     children: [
       {
         type: "link",
-        path: "/architectural-modules/notification",
+        path: "/architectural-modules/locking",
         title: "Overview",
       },
       {
-        type: "link",
-        path: "/architectural-modules/notification/local",
-        title: "Local",
-      },
-      {
-        type: "link",
-        path: "/architectural-modules/notification/sendgrid",
-        title: "SendGrid",
+        type: "sub-category",
+        title: "Providers",
+        children: [
+          {
+            type: "link",
+            path: "/architectural-modules/locking/redis",
+            title: "Redis",
+          },
+          {
+            type: "link",
+            path: "/architectural-modules/locking/postgres",
+            title: "PostgreSQL",
+          },
+        ],
       },
       {
         type: "sub-category",
@@ -121,18 +172,13 @@ export const architecturalModulesSidebar = [
         children: [
           {
             type: "link",
-            path: "/architectural-modules/notification/send-notification",
-            title: "Send Notification",
+            path: "/references/locking-module-provider",
+            title: "Create Locking Provider",
           },
           {
             type: "link",
-            path: "/references/notification-provider-module",
-            title: "Create Notification Provider",
-          },
-          {
-            type: "link",
-            path: "/integrations/guides/resend",
-            title: "Integrate Resend",
+            path: "/references/locking-service",
+            title: "Use Locking Module",
           },
         ],
       },
@@ -140,7 +186,65 @@ export const architecturalModulesSidebar = [
   },
   {
     type: "category",
-    title: "Workflow Engine Modules",
+    title: "Notification Module",
+    initialOpen: true,
+    children: [
+      {
+        type: "link",
+        path: "/architectural-modules/notification",
+        title: "Overview",
+      },
+      {
+        type: "sub-category",
+        title: "Providers",
+        children: [
+          {
+            type: "link",
+            path: "/architectural-modules/notification/local",
+            title: "Local",
+          },
+          {
+            type: "link",
+            path: "/architectural-modules/notification/sendgrid",
+            title: "SendGrid",
+          },
+        ],
+      },
+      {
+        type: "sub-category",
+        title: "Guides",
+        autogenerate_tags: "notification+server",
+        autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
+        children: [
+          {
+            type: "link",
+            path: "/references/notification-provider-module",
+            title: "Create Notification Provider",
+          },
+          {
+            type: "ref",
+            path: "/integrations/guides/resend",
+            title: "Integrate Resend",
+          },
+          {
+            type: "link",
+            path: "/architectural-modules/notification/send-notification",
+            title: "Send Notification",
+          },
+          {
+            type: "link",
+            path: "/references/notification-service",
+            title: "Use Notification Module",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: "category",
+    title: "Workflow Engine Module",
+    initialOpen: true,
     children: [
       {
         type: "link",
@@ -148,14 +252,31 @@ export const architecturalModulesSidebar = [
         title: "Overview",
       },
       {
-        type: "link",
-        path: "/architectural-modules/workflow-engine/in-memory",
-        title: "In-Memory",
+        type: "sub-category",
+        title: "Modules",
+        children: [
+          {
+            type: "link",
+            path: "/architectural-modules/workflow-engine/in-memory",
+            title: "In-Memory",
+          },
+          {
+            type: "link",
+            path: "/architectural-modules/workflow-engine/redis",
+            title: "Redis",
+          },
+        ],
       },
       {
-        type: "link",
-        path: "/architectural-modules/workflow-engine/redis",
-        title: "Redis",
+        type: "sub-category",
+        title: "Guides",
+        children: [
+          {
+            type: "link",
+            path: "/architectural-modules/workflow-engine/how-to-use",
+            title: "Use Workflow Engine Module",
+          },
+        ],
       },
     ],
   },

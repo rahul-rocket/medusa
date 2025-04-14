@@ -18,7 +18,10 @@ const nextConfig = {
 
     return config
   },
-  transpilePackages: ["docs-ui"],
+  transpilePackages: ["docs-ui", "docs-utils"],
+  experimental: {
+    optimizePackageImports: ["docs-utils"],
+  },
   async redirects() {
     return [
       {
@@ -47,6 +50,9 @@ const withMDX = createMDX({
             ui: {
               projectPath: path.resolve("..", "ui"),
               contentPath: "src/content/docs",
+            },
+            "user-guide": {
+              projectPath: path.resolve("..", "user-guide"),
             },
           },
         },
@@ -91,4 +97,4 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE_BUNDLE === "true",
 })
 
-export default withMDX(nextConfig)
+export default withMDX(withBundleAnalyzer(nextConfig))

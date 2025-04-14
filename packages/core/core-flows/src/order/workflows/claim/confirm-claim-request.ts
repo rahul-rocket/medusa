@@ -42,11 +42,6 @@ import {
 } from "../../utils/order-validation"
 import { createOrUpdateOrderPaymentCollectionWorkflow } from "../create-or-update-order-payment-collection"
 
-export type ConfirmClaimRequestWorkflowInput = {
-  claim_id: string
-  confirmed_by?: string
-}
-
 function getUpdateReturnData({ returnId }: { returnId: string }) {
   return transform({ returnId }, ({ returnId }) => {
     return [
@@ -60,7 +55,49 @@ function getUpdateReturnData({ returnId }: { returnId: string }) {
 }
 
 /**
- * This step validates that a requested claim can be confirmed.
+ * The data to validate confirming a claim request.
+ */
+export type ConfirmClaimRequestValidationStepInput = {
+  /**
+   * The order's details.
+   */
+  order: OrderDTO
+  /**
+   * The order claim's details.
+   */
+  orderClaim: OrderClaimDTO
+  /**
+   * The order change's details.
+   */
+  orderChange: OrderChangeDTO
+}
+
+/**
+ * This step validates that a requested claim can be confirmed. If the order or claim is canceled,
+ * or the order change is not active, the step will throw an error.
+ *
+ * :::note
+ *
+ * You can retrieve an order, order claim, and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
+ * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
+ *
+ * :::
+ *
+ * @example
+ * const data = confirmClaimRequestValidationStep({
+ *   order: {
+ *     id: "order_123",
+ *     // other order details...
+ *   },
+ *   orderChange: {
+ *     id: "orch_123",
+ *     // other order change details...
+ *   },
+ *   orderClaim: {
+ *     id: "claim_123",
+ *     // other order claim details...
+ *   },
+ * })
  */
 export const confirmClaimRequestValidationStep = createStep(
   "validate-confirm-claim-request",
@@ -68,11 +105,7 @@ export const confirmClaimRequestValidationStep = createStep(
     order,
     orderChange,
     orderClaim,
-  }: {
-    order: OrderDTO
-    orderClaim: OrderClaimDTO
-    orderChange: OrderChangeDTO
-  }) {
+  }: ConfirmClaimRequestValidationStepInput) {
     throwIfIsCancelled(order, "Order")
     throwIfIsCancelled(orderClaim, "Claim")
     throwIfOrderChangeIsNotActive({ orderChange })
@@ -206,7 +239,7 @@ function extractShippingOption({ orderPreview, orderClaim, returnId }) {
 
     for (const action of modifiedShippingMethod_.actions) {
       if (action.action === ChangeActionType.SHIPPING_ADD) {
-        if (action.return?.id === returnId) {
+        if (!!action.return_id && action.return_id === returnId) {
           returnShippingMethod = shippingMethod
         } else if (action.claim_id === orderClaim.id) {
           claimShippingMethod = shippingMethod
@@ -221,9 +254,39 @@ function extractShippingOption({ orderPreview, orderClaim, returnId }) {
   }
 }
 
+/**
+ * The details of confirming the claim request.
+ */
+export type ConfirmClaimRequestWorkflowInput = {
+  /**
+   * The ID of the claim to confirm.
+   */
+  claim_id: string
+  /**
+   * The ID of the user confirming the claim.
+   */
+  confirmed_by?: string
+}
+
 export const confirmClaimRequestWorkflowId = "confirm-claim-request"
 /**
- * This workflow confirms a requested claim.
+ * This workflow confirms a requested claim. It's used by the
+ * [Confirm Claim Request API Route](https://docs.medusajs.com/api/admin#claims_postclaimsidrequest).
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to confirm a claim
+ * for an order in your custom flows.
+ *
+ * @example
+ * const { result } = await confirmClaimRequestWorkflow(container)
+ * .run({
+ *   input: {
+ *     claim_id: "claim_123",
+ *   }
+ * })
+ *
+ * @summary
+ *
+ * Confirm a requested claim.
  */
 export const confirmClaimRequestWorkflow = createWorkflow(
   confirmClaimRequestWorkflowId,
@@ -264,6 +327,8 @@ export const confirmClaimRequestWorkflow = createWorkflow(
       fields: [
         "id",
         "status",
+        "claim_id",
+        "return_id",
         "actions.id",
         "actions.claim_id",
         "actions.return_id",
@@ -322,13 +387,6 @@ export const confirmClaimRequestWorkflow = createWorkflow(
       updateReturnsStep(updateReturnDate)
     })
 
-    const claimId = transform(
-      { createdClaimItems },
-      ({ createdClaimItems }) => {
-        return createdClaimItems?.[0]?.claim_id
-      }
-    )
-
     const { returnShippingMethod, claimShippingMethod } = transform(
       { orderPreview, orderClaim, returnId },
       extractShippingOption
@@ -356,7 +414,7 @@ export const confirmClaimRequestWorkflow = createWorkflow(
           "additional_items.item.variant.inventory_items.inventory.location_levels.stock_locations.sales_channels.id",
           "additional_items.item.variant.inventory_items.inventory.location_levels.stock_locations.sales_channels.name",
         ],
-        variables: { id: claimId },
+        variables: { id: input.claim_id },
         list: false,
         throw_if_key_not_found: true,
       }).config({ name: "claim-query" })
@@ -412,7 +470,6 @@ export const confirmClaimRequestWorkflow = createWorkflow(
           id: returnShippingMethod.shipping_option_id,
         },
         list: false,
-        throw_if_key_not_found: true,
       }).config({ name: "claim-return-shipping-option" })
 
       const fulfillmentData = transform(

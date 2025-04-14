@@ -40,6 +40,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostReturnsConfirmRequestReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_returns_{id}_receive_confirm/post.js
     - lang: Shell
       label: cURL
       source:

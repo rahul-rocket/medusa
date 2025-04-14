@@ -40,10 +40,10 @@ post:
             will override the provider's `callbackUrl` configurations in
             `medusa-config.ts`.
   x-codeSamples:
-    - lang: Shell
-      label: EmailPass Provider
+    - lang: JavaScript
+      label: JS SDK
       source:
-        $ref: ../code_samples/Shell/auth_user_{auth_provider}/post.sh
+        $ref: ../code_samples/JavaScript/auth_user_{auth_provider}/post.js
     - lang: Bash
       label: Google Provider
       source:

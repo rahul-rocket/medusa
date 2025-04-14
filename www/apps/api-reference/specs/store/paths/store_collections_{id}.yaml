@@ -43,6 +43,10 @@ get:
         externalDocs:
           url: '#select-fields-and-relations'
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_collections_{id}/get.js
     - lang: Shell
       label: cURL
       source:

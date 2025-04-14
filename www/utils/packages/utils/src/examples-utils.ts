@@ -130,6 +130,15 @@ function getReflectionTypeFakeValue({
           })
         }
       }
+
+      // try to retrieve the type from the reflection
+      if (reflectionType.reflection.type) {
+        return getReflectionTypeFakeValue({
+          reflectionType: reflectionType.reflection.type,
+          name,
+          level: level + 1,
+        })
+      }
     }
 
     children.forEach((child) => {
@@ -266,10 +275,15 @@ export function getFakeStrValue({
           `id_${faker.string.alphanumeric({
             length: { min: 10, max: 20 },
           })}`,
+        region_id: "reg_123",
+        product_id: "prod_123",
+        cart_id: "cart_123",
+        order_id: "order_123",
         name: () => faker.person.firstName(),
         email: () => faker.internet.email(),
         password: () => faker.internet.password({ length: 8 }),
-        currency: () => faker.finance.currencyCode(),
+        currency_code: () => faker.finance.currencyCode().toLowerCase(),
+        country_code: () => faker.location.countryCode().toLowerCase(),
         title: () => faker.lorem.word(),
         description: () => faker.lorem.sentence(),
         url: () => faker.internet.url(),

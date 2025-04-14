@@ -15,18 +15,28 @@ This documentation provides a reference to the `sdk.auth.register` method used t
 This method is used to retrieve a registration JWT token for a user, customer, or custom actor type. It sends a request to the
 [Retrieve Registration Token API route](https://docs.medusajs.com/api/store#auth\_postactor\_typeauth\_provider\_register).
 
+Then, it stores the returned token and passes it in the header of subsequent requests. So, you can call the
+[store.customer.create](https://docs.medusajs.com/resources/references/js-sdk/store/customer#create) method,
+for example, after calling this method.
+
+Learn more in the [JS SDK Authentication](https://docs.medusajs.com/resources/js-sdk/auth/overview) guide.
+
 ## Example
 
 ```ts
-sdk.auth.register(
+await sdk.auth.register(
   "customer",
   "emailpass",
   {
     email: "customer@gmail.com",
     password: "supersecret"
   }
-).then((token) => {
-  console.log(token)
+)
+
+// all subsequent requests will use the token in the header
+const { customer } = await sdk.store.customer.create({
+  email: "customer@gmail.com",
+  password: "supersecret"
 })
 ```
 

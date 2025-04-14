@@ -104,46 +104,6 @@
  *         type: string
  *         title: sales_channel_id
  *         description: A sales channel's ID.
- *   - name: fulfillment_status
- *     in: query
- *     description: Filter by the order's fulfillment status.
- *     required: false
- *     schema:
- *       type: array
- *       description: Filter by the order's fulfillment status.
- *       items:
- *         type: string
- *         description: A fulfillment status.
- *         enum:
- *           - canceled
- *           - not_fulfilled
- *           - partially_fulfilled
- *           - fulfilled
- *           - partially_shipped
- *           - shipped
- *           - partially_delivered
- *           - delivered
- *   - name: payment_status
- *     in: query
- *     description: Filter by the order's payment status.
- *     required: false
- *     schema:
- *       type: array
- *       description: Filter by the order's payment status.
- *       items:
- *         type: string
- *         description: A payment status
- *         enum:
- *           - canceled
- *           - not_paid
- *           - awaiting
- *           - authorized
- *           - partially_authorized
- *           - captured
- *           - partially_captured
- *           - partially_refunded
- *           - refunded
- *           - requires_action
  *   - name: region_id
  *     in: query
  *     description: Filter by region IDs to retrieve their associated orders.
@@ -648,6 +608,23 @@
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.order.list()
+ *       .then(({ orders, count, limit, offset }) => {
+ *         console.log(orders)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

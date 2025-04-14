@@ -60,15 +60,15 @@ export function moduleEventBuilderFactory({
       })
     }
 
-    data.forEach((dataItem) => {
-      messages.push({
-        source,
-        action,
-        context: sharedContext,
-        data: { id: dataItem.id },
-        eventName: eventName!,
-        object,
-      })
+    messages.push({
+      source,
+      action,
+      context: sharedContext,
+      data: {
+        id: data.length === 1 ? data[0].id : data.map((item) => item.id),
+      },
+      eventName: eventName!,
+      object,
     })
 
     aggregator.saveRawMessageData(messages)

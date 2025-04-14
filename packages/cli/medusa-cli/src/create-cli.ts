@@ -178,6 +178,10 @@ function buildLocalCommands(cli, isLocalProject) {
       command: "db:migrate",
       desc: "Migrate the database by executing pending migrations",
       builder: (builder) => {
+        builder.option("skip-scripts", {
+          type: "boolean",
+          describe: "Do not run migration scripts",
+        })
         builder.option("skip-links", {
           type: "boolean",
           describe: "Do not sync links",
@@ -195,6 +199,16 @@ function buildLocalCommands(cli, isLocalProject) {
       },
       handler: handlerP(
         getCommandHandler("db/migrate", (args, cmd) => {
+          process.env.NODE_ENV = process.env.NODE_ENV || `development`
+          return cmd(args)
+        })
+      ),
+    })
+    .command({
+      command: "db:migrate:scripts",
+      desc: "Run all migration scripts",
+      handler: handlerP(
+        getCommandHandler("db/run-scripts", (args, cmd) => {
           process.env.NODE_ENV = process.env.NODE_ENV || `development`
           return cmd(args)
         })
@@ -235,6 +249,16 @@ function buildLocalCommands(cli, isLocalProject) {
       ),
     })
     .command({
+      command: "plugin:db:generate",
+      desc: "Generate migrations for modules in a plugin",
+      handler: handlerP(
+        getCommandHandler("plugin/db/generate", (args, cmd) => {
+          process.env.NODE_ENV = process.env.NODE_ENV || `development`
+          return cmd(args)
+        })
+      ),
+    })
+    .command({
       command: "db:sync-links",
       desc: "Sync database schema with the links defined by your application and Medusa core",
       builder: (builder) => {
@@ -251,6 +275,57 @@ function buildLocalCommands(cli, isLocalProject) {
         getCommandHandler("db/sync-links", (args, cmd) => {
           process.env.NODE_ENV = process.env.NODE_ENV || `development`
           return cmd(args)
+        })
+      ),
+    })
+    .command({
+      command: "plugin:build",
+      desc: "Build plugin source for publishing to a package registry",
+      handler: handlerP(
+        getCommandHandler("plugin/build", (args, cmd) => {
+          process.env.NODE_ENV = process.env.NODE_ENV || `development`
+          cmd(args)
+          return new Promise((resolve) => {})
+        })
+      ),
+    })
+    .command({
+      command: "plugin:develop",
+      desc: "Start plugin development process in watch mode. Changes will be re-published to the local packages registry",
+      handler: handlerP(
+        getCommandHandler("plugin/develop", (args, cmd) => {
+          process.env.NODE_ENV = process.env.NODE_ENV || `development`
+          cmd(args)
+          return new Promise(() => {})
+        })
+      ),
+    })
+    .command({
+      command: "plugin:publish",
+      desc: "Publish the plugin to the local packages registry",
+      handler: handlerP(
+        getCommandHandler("plugin/publish", (args, cmd) => {
+          process.env.NODE_ENV = process.env.NODE_ENV || `development`
+          cmd(args)
+          return new Promise(() => {})
+        })
+      ),
+    })
+    .command({
+      command: "plugin:add [plugin_names...]",
+      desc: "Add the specified plugin to the project from the local packages registry",
+      builder: {
+        plugin_names: {
+          type: "array",
+          description: "The name of the plugins to add",
+          demand: true,
+        },
+      },
+      handler: handlerP(
+        getCommandHandler("plugin/add", (args, cmd) => {
+          process.env.NODE_ENV = process.env.NODE_ENV || `development`
+          cmd(args)
+          return new Promise(() => {})
         })
       ),
     })
@@ -310,7 +385,7 @@ function buildLocalCommands(cli, isLocalProject) {
           // Return an empty promise to prevent handlerP from exiting early.
           // The development server shouldn't ever exit until the user directly
           // kills it so this is fine.
-          return new Promise((resolve) => {})
+          return new Promise(() => {})
         })
       ),
     })
@@ -347,7 +422,7 @@ function buildLocalCommands(cli, isLocalProject) {
           }),
       handler: handlerP(
         getCommandHandler(`start`, (args, cmd) => {
-          process.env.NODE_ENV = process.env.NODE_ENV || `development`
+          process.env.NODE_ENV = process.env.NODE_ENV || `production`
           cmd(args)
           // Return an empty promise to prevent handlerP from exiting early.
           // The development server shouldn't ever exit until the user directly

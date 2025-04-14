@@ -20,53 +20,31 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The inventory levels to create or delete.
- *         properties:
- *           create:
- *             type: array
- *             description: The inventory levels to create.
- *             items:
- *               type: object
- *               description: The inventory level's details.
- *               required:
- *                 - location_id
- *               properties:
- *                 location_id:
- *                   type: string
- *                   title: location_id
- *                   description: The ID of the associated location.
- *                 stocked_quantity:
- *                   type: number
- *                   title: stocked_quantity
- *                   description: The inventory level's stocked quantity.
- *                 incoming_quantity:
- *                   type: number
- *                   title: incoming_quantity
- *                   description: The inventory level's incoming quantity.
- *           update:
- *             type: array
- *             description: The inventory levels to update.
- *             items:
- *               type: object
- *               description: The inventory level's details.
- *               properties:
- *                 stocked_quantity:
- *                   type: number
- *                   title: stocked_quantity
- *                   description: The inventory level's stocked quantity.
- *                 incoming_quantity:
- *                   type: number
- *                   title: incoming_quantity
- *                   description: The inventory level's incoming quantity.
- *           delete:
- *             type: array
- *             description: The inventory levels to delete.
- *             items:
- *               type: string
- *               title: delete
- *               description: The ID of the inventory level to delete.
+ *         $ref: "#/components/schemas/AdminBatchInventoryItemLocationsLevel"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.inventoryItem.batchInventoryItemLocationLevels("iitem_123", {
+ *         create: [{
+ *           location_id: "sloc_123",
+ *           stocked_quantity: 10
+ *         }],
+ *         delete: ["ilvl_123"]
+ *       })
+ *       .then(({ created, updated, deleted }) => {
+ *         console.log(created, updated, deleted)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -77,17 +55,6 @@
  * responses:
  *   "200":
  *     description: OK
- *     content:
- *       application/json:
- *         schema:
- *           type: object
- *           description: The inventory item's details.
- *           required:
- *             - inventory_item
- *           properties:
- *             inventory_item:
- *               type: object
- *               description: The inventory item's details.
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":
@@ -100,7 +67,7 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
- * x-workflow: bulkCreateDeleteLevelsWorkflow
+ * x-workflow: batchInventoryItemLevelsWorkflow
  * 
 */
 

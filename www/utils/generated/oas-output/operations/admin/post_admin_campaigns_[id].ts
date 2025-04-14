@@ -92,6 +92,25 @@
  *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  *         description: The campaign's details.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.campaign.update("procamp_123", {
+ *         name: "Summer Campaign"
+ *       })
+ *       .then(({ campaign }) => {
+ *         console.log(campaign)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

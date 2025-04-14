@@ -35,6 +35,7 @@ export const CartPaymentCollection: ModuleJoinerConfig = {
       args: {
         methodSuffix: "PaymentCollections",
       },
+      hasMany: true,
     },
   ],
   extends: [

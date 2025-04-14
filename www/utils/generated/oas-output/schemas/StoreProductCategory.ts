@@ -16,11 +16,6 @@
  *   - updated_at
  *   - deleted_at
  * properties:
- *   products:
- *     type: array
- *     description: The category's products.
- *     items:
- *       $ref: "#/components/schemas/StoreProduct"
  *   id:
  *     type: string
  *     title: id
@@ -70,6 +65,11 @@
  *     format: date-time
  *     title: deleted_at
  *     description: The date the category was deleted.
+ *   products:
+ *     type: array
+ *     description: The category's products.
+ *     items:
+ *       $ref: "#/components/schemas/StoreProduct"
  * 
 */
 

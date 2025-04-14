@@ -25,12 +25,24 @@ medusaIntegrationTestRunner({
       const container = getContainer()
       await createAdminUser(dbConnection, adminHeaders, container)
 
+      shippingProfile = (
+        await api.post(
+          `/admin/shipping-profiles`,
+          {
+            name: "Test",
+            type: "default",
+          },
+          adminHeaders
+        )
+      ).data.shipping_profile
+
       const product = (
         await api.post(
           "/admin/products",
           {
             title: "Test product",
             options: [{ title: "size", values: ["x", "l"] }],
+            shipping_profile_id: shippingProfile.id,
             variants: [
               {
                 title: "Test variant",
@@ -149,17 +161,6 @@ medusaIntegrationTestRunner({
         ],
       })
 
-      shippingProfile = (
-        await api.post(
-          `/admin/shipping-profiles`,
-          {
-            name: "Test",
-            type: "default",
-          },
-          adminHeaders
-        )
-      ).data.shipping_profile
-
       location = (
         await api.post(
           `/admin/stock-locations`,
@@ -235,6 +236,17 @@ medusaIntegrationTestRunner({
           [Modules.INVENTORY]: {
             inventory_item_id: inventoryItem.id,
           },
+        },
+      ])
+
+      // create reservation for inventory item that is initially on the order
+      const inventoryModule = container.resolve(Modules.INVENTORY)
+      await inventoryModule.createReservationItems([
+        {
+          inventory_item_id: inventoryItem.id,
+          location_id: location.id,
+          quantity: 2,
+          line_item_id: order.items[0].id,
         },
       ])
 
@@ -865,7 +877,9 @@ medusaIntegrationTestRunner({
               adminHeaders
             )
           ).data.inventory_levels
-          expect(inventoryLevel[0].stocked_quantity).toEqual(2)
+
+          // we had 2 items in stock that were reserved for the order and then fulfilled
+          expect(inventoryLevel[0].stocked_quantity).toEqual(0)
 
           let result = await api.post(
             `/admin/returns/${returnId}/receive`,
@@ -986,7 +1000,7 @@ medusaIntegrationTestRunner({
               adminHeaders
             )
           ).data.inventory_levels
-          expect(inventoryLevel[0].stocked_quantity).toEqual(3)
+          expect(inventoryLevel[0].stocked_quantity).toEqual(1)
         })
       })
 

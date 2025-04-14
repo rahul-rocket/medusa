@@ -15,6 +15,10 @@ const PriceListRule = model
       on: ["price_list_id"],
       where: "deleted_at IS NULL",
     },
+    {
+      on: ["attribute"],
+      where: "deleted_at IS NULL",
+    },
   ])
 
 export default PriceListRule

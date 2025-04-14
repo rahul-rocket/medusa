@@ -4,7 +4,7 @@ get:
   description: >-
     Retrieve a list of users. The users can be filtered by fields such as `id`.
     The users can also be sorted or paginated.
-  x-authenticated: false
+  x-authenticated: true
   parameters:
     - name: fields
       in: query
@@ -522,6 +522,10 @@ get:
             title: $exists
             description: Filter by whether a value for this parameter exists (not `null`).
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_users/get.js
     - lang: Shell
       label: cURL
       source:
@@ -547,3 +551,6 @@ get:
       $ref: ../components/responses/invalid_request_error.yaml
     '500':
       $ref: ../components/responses/500_error.yaml
+  security:
+    - cookie_auth: []
+    - jwt_token: []

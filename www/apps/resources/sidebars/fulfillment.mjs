@@ -1,9 +1,9 @@
-/** @type {import('types').RawSidebarItem[]} */
+/** @type {import('types').Sidebar.SidebarItem[]} */
 export const fulfillmentSidebar = [
   {
-    type: "category",
+    type: "sidebar",
+    sidebar_id: "fulfillment",
     title: "Fulfillment Module",
-    isChildSidebar: true,
     children: [
       {
         type: "link",
@@ -21,7 +21,8 @@ export const fulfillmentSidebar = [
       {
         type: "category",
         title: "Concepts",
-        initialOpen: false,
+        autogenerate_tags: "concept+fulfillment",
+        autogenerate_as_ref: true,
         children: [
           {
             type: "link",
@@ -54,8 +55,8 @@ export const fulfillmentSidebar = [
         type: "category",
         title: "Server Guides",
         autogenerate_tags: "server+fulfillment",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to use the Fulfillment Module in your customizations on the Medusa application server.",
         children: [
@@ -75,8 +76,8 @@ export const fulfillmentSidebar = [
         type: "category",
         title: "Storefront Guides",
         autogenerate_tags: "storefront+fulfillment,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to integrate the Fulfillment Module's features into your storefront.",
       },
@@ -84,24 +85,23 @@ export const fulfillmentSidebar = [
         type: "category",
         title: "Admin Guides",
         autogenerate_tags: "admin+fulfillment,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize administative features of the Fulfillment Module.",
       },
       {
         type: "category",
-        title: "User Guides",
-        autogenerate_tags: "userGuides+fulfillment",
-        initialOpen: false,
+        title: "Admin User Guides",
+        autogenerate_tags: "fulfillment+userGuide",
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize and manage Fulfillment features in the Medusa Admin dashboard.",
       },
       {
         type: "category",
         title: "References",
-        initialOpen: false,
         description:
           "Find references for tools and resources related to the Fulfillment Module, such as data models, methods, and more. These are useful for your customizations.",
         children: [
@@ -116,12 +116,14 @@ export const fulfillmentSidebar = [
                 title: "Workflows",
                 autogenerate_tags: "workflow+fulfillment",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "category",
                 title: "Steps",
                 autogenerate_tags: "step+fulfillment",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -138,6 +140,7 @@ export const fulfillmentSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Store API Routes related to the Fulfillment Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "sub-category",
@@ -146,6 +149,7 @@ export const fulfillmentSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Admin API Routes related to the Fulfillment Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -160,12 +164,19 @@ export const fulfillmentSidebar = [
             title: "Admin Widget Zones",
           },
           {
-            type: "link",
-            path: "/references/fulfillment",
+            type: "sidebar",
+            sidebar_id: "fulfillment-service-reference",
             title: "Main Service Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Fulfillment Module's Main Service Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/fulfillment",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Methods",
@@ -175,12 +186,19 @@ export const fulfillmentSidebar = [
             ],
           },
           {
-            type: "link",
-            path: "/references/fulfillment/models",
+            type: "sidebar",
+            sidebar_id: "fulfillment-models-reference",
             title: "Data Models Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Fulfillment Module Data Models Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/fulfillment/models",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Data Models",

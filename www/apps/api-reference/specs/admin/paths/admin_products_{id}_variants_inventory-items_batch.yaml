@@ -116,6 +116,11 @@ post:
                     title: variant_id
                     description: The ID of the variant.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_products_{id}_variants_inventory-items_batch/post.js
     - lang: Shell
       label: cURL
       source:

@@ -37,6 +37,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_shipping-options_{id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -281,6 +285,10 @@ post:
                               description: A value of the attribute that enables this rule.
                               example: cusgroup_123
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_shipping-options_{id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -324,6 +332,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_shipping-options_{id}/delete.js
     - lang: Shell
       label: cURL
       source:

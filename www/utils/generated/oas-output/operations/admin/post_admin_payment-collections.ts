@@ -40,6 +40,25 @@
  *             title: amount
  *             description: The amount to be paid.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.paymentCollection.create({
+ *         order_id: "order_123"
+ *       })
+ *       .then(({ payment_collection }) => {
+ *         console.log(payment_collection)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

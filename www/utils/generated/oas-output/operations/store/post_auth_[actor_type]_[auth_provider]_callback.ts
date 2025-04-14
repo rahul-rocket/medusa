@@ -3,11 +3,8 @@
  * operationId: PostActor_typeAuth_providerCallback
  * summary: Validate Authentication Callback
  * description: >
- *   This API route is used by your storefront or frontend application when a third-party provider redirects to it after authentication. 
- * 
- * 
- *   It validates the authentication with the third-party provider and, if successful, returns an authentication token.
- * 
+ *   This API route is used by your storefront or frontend application when a third-party provider redirects to it after authentication. It validates the authentication with the third-party provider and, if successful, returns an authentication token.
+ *   All query parameters received from the third-party provider, such as `code`, `state`, and `error`, must be passed as query parameters to this route.
  *   
  *   You can decode the JWT token using libraries like [react-jwt](https://www.npmjs.com/package/react-jwt) in the storefront. If the decoded data doesn't 
  *   have an `actor_id` property, then you must register the customer using the Create Customer API route passing the token in the request's Authorization header.
@@ -24,12 +21,68 @@
  *       type: string
  *       example: "google"
  * x-codeSamples:
- *   - lang: Shell
+ *   - lang: JavaScript
  *     label: Google Provider
- *     source: curl -X POST '{backend_url}/auth/customer/google/callback?code=123'
- *   - lang: Bash
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       await sdk.auth.callback(
+ *         "customer",
+ *         "google",
+ *         {
+ *           code: "123",
+ *           state: "456"
+ *         }
+ *       )
+ * 
+ *       // all subsequent requests will use the token in the header
+ *       const { customer } = await sdk.store.customer.create({
+ *         email: "customer@gmail.com",
+ *         password: "supersecret"
+ *       })
+ *   - lang: TypeScript
  *     label: GitHub Provider
- *     source: curl -X POST '{backend_url}/auth/customer/github/callback?code=123'
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       await sdk.auth.callback(
+ *         "customer",
+ *         "github",
+ *         {
+ *           code: "123",
+ *           state: "456"
+ *         }
+ *       )
+ * 
+ *       // all subsequent requests will use the token in the header
+ *       const { customer } = await sdk.store.customer.create({
+ *         email: "customer@gmail.com",
+ *         password: "supersecret"
+ *       })
  * tags:
  *   - Auth
  * responses:

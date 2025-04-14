@@ -6,7 +6,7 @@ import {
   ProductTypes,
 } from "@medusajs/framework/types"
 import {
-  FreeTextSearchFilterKey,
+  FreeTextSearchFilterKeyPrefix,
   InjectManager,
   InjectTransactionManager,
   isDefined,
@@ -87,7 +87,7 @@ export default class ProductCategoryService {
     // Apply free text search filter
     if (isDefined(filters?.q)) {
       config.filters ??= {}
-      config.filters[FreeTextSearchFilterKey] = {
+      config.filters[FreeTextSearchFilterKeyPrefix + ProductCategory.name] = {
         value: filters.q,
         fromEntity: ProductCategory.name,
       }
@@ -121,7 +121,7 @@ export default class ProductCategoryService {
     // Apply free text search filter
     if (isDefined(filters?.q)) {
       config.filters ??= {}
-      config.filters[FreeTextSearchFilterKey] = {
+      config.filters[FreeTextSearchFilterKeyPrefix + ProductCategory.name] = {
         value: filters.q,
         fromEntity: ProductCategory.name,
       }
@@ -163,8 +163,8 @@ export default class ProductCategoryService {
   async delete(
     ids: string[],
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<void> {
-    await this.productCategoryRepository_.delete(ids, sharedContext)
+  ): Promise<string[]> {
+    return await this.productCategoryRepository_.delete(ids, sharedContext)
   }
 
   @InjectTransactionManager("productCategoryRepository_")

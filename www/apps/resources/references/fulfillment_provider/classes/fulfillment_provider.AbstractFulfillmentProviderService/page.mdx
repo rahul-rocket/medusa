@@ -1,24 +1,47 @@
 ---
 slug: /references/fulfillment/provider
+tags:
+  - fulfillment
+  - server
+  - how to
+sidebar_label: Create Fulfillment Provider
 ---
 
 import { TypeList } from "docs-ui"
 
-# How to Create a Fulfillment Provider Module
+# How to Create a Fulfillment Module Provider
 
-In this document, you’ll learn how to create a fulfillment provider module and the methods you must implement in its main service.
-
----
-
-## 1. Create Module Directory
-
-Start by creating a new directory for your module. For example, `src/modules/my-fulfillment`.
+In this document, you’ll learn how to create a Fulfillment Module Provider and the methods you must implement in its main service.
 
 ---
 
-## 2. Create the Fulfillment Provider Service
+## Understanding Fulfillment Module Provider Implementation
 
-Create the file `src/modules/my-fulfillment/service.ts` that holds the module's main service. It must extend the `AbstractFulfillmentProviderService` class imported from `@medusajs/framework/utils`:
+The Fulfillment Module Provider handles processing fulfillments and shipments with a third-party provirder. However, it's not responsible for managing fulfillment concepts within Medusa, such as creating a fulfillment or its shipments. The Fulfillment Module uses your Fulfillment Module Provider within core operations.
+
+For example, when the merchant creates a fulfillment for an order, the Fulfillment Module uses your Fulfillment Module Provider to create the fulfillment in the third-party system, then creates the fulfillment in Medusa. So, you only have to implement the third-party fulfillment processing logic in your Fulfillment Module Provider.
+
+---
+
+## 1. Create Module Provider Directory
+
+Start by creating a new directory for your module provider.
+
+If you're creating the module provider in a Medusa application, create it under the `src/modules` directory. For example, `src/modules/my-fulfillment`.
+
+If you're creating the module provider in a plugin, create it under the `src/providers` directory. For example, `src/providers/my-fulfillment`.
+
+<Note>
+
+The rest of this guide always uses the `src/modules/my-fulfillment` directory as an example.
+
+</Note>
+
+---
+
+## 2. Create the Fulfillment Module Provider Service
+
+Create the file `src/modules/my-fulfillment/service.ts` that holds the module provider's main service. It must extend the `AbstractFulfillmentProviderService` class imported from `@medusajs/framework/utils`:
 
 ```ts title="src/modules/my-fulfillment/service.ts"
 import { AbstractFulfillmentProviderService } from "@medusajs/framework/utils"
@@ -129,7 +152,7 @@ class MyFulfillmentProviderService extends AbstractFulfillmentProviderService {
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;FulfillmentOption[]&#62;","optional":false,"defaultValue":"","description":"The list of fulfillment options. Each object in the array should have an `id` property unique to an item, and a `name` property\nthat's used to display the option in the admin.","expandable":false,"children":[{"name":"FulfillmentOption[]","type":"`FulfillmentOption`[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"FulfillmentOption","type":"`FulfillmentOption`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getFulfillmentOptions"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[FulfillmentOption](../../../types/types/types.FulfillmentOption/page.mdx)[]&#62;","optional":false,"defaultValue":"","description":"The list of fulfillment options. Each object in the array should have an `id` property unique to an item, and a `name` property\nthat's used to display the option in the admin.","expandable":false,"children":[{"name":"FulfillmentOption[]","type":"[FulfillmentOption](../../../types/types/types.FulfillmentOption/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The option's ID. This ID can be an ID in the third-party system relevant\nfor later processing of fulfillment.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"is_return","type":"`boolean`","description":"Whether the option can be used to return items.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getFulfillmentOptions"/>
 
 ### validateFulfillmentData
 
@@ -164,7 +187,7 @@ class MyFulfillmentProviderService extends AbstractFulfillmentProviderService {
 
 #### Parameters
 
-<TypeList types={[{"name":"optionData","type":"`Record<string, unknown>`","description":"The `data` property of the shipping option.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`Record<string, unknown>`","description":"The `data` property of the shipping method.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"context","type":"[ValidateFulfillmentDataContext](../../../fulfillment/types/fulfillment.ValidateFulfillmentDataContext/page.mdx)","description":"Context details, such as context of the cart or customer.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"id\"`]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"shipping_address","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"shipping_address\"`]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"items","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"items\"`] & `object`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"variant","type":"`object`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"product","type":"`object`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]},{"name":"from_location","type":"[StockLocationDTO](../../../fulfillment/types/fulfillment.StockLocationDTO/page.mdx)","description":"Details about the location that items are being shipped from.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"name","type":"`string`","description":"The name of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`Record<string, unknown>` \\| `null`","description":"Holds custom data in key-value pairs.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"address_id","type":"`string`","description":"The associated address's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"fulfillment_sets","type":"[FulfillmentSetDTO](../../../fulfillment/interfaces/fulfillment.FulfillmentSetDTO/page.mdx)[]","description":"Fulfillment sets for the location","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"created_at","type":"`string` \\| `Date`","description":"The creation date of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"updated_at","type":"`string` \\| `Date`","description":"The update date of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"deleted_at","type":"`string` \\| `Date` \\| `null`","description":"The deletion date of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"address","type":"[StockLocationAddressDTO](../../../fulfillment/types/fulfillment.StockLocationAddressDTO/page.mdx)","description":"The address of the stock location.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="validateFulfillmentData"/>
+<TypeList types={[{"name":"optionData","type":"`Record<string, unknown>`","description":"The `data` property of the shipping option.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`Record<string, unknown>`","description":"The `data` property of the shipping method.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"context","type":"[ValidateFulfillmentDataContext](../../../types/types/types.ValidateFulfillmentDataContext/page.mdx)","description":"Context details, such as context of the cart or customer.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"id\"`]","description":"The cart's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"shipping_address","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"shipping_address\"`]","description":"The cart's shipping address.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"items","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"items\"`] & `object`","description":"The cart's items","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"variant","type":"`object`","description":"The item's variant.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"product","type":"`object`","description":"The item's product.","optional":false,"defaultValue":"","expandable":false,"children":[]}]},{"name":"from_location","type":"[StockLocationDTO](../../../types/StockLocationTypes/types/types.StockLocationTypes.StockLocationDTO/page.mdx)","description":"Details about the location that items are being shipped from.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"name","type":"`string`","description":"The name of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`Record<string, unknown>` \\| `null`","description":"Holds custom data in key-value pairs.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"address_id","type":"`string`","description":"The associated address's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"fulfillment_sets","type":"[FulfillmentSetDTO](../../../fulfillment/interfaces/fulfillment.FulfillmentSetDTO/page.mdx)[]","description":"Fulfillment sets for the location","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"created_at","type":"`string` \\| `Date`","description":"The creation date of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"updated_at","type":"`string` \\| `Date`","description":"The update date of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"deleted_at","type":"`string` \\| `Date` \\| `null`","description":"The deletion date of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"address","type":"[StockLocationAddressDTO](../../../types/StockLocationTypes/types/types.StockLocationTypes.StockLocationAddressDTO/page.mdx)","description":"The address of the stock location.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="validateFulfillmentData"/>
 
 #### Returns
 
@@ -263,11 +286,11 @@ class MyFulfillmentProviderService extends AbstractFulfillmentProviderService {
 
 #### Parameters
 
-<TypeList types={[{"name":"optionData","type":"`Record<string, unknown>`","description":"The `data` property of a shipping option.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`Record<string, unknown>`","description":"The shipping method's `data` property with custom data passed from the frontend.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"context","type":"[CartPropsForFulfillment](../../../fulfillment/types/fulfillment.CartPropsForFulfillment/page.mdx) & `object`","description":"The context details, such as the cart details.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"id\"`]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"shipping_address","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"shipping_address\"`]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"items","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"items\"`] & `object`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"variant","type":"`object`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"product","type":"`object`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]},{"name":"from_location","type":"[StockLocationDTO](../../../types/StockLocationTypes/types/types.StockLocationTypes.StockLocationDTO/page.mdx)","description":"The location that the items will be shipped from.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"name","type":"`string`","description":"The name of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`Record<string, unknown>` \\| `null`","description":"Holds custom data in key-value pairs.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"address_id","type":"`string`","description":"The associated address's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"fulfillment_sets","type":"[FulfillmentSetDTO](../../../fulfillment/interfaces/fulfillment.FulfillmentSetDTO/page.mdx)[]","description":"Fulfillment sets for the location","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"created_at","type":"`string` \\| `Date`","description":"The creation date of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"updated_at","type":"`string` \\| `Date`","description":"The update date of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"deleted_at","type":"`string` \\| `Date` \\| `null`","description":"The deletion date of the stock location.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"address","type":"[StockLocationAddressDTO](../../../types/StockLocationTypes/types/types.StockLocationTypes.StockLocationAddressDTO/page.mdx)","description":"The address of the stock location.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="calculatePrice"/>
+<TypeList types={[{"name":"optionData","type":"`Record<string, unknown>`","description":"The `data` property of a shipping option.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`Record<string, unknown>`","description":"The shipping method's `data` property with custom data passed from the frontend.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"context","type":"[CartPropsForFulfillment](../../../fulfillment/types/fulfillment.CartPropsForFulfillment/page.mdx) & &#123; [k: string]: unknown; from\\_location?: StockLocationDTO \\| undefined; &#125; & CalculatedRMAShippingContext","description":"The context details, such as the cart details.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"id\"`]","description":"The cart's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"shipping_address","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"shipping_address\"`]","description":"The cart's shipping address.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"items","type":"[CartDTO](../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"items\"`] & `object`","description":"The cart's items","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"variant","type":"`object`","description":"The item's variant.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"product","type":"`object`","description":"The item's product.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="calculatePrice"/>
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;[CalculatedShippingOptionPrice](../../../fulfillment/types/fulfillment.CalculatedShippingOptionPrice/page.mdx)&#62;","optional":false,"defaultValue":"","description":"The calculated price's details.","expandable":false,"children":[{"name":"CalculatedShippingOptionPrice","type":"[CalculatedShippingOptionPrice](../../../fulfillment/types/fulfillment.CalculatedShippingOptionPrice/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"calculated_amount","type":"`number`","description":"The calculated price.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"is_calculated_price_tax_inclusive","type":"`boolean`","description":"Whether the calculated price includes taxes. If enabled, Medusa will\ninfer the taxes from the calculated price. If false, Medusa will\nadd taxes to the calculated price.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="calculatePrice"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[CalculatedShippingOptionPrice](../../../types/types/types.CalculatedShippingOptionPrice/page.mdx)&#62;","optional":false,"defaultValue":"","description":"The calculated price's details.","expandable":false,"children":[{"name":"calculated_amount","type":"`number`","description":"The calculated price.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"is_calculated_price_tax_inclusive","type":"`boolean`","description":"Whether the calculated price includes taxes. If enabled, Medusa will\ninfer the taxes from the calculated price. If false, Medusa will\nadd taxes to the calculated price.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="calculatePrice"/>
 
 ### createFulfillment
 
@@ -315,7 +338,7 @@ class MyFulfillmentProviderService extends AbstractFulfillmentProviderService {
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;CreateFulfillmentResult&#62;","optional":false,"defaultValue":"","description":"An object whose `data` property is stored in the fulfillment's `data` property.","expandable":false,"children":[{"name":"CreateFulfillmentResult","type":"`CreateFulfillmentResult`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="createFulfillment"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[CreateFulfillmentResult](../../../types/types/types.CreateFulfillmentResult/page.mdx)&#62;","optional":false,"defaultValue":"","description":"An object whose `data` property is stored in the fulfillment's `data` property.","expandable":false,"children":[{"name":"data","type":"`Record<string, unknown>`","description":"Additional fulfillment data from provider","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"labels","type":"`object`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"tracking_number","type":"`string`","description":"The tracking number of the fulfillment label.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"tracking_url","type":"`string`","description":"The tracking URL of the fulfillment label.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"label_url","type":"`string`","description":"The label's URL.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="createFulfillment"/>
 
 ### cancelFulfillment
 
@@ -369,7 +392,7 @@ class MyFulfillmentProviderService extends AbstractFulfillmentProviderService {
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;never[]&#62;","optional":false,"defaultValue":"","description":"The fulfillment's documents.","expandable":false,"children":[{"name":"never[]","type":"`never`[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"never","type":"`never`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getFulfillmentDocuments"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;never[]&#62;","optional":false,"defaultValue":"","description":"The fulfillment's documents.","expandable":false,"children":[{"name":"never[]","type":"`never`[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getFulfillmentDocuments"/>
 
 ### createReturnFulfillment
 
@@ -411,7 +434,7 @@ class MyFulfillmentProviderService extends AbstractFulfillmentProviderService {
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;CreateFulfillmentResult&#62;","optional":false,"defaultValue":"","description":"An object containing `data` which is stored in the fulfillment's `data` property and `labels` array which is used to create FulfillmentLabels.","expandable":false,"children":[{"name":"CreateFulfillmentResult","type":"`CreateFulfillmentResult`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="createReturnFulfillment"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[CreateFulfillmentResult](../../../types/types/types.CreateFulfillmentResult/page.mdx)&#62;","optional":false,"defaultValue":"","description":"An object containing `data` which is stored in the fulfillment's `data` property and `labels` array which is used to create FulfillmentLabels.","expandable":false,"children":[{"name":"data","type":"`Record<string, unknown>`","description":"Additional fulfillment data from provider","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"labels","type":"`object`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"tracking_number","type":"`string`","description":"The tracking number of the fulfillment label.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"tracking_url","type":"`string`","description":"The tracking URL of the fulfillment label.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"label_url","type":"`string`","description":"The label's URL.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="createReturnFulfillment"/>
 
 ### getReturnDocuments
 
@@ -436,7 +459,7 @@ class MyFulfillmentProviderService extends AbstractFulfillmentProviderService {
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;never[]&#62;","optional":false,"defaultValue":"","description":"The fulfillment's documents.","expandable":false,"children":[{"name":"never[]","type":"`never`[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"never","type":"`never`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getReturnDocuments"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;never[]&#62;","optional":false,"defaultValue":"","description":"The fulfillment's documents.","expandable":false,"children":[{"name":"never[]","type":"`never`[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getReturnDocuments"/>
 
 ### getShipmentDocuments
 
@@ -461,7 +484,7 @@ class MyFulfillmentProviderService extends AbstractFulfillmentProviderService {
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;never[]&#62;","optional":false,"defaultValue":"","description":"The shipment's documents.","expandable":false,"children":[{"name":"never[]","type":"`never`[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"never","type":"`never`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getShipmentDocuments"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;never[]&#62;","optional":false,"defaultValue":"","description":"The shipment's documents.","expandable":false,"children":[{"name":"never[]","type":"`never`[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getShipmentDocuments"/>
 
 ### retrieveDocuments
 
@@ -496,7 +519,7 @@ class MyFulfillmentProviderService extends AbstractFulfillmentProviderService {
 
 ---
 
-## 3. Create Module Definition File
+## 3. Create Module Provider Definition File
 
 Create the file `src/modules/my-fulfillment/index.ts` with the following content:
 
@@ -512,11 +535,11 @@ export default ModuleProvider(Modules.FULFILLMENT, {
 })
 ```
 
-This exports the module's definition, indicating that the `MyFulfillmentProviderService` is the module's service.
+This exports the module provider's definition, indicating that the `MyFulfillmentProviderService` is the module provider's service.
 
 ---
 
-## 4. Use Module
+## 4. Use Module Provider
 
 To use your Fulfillment Module Provider, add it to the `providers` array of the Fulfillment Module in `medusa-config.ts`:
 
@@ -534,6 +557,7 @@ module.exports = defineConfig({
             id: "manual",
           },
           {
+            // if module provider is in a plugin, use `plugin-name/providers/my-fulfillment`
             resolve: "./src/modules/my-fulfillment",
             id: "my-fulfillment",
             options: {
@@ -551,9 +575,9 @@ module.exports = defineConfig({
 
 ## 5. Test it Out
 
-Before you use your fulfillment provider, in the Medusa Admin:
+Before you use your Fulfillment Module Provider, in the Medusa Admin:
 
-1. Add the fulfillment provider to a location.
+1. Add the Fulfillment Module Provider to a location.
 2. Add in the location a delivery shipping option that uses the provider.
 
 Then, place an order, choosing the shipping option you created during checkout, and create a fulfillment in the Medusa Admin. The fulfillment is created using your provider.

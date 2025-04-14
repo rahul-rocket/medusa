@@ -242,6 +242,13 @@
  *     type: string
  *     title: status
  *     description: The order's status.
+ *   region:
+ *     $ref: "#/components/schemas/AdminRegion"
+ *   credit_lines:
+ *     type: array
+ *     description: The order's credit lines.
+ *     items:
+ *       $ref: "#/components/schemas/OrderCreditLine"
  * 
 */
 

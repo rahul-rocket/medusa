@@ -28,6 +28,11 @@ post:
           $ref: >-
             ../components/schemas/AdminPostOrderEditsUpdateItemQuantityReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_order-edits_{id}_items_item_{item_id}/post.js
     - lang: Shell
       label: cURL
       source:

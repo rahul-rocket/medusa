@@ -40,6 +40,7 @@ medusaIntegrationTestRunner({
     let baseTag2
     let baseTag3
     let newTag
+    let shippingProfile
 
     let eventBus: IEventBusModuleService
     beforeAll(async () => {
@@ -84,12 +85,21 @@ medusaIntegrationTestRunner({
         )
       ).data.product_tag
 
+      shippingProfile = (
+        await api.post(
+          `/admin/shipping-profiles`,
+          { name: "Test", type: "default" },
+          adminHeaders
+        )
+      ).data.shipping_profile
+
       baseProduct = (
         await api.post(
           "/admin/products",
           getProductFixture({
             title: "Base product",
             tags: [{ id: baseTag1.id }, { id: baseTag2.id }],
+            shipping_profile_id: shippingProfile.id,
           }),
           adminHeaders
         )
@@ -149,6 +159,11 @@ medusaIntegrationTestRunner({
           )
           fileContent = fileContent.replace(/pcol_\w*\d*/g, baseCollection.id)
           fileContent = fileContent.replace(/ptyp_\w*\d*/g, baseType.id)
+
+          fileContent = fileContent.replace(
+            /import-shipping-profile*/g,
+            shippingProfile.id
+          )
 
           const { form, meta } = getUploadReq({
             name: "test.csv",
@@ -400,6 +415,11 @@ medusaIntegrationTestRunner({
         fileContent = fileContent.replace(/ptyp_\w*\d*/g, baseType.id)
         fileContent = fileContent.replace(/pcat_\w*\d*/g, baseCategory.id)
 
+        fileContent = fileContent.replace(
+          /import-shipping-profile*/g,
+          shippingProfile.id
+        )
+
         const { form, meta } = getUploadReq({
           name: "test.csv",
           content: fileContent,
@@ -440,6 +460,11 @@ medusaIntegrationTestRunner({
           { encoding: "utf-8" }
         )
 
+        fileContent = fileContent.replace(
+          /import-shipping-profile*/g,
+          shippingProfile.id
+        )
+
         const { form, meta } = getUploadReq({
           name: "test.csv",
           content: fileContent,
@@ -466,6 +491,11 @@ medusaIntegrationTestRunner({
 
         fileContent = fileContent.replace(/pcol_\w*\d*/g, baseCollection.id)
         fileContent = fileContent.replace(/ptyp_\w*\d*/g, baseType.id)
+
+        fileContent = fileContent.replace(
+          /import-shipping-profile*/g,
+          shippingProfile.id
+        )
 
         const { form, meta } = getUploadReq({
           name: "test.csv",
@@ -503,7 +533,7 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it("should fail on non-existent product fields being present in the CSV", async () => {
+      it("should successfully skip non-existent product fields being present in the CSV", async () => {
         const subscriberExecution = TestEventUtils.waitSubscribersExecution(
           `${Modules.NOTIFICATION}.notification.${CommonEvents.CREATED}`,
           eventBus
@@ -516,6 +546,11 @@ medusaIntegrationTestRunner({
 
         fileContent = fileContent.replace(/pcol_\w*\d*/g, baseCollection.id)
         fileContent = fileContent.replace(/ptyp_\w*\d*/g, baseType.id)
+
+        fileContent = fileContent.replace(
+          /import-shipping-profile*/g,
+          shippingProfile.id
+        )
 
         const { form, meta } = getUploadReq({
           name: "test.csv",
@@ -547,8 +582,19 @@ medusaIntegrationTestRunner({
           expect.objectContaining({
             data: expect.objectContaining({
               title: "Product import",
-              description: `Failed to import products from file test.csv`,
+              description:
+                "Product import of file test.csv completed successfully!",
             }),
+          })
+        )
+
+        const [importedProduct] = (
+          await api.get("/admin/products?limit=1&order=-id", adminHeaders)
+        ).data.products
+
+        expect(importedProduct).not.toEqual(
+          expect.objectContaining({
+            field: "Test product",
           })
         )
       })
@@ -580,6 +626,11 @@ medusaIntegrationTestRunner({
         fileContent = fileContent.replace(
           /test-collection2/g,
           baseCollection.handle
+        )
+
+        fileContent = fileContent.replace(
+          /import-shipping-profile*/g,
+          shippingProfile.id
         )
 
         const { form, meta } = getUploadReq({

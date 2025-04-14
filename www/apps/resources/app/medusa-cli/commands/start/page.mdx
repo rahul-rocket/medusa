@@ -62,5 +62,22 @@ npx medusa start
 
       </Table.Cell>
     </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `--cluster <number>`
+      
+      </Table.Cell>
+      <Table.Cell>
+
+      Start Medusa's Node.js server in [cluster mode](https://expressjs.com/en/advanced/best-practice-performance.html#run-your-app-in-a-cluster). Running in cluster mode significantly improves performance as the workload and tasks are distributed among all available instances instead of a single one.
+      
+      </Table.Cell>
+      <Table.Cell>
+
+      Cluster mode is disabled by default. If the option is passed but no number is passed, Medusa will try to consume all available CPU cores.
+
+      </Table.Cell>
+    </Table.Row>
   </Table.Body>
 </Table>

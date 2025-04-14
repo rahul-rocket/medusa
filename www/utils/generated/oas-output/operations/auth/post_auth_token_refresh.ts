@@ -5,12 +5,31 @@
  * description: Create a token.
  * x-authenticated: false
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       const token = await sdk.auth.refresh()
+ * 
+ *       // all subsequent requests will use the token in the header
+ *       const { customer } = await sdk.store.customer.retrieve()
  *   - lang: Shell
  *     label: cURL
  *     source: curl -X POST '{backend_url}/auth/token/refresh'
  * tags:
  *   - Token
  * responses:
+ *   "200":
+ *     description: OK
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":

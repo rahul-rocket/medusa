@@ -41,6 +41,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostReturnsReceiveItemsReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_returns_{id}_receive-items/post.js
     - lang: Shell
       label: cURL
       source:

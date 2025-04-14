@@ -18,5 +18,6 @@ export const StockLocationModule = {
     alias: [],
   },
 
+  list: jest.fn(async () => []),
   softDelete: jest.fn(() => {}),
 }

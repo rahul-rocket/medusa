@@ -25,6 +25,7 @@ export const CartPromotion: ModuleJoinerConfig = {
       args: {
         methodSuffix: "Carts",
       },
+      hasMany: true,
     },
     {
       serviceName: Modules.PROMOTION,
@@ -35,6 +36,7 @@ export const CartPromotion: ModuleJoinerConfig = {
       args: {
         methodSuffix: "Promotions",
       },
+      hasMany: true,
     },
   ],
   extends: [

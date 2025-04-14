@@ -57,6 +57,10 @@ post:
                 title: remove
                 description: A promotion's ID.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_campaigns_{id}_promotions/post.js
     - lang: Shell
       label: cURL
       source:
